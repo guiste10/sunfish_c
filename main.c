@@ -14,6 +14,7 @@ int main() {
     // Print the values associated with the keys
     //printf("Value for key1: %d\N", map_get(pieces, "R"));
 
+    printf("hey");
     // Free the map memory
     map_destroy(pst);
 
