@@ -1,22 +1,26 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
 #include <stdint.h>
-#include <stddef.h>
-#include <assert.h>
 #include "map.h"
 #include "pieceSquareTables.h"
+#include "debug.h"
+#include "chessBoard.h"
+#include "constants.h"
+
 
 int main() {
     map* pst = createPst();
-    
-    // Print the values associated with the keys
-    //printf("Value for key1: %d\N", map_get(pieces, "R"));
+    //printIntArray(map_get(pst, "P"), SIZE);
 
-    printf("hey");
-    // Free the map memory
+    map* directions = createPieceDirections();
+    //printIntArray((int*)map_get(directions, "R"), 4);
+
+    printCharArray(board, SIZE);
+
+
+    // Free memory
     map_destroy(pst);
-
+    map_destroy(directions);
+    printf("\n");
+    fflush(stdout);  // Flush the output stream
     return 0;
 }

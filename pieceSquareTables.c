@@ -2,21 +2,21 @@
 // Created by neiringu on 18-05-23.
 //
 
+#include <stdint.h>
 #include "map.h"
-#include "debug.h"
+#include "constants.h"
+#include "chessBoard.h"
 
-const int P = 100;
-const int N = 280;
-const int B = 320;
-const int R = 479;
-const int Q = 929;
-const int K = 60000;
-const int MATE_LOWER = K - 10 * Q;
-const int MATE_UPPER = K + 10 * Q;
+const int pawnVal = 100;
+const int knightVal = 280;
+const int bishopVal = 320;
+const int rookVal = 479;
+const int queenVal = 929;
+const int kingVal = 60000;
+const int MATE_LOWER = kingVal - 10 * queenVal;
+const int MATE_UPPER = kingVal + 10 * queenVal;
 
 const int NUM_PIECES = 6;
-const char PIECES[] = "PNBRQK";
-const int ARRAY_SIZE = 120;
 
 int pawn[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -110,12 +110,12 @@ int king[] = {
 
 map* createPieceValues(){
     map* pieceValues = map_create();
-    map_put(pieceValues, "P", (void*)P);
-    map_put(pieceValues, "N", (void*)N);
-    map_put(pieceValues, "B", (void*)B);
-    map_put(pieceValues, "R", (void*)R);
-    map_put(pieceValues, "Q", (void*)Q);
-    map_put(pieceValues, "K", (void*)K);
+    map_put(pieceValues, "P", (void*)(uintptr_t)pawnVal);
+    map_put(pieceValues, "N", (void*)(uintptr_t)knight);
+    map_put(pieceValues, "B", (void*)(uintptr_t)bishopVal);
+    map_put(pieceValues, "R", (void*)(uintptr_t)rookVal);
+    map_put(pieceValues, "Q", (void*)(uintptr_t)queenVal);
+    map_put(pieceValues, "K", (void*)(uintptr_t)kingVal);
     return pieceValues;
 }
 
@@ -135,9 +135,9 @@ map* createPst(){
     map* squareValues = createSquareValues();
     for(int i=0; i < NUM_PIECES; i++){
         char pieceIdentifier[2] = {PIECES[i], '\0'};
-        int valueForPiece = (int)map_get(pieceValues, pieceIdentifier);
+        int valueForPiece = (int)(uintptr_t)map_get(pieceValues, pieceIdentifier);
         int* squareValuesForPiece = (int*)map_get(squareValues, pieceIdentifier);
-        for(int j=0; j < ARRAY_SIZE; j++){
+        for(int j=0; j < SIZE; j++){
             *(squareValuesForPiece + j) = *(squareValuesForPiece + j) + valueForPiece;
         }
     }
