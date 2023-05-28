@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "move.h"
 
 //
 // Created by neiringu on 18-05-23.
@@ -27,5 +28,8 @@ void printCharArray(const char* arr, int size) {
     }
     printf("\n");
     fflush(stdout);  // Flush the output stream
+}
 
+void printMove(const Move move) {
+    printf("Move: i = %d, j = %d, prom = %c\n", move.i, move.j, move.prom);;
 }

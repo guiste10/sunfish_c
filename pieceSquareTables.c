@@ -108,8 +108,8 @@ int king[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-map* createPieceValues(){
-    map* pieceValues = map_create();
+Map* createPieceValues(){
+    Map* pieceValues = map_create();
     map_put(pieceValues, "P", (void*)(uintptr_t)pawnVal);
     map_put(pieceValues, "N", (void*)(uintptr_t)knight);
     map_put(pieceValues, "B", (void*)(uintptr_t)bishopVal);
@@ -119,8 +119,8 @@ map* createPieceValues(){
     return pieceValues;
 }
 
-map* createSquareValues(){
-    map* squareValues = map_create();
+Map* createSquareValues(){
+    Map* squareValues = map_create();
     map_put(squareValues, "P", (void*)pawn);
     map_put(squareValues, "N", (void*)knight);
     map_put(squareValues, "B", (void*)bishop);
@@ -130,9 +130,9 @@ map* createSquareValues(){
     return squareValues;
 }
 
-map* createPst(){
-    map* pieceValues = createPieceValues();
-    map* squareValues = createSquareValues();
+Map* createPst(){
+    Map* pieceValues = createPieceValues();
+    Map* squareValues = createSquareValues();
     for(int i=0; i < NUM_PIECES; i++){
         char pieceIdentifier[2] = {PIECES[i], '\0'};
         int valueForPiece = (int)(uintptr_t)map_get(pieceValues, pieceIdentifier);

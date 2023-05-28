@@ -5,16 +5,26 @@
 #include "debug.h"
 #include "chessBoard.h"
 #include "constants.h"
+#include "position.h"
+#include "move.h"
 
 
 int main() {
-    map* pst = createPst();
+    Map* pst = createPst();
     //printIntArray(map_get(pst, "P"), SIZE);
 
-    map* directions = createPieceDirections();
+    Map* directions = createPieceDirections();
     //printIntArray((int*)map_get(directions, "R"), 4);
 
-    printCharArray(board, SIZE);
+    //printCharArray(board, SIZE);
+
+    Position* position = initPosition();
+    ArrayList* moves = gen_moves(initPosition(), directions);
+
+    for(int i=0; i<20; i++){
+        Move* move = arrayListGet(moves, i);
+        printMove(*move);
+    }
 
 
     // Free memory

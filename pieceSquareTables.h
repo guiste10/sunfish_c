@@ -9,5 +9,5 @@
 extern const int MATE_LOWER;
 extern const int MATE_UPPER;
 
-map* createPst();
+Map* createPst();
 #endif //SUNFISH_C_PIECESQUARETABLES_H

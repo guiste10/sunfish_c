@@ -11,18 +11,18 @@
 typedef struct {
     char* key;
     void* value;
-} map_entry;
+} Map_entry;
 
 typedef struct {
-    map_entry entries[MAP_CAPACITY];
+    Map_entry entries[MAP_CAPACITY];
     size_t count;
-} map;
+} Map;
 
-map* map_create();
-void map_put(map* m, const char* key, void* value);
-void* map_get(map* m, const char* key);
-void map_delete(map* m, const char* key);
-void map_destroy(map* m);
+Map* map_create();
+void map_put(Map* m, const char* key, void* value);
+void* map_get(Map* m, const char* key);
+void map_delete(Map* m, const char* key);
+void map_destroy(Map* m);
 
 #endif /* MAP_H */
 
