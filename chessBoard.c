@@ -1,4 +1,6 @@
-#include "map.h"
+#include <string.h>
+#include "constants.h"
+#include "chessBoard.h"
 
 //
 // Created by neiringu on 21-05-23.
@@ -8,41 +10,44 @@ const int H1 = 98;
 const int A8 = 21;
 const int H8 = 28;
 
-const int N = -10;
-const int E = 1;
-const int S = 10;
-const int W = -1;
+const int NORTH = -10;
+const int EAST = 1;
+const int SOUTH = 10;
+const int WEST = -1;
 
-const int pawnDirections[] = {N, N+N, N+W, N+E, 0};
-const int knightDirections[] = {N+N+E, E+N+E, E+S+E, S+S+E, S+S+W, W+S+W, W+N+W, N+N+W, 0};
-const int bishopDirections[] = {N+E, S+E, S+W, N+W, 0};
-const int rookDirections[] = {N, E, S, W, 0};
-const int kingDirections[] = {N, E, S, W, N+E, S+E, S+W, N+W, 0};
+const int N = 1;
+const int B = 2;
+const int R = 3;
+const int Q = 4;
+const int K = 5;
 
-const char PIECES[] = "PNBRQK";
-const char PROMOTIONS[] = "NBRQ";
-const int NUM_PROMOTIONS = 4;
+const char initialBoard[] = "          "
+                            "          "
+                            " rnbqkbnr "
+                            " pppppppp "
+                            " ........ "
+                            " ........ "
+                            " ........ "
+                            " ........ "
+                            " PPPPPPPP "
+                            " RNBQKBNR "
+                            "          "
+                            "          ";
 
-char board[] = "          "
-                    "          "
-                    " rnbqkbnr "
-                    " pppppppp "
-                    " ........ "
-                    " ........ "
-                    " ........ "
-                    " ........ "
-                    " PPPPPPPP "
-                    " RNBQKBNR "
-                    "          "
-                    "          ";
+const int DIRECTIONS[NUM_PIECES][9] = {
+        {NORTH, NORTH + NORTH, NORTH + WEST, NORTH + EAST, 0}, // pawn
+        {NORTH + NORTH + EAST, NORTH + NORTH + WEST, // knight
+         EAST + EAST + NORTH,EAST + EAST + SOUTH,
+         SOUTH + SOUTH + EAST, SOUTH + SOUTH + WEST,
+         WEST + WEST + + SOUTH,WEST + WEST + NORTH, 0},
+        {NORTH + EAST, SOUTH + EAST, SOUTH + WEST, NORTH + WEST, 0}, // bishop
+        {NORTH, EAST, SOUTH, WEST, 0}, // rook
+        {NORTH, EAST, SOUTH, WEST, NORTH + EAST, // queen
+         SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0},
+        {NORTH, EAST, SOUTH, WEST, NORTH + EAST, // king
+         SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0}
+};
 
-Map* createPieceDirections(){
-    Map* directions = map_create();
-    map_put(directions, "P", (int*)pawnDirections);
-    map_put(directions, "N", (int*)knightDirections);
-    map_put(directions, "B", (int*)bishopDirections);
-    map_put(directions, "R", (int*)rookDirections);
-    map_put(directions, "Q", (int*)kingDirections);
-    map_put(directions, "K", (int*)kingDirections);
-    return directions;
+void copyBoard(char* dest, const char* src) {
+    memcpy(dest, src, sizeof(char) * SIZE);
 }

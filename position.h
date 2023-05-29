@@ -14,11 +14,14 @@ typedef struct {
     int score;
     bool wc[2];
     bool bc[2];
-    bool ep;
-    bool kp;
+    int ep;
+    int kp; // square where the king has passed but not stopped during castling
 } Position;
 
 Position* initPosition();
 
-ArrayList* gen_moves(Position * position, Map* directions);
+ArrayList* genMoves(Position * position);
+
+void rotate(Position* position, bool nullMove);
+
 #endif //SUNFISH_C_POSITION_H

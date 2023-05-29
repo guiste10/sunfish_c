@@ -4,7 +4,6 @@
 
 #include <malloc.h>
 #include "move.h"
-#include "map.h"
 #include "chessBoard.h"
 
 Move* createMove(int i, int j, char prom) {
