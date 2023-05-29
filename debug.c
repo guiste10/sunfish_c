@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <malloc.h>
 #include "move.h"
 
 //
@@ -27,9 +28,14 @@ void printCharArray(const char* arr, int size) {
         fflush(stdout);  // Flush the output stream
     }
     printf("\n");
-    fflush(stdout);  // Flush the output stream
 }
 
-void printMove(const Move move) {
-    printf("Move: i = %d, j = %d, prom = %c\n", move.i, move.j, move.prom);;
+void printMove(const Move move, const char board[]) {
+    //printf("Move: %c from i = %d to j = %d, prom = %c\n", board[move.i], move.i, move.j, move.prom);
+    char* from = render(move.i);
+    char* to = render(move.j);
+    printf("Move %c from i = %s to j = %s, prom = %c\n", board[move.i], from, to, move.prom);
+    free(from);
+    free(to);
+    fflush(stdout);  // Flush the output stream
 }

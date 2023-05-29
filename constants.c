@@ -4,4 +4,4 @@
 
 const int SIZE = 120;
 const int ARRAY_END = 0;
-const char NO_PROMOTION = '\0';
+const char NO_PROMOTION = ' ';

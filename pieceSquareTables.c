@@ -111,7 +111,7 @@ int king[] = {
 Map* createPieceValues(){
     Map* pieceValues = map_create();
     map_put(pieceValues, "P", (void*)(uintptr_t)pawnVal);
-    map_put(pieceValues, "N", (void*)(uintptr_t)knight);
+    map_put(pieceValues, "N", (void*)(uintptr_t)knightVal);
     map_put(pieceValues, "B", (void*)(uintptr_t)bishopVal);
     map_put(pieceValues, "R", (void*)(uintptr_t)rookVal);
     map_put(pieceValues, "Q", (void*)(uintptr_t)queenVal);

@@ -34,7 +34,7 @@ ArrayList* gen_moves(Position * position, Map* directions) {
             continue;
         char pieceIdentifier[2] = {p, '\0'};
         int* pieceDirections = (int*)(uintptr_t)map_get(directions, pieceIdentifier);
-        for (int dirIndex = 0; dirIndex != ARRAY_END; dirIndex++) {
+        for (int dirIndex = 0; *(pieceDirections + dirIndex) != ARRAY_END; dirIndex++) {
             int d = *(pieceDirections + dirIndex);
             for (int j = i + d; j >= 0 && j < SIZE; j += d) {
                 char q = position->board[j];

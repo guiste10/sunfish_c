@@ -11,5 +11,7 @@ typedef struct {
 } Move;
 
 Move* createMove(int i, int j, char prom);
+char* render(int i);
+
 
 #endif //SUNFISH_C_MOVE_H

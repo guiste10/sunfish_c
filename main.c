@@ -19,13 +19,14 @@ int main() {
     //printCharArray(board, SIZE);
 
     Position* position = initPosition();
-    ArrayList* moves = gen_moves(initPosition(), directions);
+    ArrayList* moves = gen_moves(position, directions);
 
     for(int i=0; i<20; i++){
         Move* move = arrayListGet(moves, i);
-        printMove(*move);
+        printMove(*move, board);
     }
-
+    //Move* move = arrayListGet(moves, 2);
+    //printMove(*move, board);
 
     // Free memory
     map_destroy(pst);

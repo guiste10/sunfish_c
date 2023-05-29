@@ -9,5 +9,5 @@
 
 void printIntArray(const int* arr, int size);
 void printCharArray(const char* arr, int size);
-void printMove(Move move);
+void printMove(Move move, char board[]);
 #endif //SUNFISH_C_DEBUG_H
