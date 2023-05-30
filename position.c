@@ -32,7 +32,7 @@ ArrayList* genMoves(Position * position) {
         char p = position->board[i];
         if (!isupper(p))
             continue;
-        int* pieceDirections = (int*)DIRECTIONS[p];
+        int* pieceDirections = (int*)DIRECTIONS[getPieceValue(p)];
         for (int dirIndex = 0; *(pieceDirections + dirIndex) != ARRAY_END; dirIndex++) {
             int d = *(pieceDirections + dirIndex);
             for (int j = i + d; j >= 0 && j < SIZE; j += d) {
@@ -51,7 +51,7 @@ ArrayList* genMoves(Position * position) {
                         break;
                     // If we move to the last row, we can be anything
                     if (j >= A8 && j <= H8) {
-                        for (int promIndex = 0; promIndex < NUM_PROMOTIONS; promIndex++)
+                        for (int promIndex = 0; promIndex < NUM_PROMOTIONS ; promIndex++)
                             arrayListAdd(moves, createMove(i, j, PROMOTIONS[promIndex]));
                         break;
                     }
@@ -73,11 +73,10 @@ ArrayList* genMoves(Position * position) {
 }
 
 void rotate(Position* position, bool nullMove) {
-    int boardSize = 120;
-    for (int i = 0; i < boardSize / 2; i++) {
+    for (int i = 0; i < SIZE / 2; i++) {
         char temp = position->board[i];
-        position->board[i] = position->board[boardSize - i - 1];
-        position->board[boardSize - i - 1] = temp;
+        position->board[i] = position->board[SIZE - i - 1];
+        position->board[SIZE - i - 1] = temp;
 
         // Swap case if it is an alphabetic character
         if (isalpha(position->board[i])) {
@@ -86,10 +85,10 @@ void rotate(Position* position, bool nullMove) {
             position->board[i] = (char)tolower(position->board[i]);
         }
 
-        if (isalpha(position->board[boardSize - i - 1])) {
-            position->board[boardSize - i - 1] = (char)toupper(position->board[boardSize - i - 1]);
-        } else if (isupper(position->board[boardSize - i - 1])) {
-            position->board[boardSize - i - 1] = (char)tolower(position->board[boardSize - i - 1]);
+        if (isalpha(position->board[SIZE - i - 1])) {
+            position->board[SIZE - i - 1] = (char)toupper(position->board[SIZE - i - 1]);
+        } else if (isupper(position->board[SIZE - i - 1])) {
+            position->board[SIZE - i - 1] = (char)tolower(position->board[SIZE - i - 1]);
         }
     }
 
@@ -174,12 +173,12 @@ int value(const Position *position, const Move *move) {
 
     // Capture
     if (islower(q)) {
-        score += pst[toupper(q)][119 - j];
+        score += pst[toupper(q)][SIZE - 1 - j];
     }
 
     // Castling check detection
     if (abs(j - position->kp) < 2) {
-        score += pst[K][119 - j];
+        score += pst[K][SIZE - 1 - j];
     }
 
     // Castling
@@ -194,7 +193,7 @@ int value(const Position *position, const Move *move) {
             score += pst[prom][j] - pst[P][j];
         }
         if (j == position->ep) {
-            score += pst[P][119 - (j + SOUTH)];
+            score += pst[P][SIZE - 1 - (j + SOUTH)];
         }
     }
 

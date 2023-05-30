@@ -15,6 +15,7 @@ const int EAST = 1;
 const int SOUTH = 10;
 const int WEST = -1;
 
+const int P = 0;
 const int N = 1;
 const int B = 2;
 const int R = 3;
@@ -33,7 +34,8 @@ const char initialBoard[] = "          "
                             " RNBQKBNR "
                             "          "
                             "          ";
-
+const char PIECES[] = "PNBRQK";
+const char PROMOTIONS[] = "NBRQ";
 const int DIRECTIONS[NUM_PIECES][9] = {
         {NORTH, NORTH + NORTH, NORTH + WEST, NORTH + EAST, 0}, // pawn
         {NORTH + NORTH + EAST, NORTH + NORTH + WEST, // knight
@@ -47,6 +49,25 @@ const int DIRECTIONS[NUM_PIECES][9] = {
         {NORTH, EAST, SOUTH, WEST, NORTH + EAST, // king
          SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0}
 };
+
+int getPieceValue(char piece) {
+    switch (piece) {
+        case 'P':
+            return 0;
+        case 'N':
+            return 1;
+        case 'B':
+            return 2;
+        case 'R':
+            return 3;
+        case 'Q':
+            return 4;
+        case 'K':
+            return 5;
+        default:
+            return -1;  // Return -1 for invalid characters
+    }
+}
 
 void copyBoard(char* dest, const char* src) {
     memcpy(dest, src, sizeof(char) * SIZE);

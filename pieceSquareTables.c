@@ -2,9 +2,7 @@
 // Created by neiringu on 18-05-23.
 //
 
-#include "chessBoard.h"
-#define NUM_PIECES 6
-#define ARRAY_SIZE 120
+#include "constants.h"
 
 const int pawnVal = 100;
 const int knightVal = 280;
@@ -18,7 +16,7 @@ const int MATE_UPPER = kingVal + 10 * queenVal;
 const int pieceValues[NUM_PIECES] = {pawnVal, knightVal, bishopVal,
                                      rookVal, queenVal, kingVal};
 
-int pst[NUM_PIECES][ARRAY_SIZE] = {
+int pst[NUM_PIECES][SIZE] = {
         { // pawn
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -106,11 +104,10 @@ int pst[NUM_PIECES][ARRAY_SIZE] = {
 };
 
 void initPst(){
-    for(int i=0; i < NUM_PIECES; i++){
-        char piece = PIECES[i];
+    for(int piece=0; piece < NUM_PIECES; piece++){
         int* squareValuesForPiece = pst[piece];
-        for(int j=0; j < ARRAY_SIZE; j++){
-            *(squareValuesForPiece + j) = *(squareValuesForPiece + j) + pieceValues[piece];
+        for(int j=0; j < SIZE; j++){
+            *(squareValuesForPiece + j) += pieceValues[piece];
         }
     }
 }

@@ -4,6 +4,7 @@
 
 #ifndef SUNFISH_C_CHESSBOARD_H
 #define SUNFISH_C_CHESSBOARD_H
+#include "constants.h"
 
 extern const int A1;
 extern const int H1;
@@ -22,14 +23,13 @@ extern const int R;
 extern const int Q;
 extern const int K;
 
-const char PIECES[] = "PNBRQK";
-const int NUM_PIECES = 6;
-const char PROMOTIONS[] = "NBRQ";
-const int NUM_PROMOTIONS = 4;
-
+extern const char PIECES[];
+extern const char PROMOTIONS[];
 extern const int DIRECTIONS[NUM_PIECES][9];
 
 extern const char initialBoard[];
+
+int getPieceValue(char piece);
 
 void copyBoard(char* dest, const char* src);
 #endif //SUNFISH_C_CHESSBOARD_H
