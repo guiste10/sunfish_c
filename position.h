@@ -7,6 +7,7 @@
 
 #include "arraylist.h"
 #include "map.h"
+#include "move.h"
 #include <stdbool.h>
 
 typedef struct {
@@ -22,6 +23,5 @@ Position* initPosition();
 
 ArrayList* genMoves(Position * position);
 
-void rotate(Position* position, bool nullMove);
-
+void doMove(Position* position, Move* move, char* newBoard);
 #endif //SUNFISH_C_POSITION_H

@@ -15,6 +15,7 @@ void printIntArray(const int* arr, int size) {
         fflush(stdout);  // Flush the output stream
     }
     printf("\n");
+    fflush(stdout);  // Flush the output stream
 }
 
 void printCharArray(const char* arr, int size) {
@@ -28,6 +29,7 @@ void printCharArray(const char* arr, int size) {
         fflush(stdout);  // Flush the output stream
     }
     printf("\n");
+    fflush(stdout);  // Flush the output stream
 }
 
 void printMove(const Move move, const char board[]) {

@@ -34,7 +34,7 @@ ArrayList* genMoves(Position* position) {
         char p = position->board[i];
         if (!isupper(p))
             continue;
-        int* pieceDirections = (int*)DIRECTIONS[getPieceValue(p)];
+        int* pieceDirections = (int*)DIRECTIONS[getPieceIndex(p)];
         for (int dirIndex = 0; *(pieceDirections + dirIndex) != ARRAY_END; dirIndex++) {
             int d = *(pieceDirections + dirIndex);
             for (int j = i + d; j >= 0 && j < SIZE; j += d) {
@@ -75,22 +75,15 @@ ArrayList* genMoves(Position* position) {
 }
 
 void rotate(Position* position, bool nullMove) {
-    for (int i = 0; i < SIZE / 2; i++) {
+    for (int i = 0; i < SIZE / 2; i++) { // rotate board
         char temp = position->board[i];
         position->board[i] = position->board[SIZE - i - 1];
         position->board[SIZE - i - 1] = temp;
-
-        // Swap case if it is an alphabetic character
-        if (isalpha(position->board[i])) {
-            position->board[i] = (char)toupper(position->board[i]);
-        } else if (isupper(position->board[i])) {
-            position->board[i] = (char)tolower(position->board[i]);
-        }
-
-        if (isalpha(position->board[SIZE - i - 1])) {
-            position->board[SIZE - i - 1] = (char)toupper(position->board[SIZE - i - 1]);
-        } else if (isupper(position->board[SIZE - i - 1])) {
-            position->board[SIZE - i - 1] = (char)tolower(position->board[SIZE - i - 1]);
+    }
+    for (int i = 0; i < SIZE; i++) { // swap cases
+        char *piece = &(position->board[i]);
+        if(isalpha(*piece)) {
+            *piece = isupper(*piece) ? tolower(*piece) : toupper(*piece);
         }
     }
 
@@ -98,6 +91,46 @@ void rotate(Position* position, bool nullMove) {
     position->score = -position->score;
     position->ep = (position->ep && !nullMove) ? (119 - position->ep) : 0;
     position->kp = (position->kp && !nullMove) ? (119 - position->kp) : 0;
+}
+
+int value(const Position *position, const Move *move) {
+    int i = move->i;
+    int j = move->j;
+    char prom = move->prom;
+    char p = position->board[i];
+    char q = position->board[j];
+
+    int friendlyPieceIndex = getPieceIndex(p);
+    int score = pst[friendlyPieceIndex][j] - pst[friendlyPieceIndex][i];
+
+    // Capture
+    if (islower(q)) {
+        int enemyPieceIndex = getPieceIndex((char)toupper(q));
+        score += pst[enemyPieceIndex][SIZE - 1 - j];
+    }
+
+    // Castling check detection
+    if (abs(j - position->kp) < 2) {
+        score += pst[K][SIZE - 1 - j];
+    }
+
+    // Castling
+    if (p == 'K' && abs(i - j) == 2) {
+        score += pst[R][(i + j) / 2];
+        score -= pst[R][j < i ? A1 : H1];
+    }
+
+    // Special pawn stuff
+    if (p == 'P') {
+        if (A8 <= j && j <= H8) {
+            score += pst[prom][j] - pst[P][j];
+        }
+        if (j == position->ep) {
+            score += pst[P][SIZE - 1 - (j + SOUTH)];
+        }
+    }
+
+    return score;
 }
 
 void doMove(Position* position, Move* move, char* newBoard) {
@@ -117,7 +150,7 @@ void doMove(Position* position, Move* move, char* newBoard) {
     newPosition.bc[1] = position->bc[1];
     newPosition.ep = 0;
     newPosition.kp = 0;
-    newPosition.score = position->score + 0; //value(move);  // Assuming value() function exists
+    newPosition.score = position->score + value(position, move);
 
     // Actual move
     newPosition.board[j] = newPosition.board[i];
@@ -165,42 +198,7 @@ void doMove(Position* position, Move* move, char* newBoard) {
     rotate(&newPosition, false);
 }
 
-int value(const Position *position, const Move *move) {
-    int i = move->i;
-    int j = move->j;
-    char prom = move->prom;
-    char p = position->board[i];
-    char q = position->board[j];
-    int score = pst[p][j] - pst[p][i];
 
-    // Capture
-    if (islower(q)) {
-        score += pst[toupper(q)][SIZE - 1 - j];
-    }
-
-    // Castling check detection
-    if (abs(j - position->kp) < 2) {
-        score += pst[K][SIZE - 1 - j];
-    }
-
-    // Castling
-    if (p == 'K' && abs(i - j) == 2) {
-        score += pst[R][(i + j) / 2];
-        score -= pst[R][j < i ? A1 : H1];
-    }
-
-    // Special pawn stuff
-    if (p == 'P') {
-        if (A8 <= j && j <= H8) {
-            score += pst[prom][j] - pst[P][j];
-        }
-        if (j == position->ep) {
-            score += pst[P][SIZE - 1 - (j + SOUTH)];
-        }
-    }
-
-    return score;
-}
 
 
 

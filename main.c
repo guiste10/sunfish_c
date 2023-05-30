@@ -6,14 +6,8 @@
 #include "position.h"
 #include "move.h"
 
-
 int main() {
     initPst();
-    //printIntArray(map_get(pst, "P"), SIZE);
-
-    //printIntArray((int*)map_get(directions, "R"), 4);
-
-    //printCharArray(board, SIZE);
 
     Position* position = initPosition();
     ArrayList* moves = genMoves(position);
@@ -21,11 +15,18 @@ int main() {
     for(int i=0; i<20; i++){
         Move* move = arrayListGet(moves, i);
         printMove(*move, (char*)initialBoard);
+        if(i == 0){
+            char newBoard[SIZE];
+            //printCharArray(position->board, SIZE);
+            doMove(position, move, newBoard);
+            printCharArray(newBoard, SIZE);
+        }
         free(move);
     }
+
+
+
     freeArrayList(moves);
-    //Move* move = arrayListGet(moves, 2);
-    //printMove(*move, board);
 
     // Free memory
     free(position);

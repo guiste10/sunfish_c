@@ -29,7 +29,7 @@ extern const int DIRECTIONS[NUM_PIECES][9];
 
 extern const char initialBoard[];
 
-int getPieceValue(char piece);
+int getPieceIndex(char piece);
 
 void copyBoard(char* dest, const char* src);
 #endif //SUNFISH_C_CHESSBOARD_H

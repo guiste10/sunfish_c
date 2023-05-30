@@ -50,7 +50,7 @@ const int DIRECTIONS[NUM_PIECES][9] = {
          SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0}
 };
 
-int getPieceValue(char piece) {
+int getPieceIndex(char piece) {
     switch (piece) {
         case 'P':
             return 0;
