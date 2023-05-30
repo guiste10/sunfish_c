@@ -20,10 +20,12 @@ Position* initPosition(){
     position->wc[1] = true;
     position->bc[0] = true;
     position->bc[1] = true;
+    position->ep = 0;
+    position->kp = 0;
     return position;
 }
 
-ArrayList* genMoves(Position * position) {
+ArrayList* genMoves(Position* position) {
     // For each of our pieces, iterate through each possible 'ray' of moves,
     // as defined in the 'directions' map. The rays are broken e.g. by
     // captures or immediately in case of pieces such as knights.
