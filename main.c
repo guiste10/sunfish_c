@@ -18,8 +18,9 @@ int main() {
         Move* move = arrayListGet(moves, i);
         printMove(*move, (char*)initialBoard);
         if(i == 0){
+            Position newPosition;
             char newBoard[SIZE];
-            doMove(position, move, newBoard);
+            doMove(position, move, &newPosition, newBoard);
             printCharArray(newBoard, SIZE);
         }
         free(move);

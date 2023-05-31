@@ -128,69 +128,70 @@ int value(const Position *position, const Move *move) {
     return score;
 }
 
-void doMove(Position* position, Move* move, char* newBoard) {
+void doMove(Position* position, Move* move, Position* newPosition, char* newBoard) {
     // Copy board representation
-    Position newPosition;
-    newPosition.board = newBoard;
-    copyBoard(newBoard, position->board);
+    Position newPos;
+    newPos.board = newBoard;
+    *newPosition = newPos;
+    copyBoard(newPosition->board, position->board);
     // Init helper variables
     int i = move->i, j = move->j;
     char prom = move->prom;
     char p = position->board[i];
 
     // Copy variables and reset ep and kp
-    newPosition.wc[0] = position->wc[0];
-    newPosition.wc[1] = position->wc[1];
-    newPosition.bc[0] = position->bc[0];
-    newPosition.bc[1] = position->bc[1];
-    newPosition.ep = 0;
-    newPosition.kp = 0;
-    newPosition.score = position->score + value(position, move);
+    newPosition->wc[0] = position->wc[0];
+    newPosition->wc[1] = position->wc[1];
+    newPosition->bc[0] = position->bc[0];
+    newPosition->bc[1] = position->bc[1];
+    newPosition->ep = 0;
+    newPosition->kp = 0;
+    newPosition->score = position->score + value(position, move);
 
     // Actual move
-    newPosition.board[j] = newPosition.board[i];
-    newPosition.board[i] = '.';
+    newPosition->board[j] = newPosition->board[i];
+    newPosition->board[i] = '.';
 
     // Castling rights, we move the rook or capture the opponent's
     if (i == A1) {
-        newPosition.wc[0] = false;
+        newPosition->wc[0] = false;
     }
     if (i == H1) {
-        newPosition.wc[1] = false;
+        newPosition->wc[1] = false;
     }
     if (j == A8) {
-        newPosition.bc[0] = false;
+        newPosition->bc[0] = false;
     }
     if (j == H8) {
-        newPosition.bc[1] = false;
+        newPosition->bc[1] = false;
     }
 
     // Castling
     if (p == 'K') {
-        newPosition.wc[0] = false;
-        newPosition.wc[1] = false;
+        newPosition->wc[0] = false;
+        newPosition->wc[1] = false;
         if (abs(j - i) == 2) {
-            newPosition.kp = (i + j) / 2; // 96 if short castle, 94 if long castle
-            newPosition.board[(j < i) ? A1 : H1] = '.';
-            newPosition.board[newPosition.kp] = 'R';
+            newPosition->kp = (i + j) / 2; // 96 if short castle, 94 if long castle
+            newPosition->board[(j < i) ? A1 : H1] = '.';
+            newPosition->board[newPosition->kp] = 'R';
         }
     }
 
     // Pawn promotion, double move, and en passant capture
     if (p == 'P') {
         if (A8 <= j && j <= H8) {
-            newPosition.board[j] = prom;
+            newPosition->board[j] = prom;
         }
         if (j - i == 2 * NORTH) {
-            newPosition.ep = j;
+            newPosition->ep = j;
         }
         if (j == position->ep) {
-            newPosition.board[j + SOUTH] = '.';
+            newPosition->board[j + SOUTH] = '.';
         }
     }
 
     // We rotate the new position, so it's ready for the next player
-    rotate(&newPosition, false);
+    rotate(newPosition, false);
 }
 
 
