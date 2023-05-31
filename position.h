@@ -19,7 +19,7 @@ typedef struct {
     int kp; // square where the king has passed but not stopped during castling
 } Position;
 
-Position* initPosition();
+void initPosition(Position* position);
 
 ArrayList* genMoves(Position * position);
 

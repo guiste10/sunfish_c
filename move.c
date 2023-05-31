@@ -14,10 +14,8 @@ Move* createMove(int i, int j, char prom) {
     return move;
 }
 
-
-char* render(int index) {
+void render(int index, char* result) {
     int rank, fil;
-    char* result = malloc(sizeof(char) * 3);  // Allocate memory for the result (e.g., "a1")
 
     fil = (H1 - index) % 10;
     rank = (H1 - index) / 10;
@@ -25,6 +23,16 @@ char* render(int index) {
     result[0] = (char)('h' - fil);
     result[1] = (char)('1' + rank);
     result[2] = '\0';  // Null-terminate the string
+}
 
-    return result;
+void printMove(Move move, char board[]) {
+    char from[3];  // Local character array to store the "from" position
+    char to[3];  // Local character array to store the "to" position
+
+    render(move.i, from);
+    render(move.j, to);
+
+    printf("Move %c from i = %s to j = %s, prom = %c\n", board[move.i], from, to, move.prom);
+
+    fflush(stdout);  // Flush the output stream
 }

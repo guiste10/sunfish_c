@@ -12,8 +12,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-Position* initPosition(){
-    Position *position = malloc(sizeof(Position));
+void initPosition(Position* position){
     position->board = (char*)initialBoard;
     position->score = 0;
     position->wc[0] = true;
@@ -22,7 +21,6 @@ Position* initPosition(){
     position->bc[1] = true;
     position->ep = 0;
     position->kp = 0;
-    return position;
 }
 
 ArrayList* genMoves(Position* position) {

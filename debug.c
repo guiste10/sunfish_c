@@ -31,13 +31,3 @@ void printCharArray(const char* arr, int size) {
     printf("\n");
     fflush(stdout);  // Flush the output stream
 }
-
-void printMove(const Move move, const char board[]) {
-    //printf("Move: %c from i = %d to j = %d, prom = %c\n", board[move.i], move.i, move.j, move.prom);
-    char* from = render(move.i);
-    char* to = render(move.j);
-    printf("Move %c from i = %s to j = %s, prom = %c\n", board[move.i], from, to, move.prom);
-    free(from);
-    free(to);
-    fflush(stdout);  // Flush the output stream
-}
