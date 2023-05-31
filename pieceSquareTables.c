@@ -1,7 +1,3 @@
-//
-// Created by neiringu on 18-05-23.
-//
-
 #include "constants.h"
 
 const int pawnVal = 100;

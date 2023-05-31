@@ -1,7 +1,3 @@
-//
-// Created by neiringu on 28-05-23.
-//
-
 #ifndef SUNFISH_C_MOVE_H
 #define SUNFISH_C_MOVE_H
 typedef struct {

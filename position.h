@@ -1,7 +1,3 @@
-//
-// Created by neiringu on 28-05-23.
-//
-
 #ifndef SUNFISH_C_POSITION_H
 #define SUNFISH_C_POSITION_H
 
@@ -16,7 +12,7 @@ typedef struct {
     bool wc[2];
     bool bc[2];
     int ep;
-    int kp; // square where the king has passed but not stopped during castling
+    int kp; // square where the king has walked but not stopped during castling (e.g. f1 or d1 for white)
 } Position;
 
 void initPosition(Position* position);

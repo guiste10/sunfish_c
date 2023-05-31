@@ -1,7 +1,3 @@
-//
-// Created by neiringu on 18-05-23.
-//
-
 #ifndef SUNFISH_C_PIECESQUARETABLES_H
 #define SUNFISH_C_PIECESQUARETABLES_H
 

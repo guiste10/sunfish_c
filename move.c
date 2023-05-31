@@ -1,7 +1,3 @@
-//
-// Created by neiringu on 28-05-23.
-//
-
 #include <malloc.h>
 #include "move.h"
 #include "chessBoard.h"

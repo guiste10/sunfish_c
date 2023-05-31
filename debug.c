@@ -1,10 +1,5 @@
 #include <stdio.h>
-#include <malloc.h>
-#include "move.h"
 
-//
-// Created by neiringu on 18-05-23.
-//
 void printIntArray(const int* arr, int size) {
     printf("Array:");
     for (int i = 0; i < size; i++) {

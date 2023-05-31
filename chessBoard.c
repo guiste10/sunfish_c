@@ -2,9 +2,6 @@
 #include "constants.h"
 #include "chessBoard.h"
 
-//
-// Created by neiringu on 21-05-23.
-//
 const int A1 = 91;
 const int H1 = 98;
 const int A8 = 21;
@@ -36,6 +33,7 @@ const char initialBoard[] = "          "
                             "          ";
 const char PIECES[] = "PNBRQK";
 const char PROMOTIONS[] = "NBRQ";
+
 const int DIRECTIONS[NUM_PIECES][9] = {
         {NORTH, NORTH + NORTH, NORTH + WEST, NORTH + EAST, 0}, // pawn
         {NORTH + NORTH + EAST, NORTH + NORTH + WEST, // knight

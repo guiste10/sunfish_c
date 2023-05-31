@@ -1,6 +1,3 @@
-//
-// Created by neiringu on 28-05-23.
-//
 #include "position.h"
 #include "constants.h"
 #include "map.h"
