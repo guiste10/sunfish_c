@@ -21,6 +21,7 @@ extern const int K;
 
 extern const char PIECES[];
 extern const char PROMOTIONS[];
+extern const int NUM_PROMOTIONS;
 extern const int DIRECTIONS[NUM_PIECES][9];
 
 extern const char initialBoard[];
