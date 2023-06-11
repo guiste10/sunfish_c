@@ -69,25 +69,6 @@ ArrayList* genMoves(Position* position) {
     return moves;
 }
 
-void rotate(Position* position, bool nullMove) {
-    for (int i = 0; i < SIZE / 2; i++) { // rotate board
-        char temp = position->board[i];
-        position->board[i] = position->board[SIZE - i - 1];
-        position->board[SIZE - i - 1] = temp;
-    }
-    for (int i = 0; i < SIZE; i++) { // swap cases
-        char *piece = &(position->board[i]);
-        if(isalpha(*piece)) {
-            *piece = isupper(*piece) ? tolower(*piece) : toupper(*piece);
-        }
-    }
-
-    // Update other attributes
-    position->score = -position->score;
-    position->ep = (position->ep && !nullMove) ? (119 - position->ep) : 0;
-    position->kp = (position->kp && !nullMove) ? (119 - position->kp) : 0;
-}
-
 int value(const Position *position, const Move *move) {
     int i = move->i;
     int j = move->j;
@@ -189,9 +170,26 @@ void doMove(Position* position, Move* move, Position* newPosition, char* newBoar
             newPosition->board[j + SOUTH] = '.';
         }
     }
+}
 
-    // We rotate the new position, so it's ready for the next player
-    rotate(newPosition, false);
+
+void rotate(Position* position, bool nullMove) {
+    for (int i = 0; i < SIZE / 2; i++) { // rotate board
+        char temp = position->board[i];
+        position->board[i] = position->board[SIZE - i - 1];
+        position->board[SIZE - i - 1] = temp;
+    }
+    for (int i = 0; i < SIZE; i++) { // swap cases
+        char *piece = &(position->board[i]);
+        if(isalpha(*piece)) {
+            *piece = isupper(*piece) ? tolower(*piece) : toupper(*piece);
+        }
+    }
+
+    // Update other attributes
+    position->score = -position->score;
+    position->ep = (position->ep && !nullMove) ? (119 - position->ep) : 0;
+    position->kp = (position->kp && !nullMove) ? (119 - position->kp) : 0;
 }
 
 

@@ -15,11 +15,11 @@ Move* minimax(Position* position, int depth, int* max) {
         char newBoard[SIZE];
         Move* move = arrayListGet(moves, i);
         doMove(position, move, newPosition, newBoard);
-        int score;
-        if(depth == 1){
-            score = - position->score;
-        } else {
-            minimax(newPosition, depth - 1, &score);
+        int score = newPosition->score;
+        rotate(newPosition, false);
+        if(depth > 1){
+            score = -INT_MAX;
+            free(minimax(newPosition, depth - 1, &score));
         }
         if( score > *max ){
             if(maxMove != NULL){

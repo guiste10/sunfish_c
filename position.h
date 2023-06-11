@@ -20,4 +20,6 @@ void initPosition(Position* position);
 ArrayList* genMoves(Position * position);
 
 void doMove(Position* position, Move* move, Position* newPosition, char* newBoard);
+
+void rotate(Position* position, bool nullMove);
 #endif //SUNFISH_C_POSITION_H
