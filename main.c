@@ -23,7 +23,7 @@ int main() {
     char newBoard[SIZE];
     doMove(position, bestMove, &newPosition, newBoard);
     free(bestMove);
-    printCharArray(newBoard, SIZE);
+    //printCharArray(newBoard, SIZE);
 
 //    ArrayList* moves = genMoves(position);
 //    for(int i=0; i<20; i++){

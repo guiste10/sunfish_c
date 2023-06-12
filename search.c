@@ -16,11 +16,15 @@ Move* minimax(Position* position, int depth, int* max) {
         Move* move = arrayListGet(moves, i);
         doMove(position, move, newPosition, newBoard);
         int score = newPosition->score;
-        rotate(newPosition, false);
         if(depth > 1){
+            rotate(newPosition, false);
             score = -INT_MAX;
             free(minimax(newPosition, depth - 1, &score));
+            score = -score;
         }
+//        if(depth == 2 ){//&& score == 8036){
+//            int c = 1;
+//        }
         if( score > *max ){
             if(maxMove != NULL){
                 free(maxMove);
@@ -31,6 +35,8 @@ Move* minimax(Position* position, int depth, int* max) {
             free(move);
         }
     }
+//    printf("Depth: %d, score: %d\n", depth, *max);
+//    fflush(stdout);  // Flush the output stream
     freeArrayList(moves);
     return maxMove;
 }
