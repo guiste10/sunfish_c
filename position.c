@@ -21,6 +21,21 @@ void initPosition(Position* position, char* initialBoardCopy){
     position->kp = 0;
 }
 
+Position* duplicatePosition(Position* source){
+    Position* target = malloc(sizeof(Position));
+    target->score = source->score;
+    target->wc[0] = source->wc[0];
+    target->wc[1] = source->wc[1];
+    target->bc[0] = source->bc[0];
+    target->bc[1] = source->bc[1];
+    target->ep = source->ep;
+    target->kp = source->kp;
+    char* board = malloc(sizeof(char) * SIZE);
+    target->board = board;
+    copyBoard(target->board, source->board);
+    return target;
+}
+
 ArrayList* genMoves(Position* position) {
     // For each of our pieces, iterate through each possible 'ray' of moves,
     // as defined in the 'directions' map. The rays are broken e.g. by
@@ -114,7 +129,7 @@ void doMove(Position* position, Move* move, Position* newPosition, char* newBoar
     // Copy board representation
     Position newPos;
     newPos.board = newBoard;
-    *newPosition = newPos;
+    *newPosition = newPos; // problème, position doit être copie!!!
     copyBoard(newPosition->board, position->board);
     // Init helper variables
     int i = move->i, j = move->j;

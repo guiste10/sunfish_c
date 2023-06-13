@@ -59,7 +59,10 @@ void playUci(){
                     j = 119 - j;
                 }
                 Move* move = createMove(i, j, prom);
-                doMove(position, move, position, position->board);
+                Position* duplicate = duplicatePosition(position);
+                doMove(duplicate, move, position, position->board);
+                free(duplicate->board);
+                free(duplicate);
                 rotate(position, false);
                 free(move);
                 isWhite = !isWhite;
@@ -71,6 +74,7 @@ void playUci(){
             int i = bestMove->i;
             int j = bestMove->j;
             char prom = bestMove->prom;
+            free(bestMove);
             if (!isWhite) {
                 i = 119 - i;
                 j = 119 - j;

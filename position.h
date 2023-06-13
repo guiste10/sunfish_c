@@ -17,6 +17,8 @@ typedef struct {
 
 void initPosition(Position* position, char* initialBoard);
 
+Position* duplicatePosition(Position* source);
+
 ArrayList* genMoves(Position * position);
 
 void doMove(Position* position, Move* move, Position* newPosition, char* newBoard);
