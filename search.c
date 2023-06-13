@@ -1,10 +1,10 @@
 #include <limits.h>
 #include <malloc.h>
+#include <stdio.h>
 #include "position.h"
 #include "constants.h"
 
-const int maxDepth = 1;
-//const int maxDepth = 5;
+const int maxDepth = 4;
 
 int minimax(Position* position, int depth, Move** bestMoveToSave, int alpha, int beta) {
     int max = -INT_MAX;

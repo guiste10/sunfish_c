@@ -18,23 +18,11 @@ void render(int index, char* result) {
 
     result[0] = (char)('h' - file);
     result[1] = (char)('1' + rank);
-    result[2] = '\0';  // Null-terminate the string
+    result[2] = '\0';
 }
 
 int parse(const char* c) {
     int file = c[0] - 'a';
     int rank = c[1] - '1';
     return A1 + file - 10 * rank;
-}
-
-void printMove(Move move, char board[]) {
-    char from[3];  // Local character array to store the "from" position
-    char to[3];  // Local character array to store the "to" position
-
-    render(move.i, from);
-    render(move.j, to);
-
-    printf("Move %c from i = %s to j = %s, prom = %c\n", board[move.i], from, to, move.prom);
-
-    fflush(stdout);  // Flush the output stream
 }

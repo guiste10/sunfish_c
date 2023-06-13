@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "move.h"
 
 void printIntArray(const int* arr, int size) {
     printf("Array:");
@@ -24,5 +25,18 @@ void printCharArray(const char* arr, int size) {
         fflush(stdout);  // Flush the output stream
     }
     printf("\n");
+    fflush(stdout);  // Flush the output stream
+}
+
+
+void printMove(Move move, char board[]) {
+    char from[3];  // Local character array to store the "from" position
+    char to[3];  // Local character array to store the "to" position
+
+    render(move.i, from);
+    render(move.j, to);
+
+    printf("Move %c from i = %s to j = %s, prom = %c\n", board[move.i], from, to, move.prom);
+
     fflush(stdout);  // Flush the output stream
 }

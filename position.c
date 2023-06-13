@@ -1,6 +1,5 @@
 #include "position.h"
 #include "constants.h"
-#include "map.h"
 #include "chessBoard.h"
 #include "arraylist.h"
 #include "move.h"
@@ -21,7 +20,7 @@ void initPosition(Position* position, char* initialBoardCopy){
     position->kp = 0;
 }
 
-Position* duplicatePosition(Position* source){
+Position* duplicatePosition(Position* source){ // used only to set up the position, not for search
     Position* target = malloc(sizeof(Position));
     target->score = source->score;
     target->wc[0] = source->wc[0];
@@ -37,9 +36,8 @@ Position* duplicatePosition(Position* source){
 }
 
 ArrayList* genMoves(Position* position) {
-    // For each of our pieces, iterate through each possible 'ray' of moves,
-    // as defined in the 'directions' map. The rays are broken e.g. by
-    // captures or immediately in case of pieces such as knights.
+    // For each friendly piece, iterate through each possible 'ray' of moves as defined in the 'directions' map.
+    // The rays are broken e.g. by captures or immediately in case of pieces such as knights.
     ArrayList* moves = createArrayList();
     for (int i = 0; i <SIZE ; i++) {
         char p = position->board[i];
@@ -207,8 +205,3 @@ void rotate(Position* position, bool nullMove) {
     position->ep = (position->ep && !nullMove) ? (119 - position->ep) : 0;
     position->kp = (position->kp && !nullMove) ? (119 - position->kp) : 0;
 }
-
-
-
-
-

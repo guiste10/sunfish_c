@@ -16,13 +16,10 @@ ArrayList* createArrayList() {
 }
 
 void arrayListAdd(ArrayList* list, void* element) {
-    if (list->size == list->capacity) {
-        // Resize the array if capacity is reached
+    if (list->size == list->capacity) { // Resize the array if capacity is reached
         list->capacity *= 2;
         void** temp = realloc(list->array, sizeof(void*) * list->capacity * 2);
         if (temp == NULL) {
-            // Handle reallocation failure (e.g., error handling, freeing resources)
-            // Here, we simply print an error message and return
             printf("Error: Failed to reallocate memory.\n");
             return;
         }

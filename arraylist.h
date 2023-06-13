@@ -12,5 +12,4 @@ void arrayListAdd(ArrayList* list, void* element);
 void* arrayListGet(ArrayList* list, int index);
 void freeArrayList(ArrayList* list);
 
-
 #endif //SUNFISH_C_ARRAYLIST_H

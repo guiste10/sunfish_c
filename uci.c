@@ -7,7 +7,6 @@
 #include "constants.h"
 #include "search.h"
 #include "debug.h"
-#include "pieceSquareTables.h"
 
 const int MAX_ARGS = 1000;
 const char BOT_NAME[] = "Sunfish_c";
@@ -41,6 +40,7 @@ void playUci(){
             break;
         } else if (numArgs >= 2 && strcmp(args[0], "position") == 0 && strcmp(args[1], "startpos") == 0) {
             initPosition(position, initialBoardCopy);
+            isWhite = true;
             for (int ply = 0; ply < numArgs - 3; ply++) {
                 int i, j;
                 char prom;
@@ -53,7 +53,7 @@ void playUci(){
                 to[2] = '\0';
                 i = parse(from);
                 j = parse(to);
-                prom = uciProm == '\0' ? NO_PROMOTION : toupper(uciProm); // to check
+                prom = uciProm == '\0' ? NO_PROMOTION : toupper(uciProm);
                 if (!isWhite) {
                     i = 119 - i;
                     j = 119 - j;
@@ -66,8 +66,6 @@ void playUci(){
                 rotate(position, false);
                 free(move);
                 isWhite = !isWhite;
-
-                //printCharArray(position->board, SIZE);
             }
         } else if (strcmp(args[0], "go") == 0) {
             Move* bestMove = searchBestMove(position);
@@ -85,62 +83,6 @@ void playUci(){
             char uciMove[6] = {from[0], from[1], to[0], to[1], prom, '\0'};
             printf("bestmove %s\n", uciMove);
             fflush(stdout);
-
-//            int wtime, btime, winc, binc;
-//            int i;
-//            // Extracting values for wtime, btime, winc, binc
-//            for (i = 2; i < numArgs; i += 2) {
-//                int val = atoi(args[i]);
-//                if (i == 2) {
-//                    wtime = val / 1000;
-//                } else if (i == 4) {
-//                    btime = val / 1000;
-//                } else if (i == 6) {
-//                    winc = val / 1000;
-//                } else if (i == 8) {
-//                    binc = val / 1000;
-//                }
-//            }
-//
-//            // Adjusting values based on len(hist) % 2
-//            if (len(hist) % 2 == 0) {
-//                wtime = btime;
-//                winc = binc;
-//            }
-//
-//            // Calculating think
-//            int think = (wtime / 40) + winc;
-//            if (think > (wtime / 2 - 1)) {
-//                think = wtime / 2 - 1;
-//            }
-//
-//            time_t start = time(NULL);
-//            char moveStr[5] = "";
-//            bool moveStrFound = false;
-//            int depth, gamma, score, i, j;
-//            char prom;
-//
-//            while (1) {
-//                // Perform search and update depth, gamma, score, move values
-//
-//                if (score >= gamma) {
-//                    if (moveStrFound)
-//                        break;
-//
-//                    if (len(hist) % 2 == 0) {
-//                        i = 119 - i;
-//                        j = 119 - j;
-//                    }
-//                    printMove(i, j, prom);
-//                    sprintf(moveStr, "%c%c%c", i + 'a', j + '1', prom);
-//                    printf("info depth %d score cp %d pv %s\n", depth, score, moveStr);
-//                }
-//
-//                if (moveStrFound && time(NULL) - start > think * 0.8)
-//                    break;
-//            }
-//
-//            printf("bestmove %s\n", moveStr[0] != '\0' ? moveStr : "(none)");
         }
     }
 }

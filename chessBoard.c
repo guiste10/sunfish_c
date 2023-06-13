@@ -31,7 +31,6 @@ const char initialBoard[] = "          "
                             " RNBQKBNR "
                             "          "
                             "          ";
-const char PIECES[] = "PNBRQK";
 const char PROMOTIONS[] = "NBRQ";
 const int NUM_PROMOTIONS = 4;
 

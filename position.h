@@ -1,8 +1,6 @@
 #ifndef SUNFISH_C_POSITION_H
 #define SUNFISH_C_POSITION_H
-
 #include "arraylist.h"
-#include "map.h"
 #include "move.h"
 #include <stdbool.h>
 
