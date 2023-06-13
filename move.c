@@ -11,14 +11,20 @@ Move* createMove(int i, int j, char prom) {
 }
 
 void render(int index, char* result) {
-    int rank, fil;
+    int rank, file;
 
-    fil = (H1 - index) % 10;
+    file = (H1 - index) % 10;
     rank = (H1 - index) / 10;
 
-    result[0] = (char)('h' - fil);
+    result[0] = (char)('h' - file);
     result[1] = (char)('1' + rank);
     result[2] = '\0';  // Null-terminate the string
+}
+
+int parse(const char* c) {
+    int file = c[0] - 'a';
+    int rank = c[1] - '1';
+    return A1 + file - 10 * rank;
 }
 
 void printMove(Move move, char board[]) {

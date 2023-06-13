@@ -6,7 +6,7 @@
 const int maxDepth = 4;
 //const int maxDepth = 5;
 
-int minimax(Position* position, int depth, Move** bestMoveToSave) {
+int minimax(Position* position, int depth, Move** bestMoveToSave, int alpha, int beta) {
     int max = -INT_MAX;
     ArrayList* moves = genMoves(position);
     for (int i=0; i<moves->size; i++) {
@@ -19,8 +19,12 @@ int minimax(Position* position, int depth, Move** bestMoveToSave) {
         if(depth > 1){
             rotate(newPosition, false);
             Move* bestChildMove = NULL;
-            score = -minimax(newPosition, depth - 1, &bestChildMove);
+            score = -minimax(newPosition, depth - 1, &bestChildMove, -beta, -alpha);
             free(bestChildMove);
+//            alpha = alpha > score ? alpha : score;
+//            if(alpha >= beta){
+//                break;
+//            }
         }
         if( score > max ){
             if(*bestMoveToSave != NULL){
@@ -40,7 +44,7 @@ int minimax(Position* position, int depth, Move** bestMoveToSave) {
 
 Move* searchBestMove(Position* position) {
     Move* bestMove = NULL;
-    int score = minimax(position, maxDepth, &bestMove);
+    int score = minimax(position, maxDepth, &bestMove, -INT_MAX, INT_MAX);
     printf("Score: %d\n", score);
     printMove(*bestMove, position->board);
     return bestMove;

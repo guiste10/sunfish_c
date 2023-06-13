@@ -8,6 +8,7 @@ typedef struct {
 
 Move* createMove(int i, int j, char prom);
 void render(int index, char* result);
+int parse(const char* c);
 void printMove(Move move, char board[]);
 
 #endif //SUNFISH_C_MOVE_H

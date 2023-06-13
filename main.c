@@ -1,32 +1,27 @@
 #include <stdio.h>
-#include <malloc.h>
-#include <limits.h>
 #include "pieceSquareTables.h"
-#include "debug.h"
-#include "chessBoard.h"
 #include "position.h"
-#include "move.h"
-#include "search.h"
-
+#include "uci.h"
 
 int main() {
     initPst();
-
     Position pos;
     Position* position = &pos;
     initPosition(position);
-    Move* bestMove = searchBestMove(position);
-    //printMove(*bestMove, position->board);
-    printf("Best move search finished\n");
 
-    Position newPosition;
-    char newBoard[SIZE];
-    doMove(position, bestMove, &newPosition, newBoard);
-    free(bestMove);
-    //printCharArray(newBoard, SIZE);
+    playUci(position);
 
-    // Free memory
+//    Move* bestMove = searchBestMove(position);
+//    printf("Best move search finished\n");
+//    Position newPosition;
+//    char newBoard[SIZE];
+//    doMove(position, bestMove, &newPosition, newBoard);
+//    printMove(*bestMove, position->board);
+//    printCharArray(newBoard, SIZE);
+//    free(bestMove);
+
+    // Flush the output stream
     printf("\n");
-    fflush(stdout);  // Flush the output stream
+    fflush(stdout);
     return 0;
 }
