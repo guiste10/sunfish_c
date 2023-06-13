@@ -2,17 +2,23 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "position.h"
 #include "constants.h"
 #include "search.h"
+#include "debug.h"
+#include "pieceSquareTables.h"
 
 const int MAX_ARGS = 1000;
 const char BOT_NAME[] = "Sunfish_c";
 
-void playUci(Position* position){
-    char line[100];
+void playUci(){
+    char line[1000];
     char* args[MAX_ARGS];
     bool isWhite = true;
+    Position pos;
+    Position* position = &pos;
+    char initialBoardCopy[SIZE];
 
     while (1) {
         fgets(line, sizeof(line), stdin);
@@ -25,37 +31,40 @@ void playUci(Position* position){
 
         if (strcmp(args[0], "uci") == 0) {
             printf("id name %s\n", BOT_NAME);
+            fflush(stdout);
             printf("uciok\n");
+            fflush(stdout);
         } else if (strcmp(args[0], "isready") == 0) {
             printf("readyok\n");
+            fflush(stdout);
         } else if (strcmp(args[0], "quit") == 0) {
             break;
         } else if (numArgs >= 2 && strcmp(args[0], "position") == 0 && strcmp(args[1], "startpos") == 0) {
+            initPosition(position, initialBoardCopy);
             for (int ply = 0; ply < numArgs - 3; ply++) {
                 int i, j;
                 char prom;
                 char from [3], to[3];
                 char *uciMove = args[3 + ply];
-                char uciProm = *(uciMove+5);
+                char uciProm = *(uciMove+4);
                 strncpy(from, uciMove, 2);
                 from[2] = '\0';
                 strncpy(to, uciMove + 2, 2);
                 to[2] = '\0';
                 i = parse(from);
                 j = parse(to);
-                prom = uciProm == ' ' ? NO_PROMOTION : uciProm; // to check
+                prom = uciProm == '\0' ? NO_PROMOTION : toupper(uciProm); // to check
                 if (!isWhite) {
                     i = 119 - i;
                     j = 119 - j;
                 }
                 Move* move = createMove(i, j, prom);
-//                Position newPosition;
-//                char newBoard[SIZE];
                 doMove(position, move, position, position->board);
                 rotate(position, false);
                 free(move);
                 isWhite = !isWhite;
-                // To do: update hist with the move
+
+                //printCharArray(position->board, SIZE);
             }
         } else if (strcmp(args[0], "go") == 0) {
             Move* bestMove = searchBestMove(position);
@@ -70,7 +79,8 @@ void playUci(Position* position){
             render(i, from);
             render(j, to);
             char uciMove[6] = {from[0], from[1], to[0], to[1], prom, '\0'};
-            printf("bestmove %s", uciMove);
+            printf("bestmove %s\n", uciMove);
+            fflush(stdout);
 
 //            int wtime, btime, winc, binc;
 //            int i;

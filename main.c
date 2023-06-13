@@ -5,11 +5,7 @@
 
 int main() {
     initPst();
-    Position pos;
-    Position* position = &pos;
-    initPosition(position);
-
-    playUci(position);
+    playUci();
 
 //    Move* bestMove = searchBestMove(position);
 //    printf("Best move search finished\n");

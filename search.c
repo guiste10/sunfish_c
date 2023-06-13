@@ -3,7 +3,7 @@
 #include "position.h"
 #include "constants.h"
 
-const int maxDepth = 4;
+const int maxDepth = 1;
 //const int maxDepth = 5;
 
 int minimax(Position* position, int depth, Move** bestMoveToSave, int alpha, int beta) {
@@ -45,7 +45,9 @@ int minimax(Position* position, int depth, Move** bestMoveToSave, int alpha, int
 Move* searchBestMove(Position* position) {
     Move* bestMove = NULL;
     int score = minimax(position, maxDepth, &bestMove, -INT_MAX, INT_MAX);
-    printf("Score: %d\n", score);
-    printMove(*bestMove, position->board);
+    printf("info depth %d score cp %d\n", maxDepth, score);
+    fflush(stdout);
+    //printf("Score: %d\n", score);
+    //printMove(*bestMove, position->board);
     return bestMove;
 }

@@ -9,8 +9,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-void initPosition(Position* position){
-    position->board = (char*)initialBoard;
+void initPosition(Position* position, char* initialBoardCopy){
+    copyBoard(initialBoardCopy, initialBoard);
+    position->board = initialBoardCopy;
     position->score = 0;
     position->wc[0] = true;
     position->wc[1] = true;

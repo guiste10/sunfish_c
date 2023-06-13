@@ -4,6 +4,6 @@
 
 #include "position.h"
 
-void playUci(Position* position);
+void playUci();
 
 #endif //SUNFISH_C_UCI_H
