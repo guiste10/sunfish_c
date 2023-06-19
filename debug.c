@@ -1,5 +1,36 @@
 #include <stdio.h>
+#include <time.h>
+#include <malloc.h>
 #include "move.h"
+#include "position.h"
+#include "constants.h"
+#include "search.h"
+
+const char debugBoard[] = "          "
+                          "          "
+                          " r....rk. "
+                          " ppp..pbp "
+                          " ......p. "
+                          " ...N.bQ. "
+                          " ......p. "
+                          " ........ "
+                          " Pq..PPPP "
+                          " R.K..B.R "
+                          "          "
+                        "          ";
+
+const char randomBoard[] = "          "
+                          "          "
+                          " r.k..b.r "
+                          " pp..pppp "
+                          " ........ "
+                          " ...Q.b.. "
+                          " ...n.Bq. "
+                          " ......P. "
+                          " PPP..PBP "
+                          " R...K..R "
+                          "          "
+                          "          ";
 
 void printIntArray(const int* arr, int size) {
     printf("Array:");
@@ -39,4 +70,26 @@ void printMove(Move move, char board[]) {
     printf("Move %c from i = %s to j = %s, prom = %c\n", board[move.i], from, to, move.prom);
 
     fflush(stdout);  // Flush the output stream
+}
+
+void findBestMoveTimeStamped() {
+    Position pos;
+    Position* position = &pos;
+    char board[SIZE];
+    initPosition(position, board, (char*)debugBoard);
+    clock_t start = clock();  // Start measuring time
+    Move* bestMove = searchBestMove(position);
+    clock_t end = clock();  // Stop measuring time
+    double elapsedTime = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;  // Calculate elapsed time in ms
+    printf("Best move search finished\nTime taken: %.2f ms\n", elapsedTime);
+    Position newPosition;
+    char newBoard[SIZE];
+    doMove(position, bestMove, &newPosition, newBoard);
+    printMove(*bestMove, position->board);
+    printCharArray(newBoard, SIZE);
+    free(bestMove);
+}
+
+void findBestMoveFromUciPosition() {
+
 }

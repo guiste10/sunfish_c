@@ -7,6 +7,7 @@
 #include "constants.h"
 #include "search.h"
 #include "debug.h"
+#include "chessBoard.h"
 
 const int MAX_ARGS = 1000;
 const char BOT_NAME[] = "Sunfish_c";
@@ -39,7 +40,7 @@ void playUci(){
         } else if (strcmp(args[0], "quit") == 0) {
             break;
         } else if (numArgs >= 2 && strcmp(args[0], "position") == 0 && strcmp(args[1], "startpos") == 0) {
-            initPosition(position, initialBoardCopy);
+            initPosition(position, initialBoardCopy, (char*)initialBoard);
             isWhite = true;
             for (int ply = 0; ply < numArgs - 3; ply++) {
                 int i, j;

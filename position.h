@@ -13,7 +13,7 @@ typedef struct {
     int kp; // square where the king has walked but not stopped during castling (e.g. f1 or d1 for white)
 } Position;
 
-void initPosition(Position* position, char* initialBoard);
+void initPosition(Position* position, char* boardCopy, char* boardSrc);
 
 Position* duplicatePosition(Position* source);
 

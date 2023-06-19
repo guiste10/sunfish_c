@@ -4,47 +4,54 @@
 #include "position.h"
 #include "constants.h"
 
-const int maxDepth = 4;
+const int maxDepth = 6;
 
-int minimax(Position* position, int depth, Move** bestMoveToSave, int alpha, int beta) {
+void freeMoves(Move **bestMoveToSave, ArrayList *moves) {
+    for (int i = 0; i < moves->size; i++) {
+        Move* move = arrayListGet(moves, i);
+        if(move != *bestMoveToSave){
+            free(move);
+        }
+    }
+    freeArrayList(moves);
+}
+
+int negamax(Position* position, int depth, int alpha, int beta, Move** bestMoveToSave) {
+    if (depth == 0) {
+        return position->score;
+    }
+
     int max = -INT_MAX;
     ArrayList* moves = genMoves(position);
-    for (int i=0; i<moves->size; i++) {
+
+    for (int i = 0; i < moves->size; i++) {
         Position newPos;
         Position* newPosition = &newPos;
         char newBoard[SIZE];
         Move* move = arrayListGet(moves, i);
         doMove(position, move, newPosition, newBoard);
-        int score = newPosition->score;
-        if(depth > 1){
-            rotate(newPosition, false);
-            Move* bestChildMove = NULL;
-            score = -minimax(newPosition, depth - 1, &bestChildMove, -beta, -alpha);
-            free(bestChildMove);
-//            alpha = alpha > score ? alpha : score;
-//            if(alpha >= beta){
-//                break;
-//            }
-        }
-        if( score > max ){
-            if(*bestMoveToSave != NULL){
-                free(*bestMoveToSave);
-            }
+        rotate(newPosition, false);
+        Move* bestChildMove = NULL;
+
+        int score = -negamax(newPosition, depth - 1, -beta, -alpha, &bestChildMove);
+        free(bestChildMove);
+
+        if (score > max) {
             max = score;
             *bestMoveToSave = move;
-        } else {
-            free(move);
+        }
+        alpha = (alpha > score) ? alpha : score;
+        if (alpha >= beta) {
+            break; // Beta cutoff
         }
     }
-//    printf("Depth: %d, score: %d\n", depth, *max);
-//    fflush(stdout);  // Flush the output stream
-    freeArrayList(moves);
+    freeMoves(bestMoveToSave, moves);
     return max;
 }
 
 Move* searchBestMove(Position* position) {
     Move* bestMove = NULL;
-    int score = minimax(position, maxDepth, &bestMove, -INT_MAX, INT_MAX);
+    int score = negamax(position, maxDepth, -INT_MAX, INT_MAX, &bestMove);
     printf("info depth %d score cp %d\n", maxDepth, score);
     fflush(stdout);
     //printf("Score: %d\n", score);
