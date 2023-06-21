@@ -6,6 +6,19 @@
 #include "constants.h"
 #include "search.h"
 
+const char pawnBoard[] = "          "
+                         "          "
+                         " ........ "
+                         " ........ "
+                         " ........ "
+                         " ........ "
+                         " ........ "
+                         " ........ "
+                         " P....... "
+                         " ........ "
+                         "          "
+                         "          ";
+
 const char debugBoard[] = "          "
                           "          "
                           " r....rk. "
@@ -72,21 +85,20 @@ void printMove(Move move, char board[]) {
     fflush(stdout);  // Flush the output stream
 }
 
-void findBestMoveTimeStamped() {
-    Position pos;
-    Position* position = &pos;
-    char board[SIZE];
-    initPosition(position, board, (char*)debugBoard);
+void findBestMoveTimeStamped(char* board) {
+    Position* position = initPosition(board);
     clock_t start = clock();  // Start measuring time
     Move* bestMove = searchBestMove(position);
     clock_t end = clock();  // Stop measuring time
     double elapsedTime = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;  // Calculate elapsed time in ms
     printf("Best move search finished\nTime taken: %.2f ms\n", elapsedTime);
-    Position newPosition;
-    char newBoard[SIZE];
-    doMove(position, bestMove, &newPosition, newBoard);
+    Position* newPosition = doMove(position, bestMove);
     printMove(*bestMove, position->board);
-    printCharArray(newBoard, SIZE);
+    printCharArray(newPosition->board, SIZE);
+    free(position->board);
+    free(position);
+    free(newPosition->board);
+    free(newPosition);
     free(bestMove);
 }
 

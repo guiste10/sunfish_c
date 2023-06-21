@@ -16,9 +16,7 @@ void playUci(){
     char line[1000];
     char* args[MAX_ARGS];
     bool isWhite = true;
-    Position pos;
-    Position* position = &pos;
-    char initialBoardCopy[SIZE];
+    Position* position;
 
     while (1) {
         fgets(line, sizeof(line), stdin);
@@ -38,9 +36,11 @@ void playUci(){
             printf("readyok\n");
             fflush(stdout);
         } else if (strcmp(args[0], "quit") == 0) {
+            free(position->board);
+            free(position);
             break;
         } else if (numArgs >= 2 && strcmp(args[0], "position") == 0 && strcmp(args[1], "startpos") == 0) {
-            initPosition(position, initialBoardCopy, (char*)initialBoard);
+            position = initPosition((char*)initialBoard);
             isWhite = true;
             for (int ply = 0; ply < numArgs - 3; ply++) {
                 int i, j;
@@ -61,7 +61,7 @@ void playUci(){
                 }
                 Move* move = createMove(i, j, prom);
                 Position* duplicate = duplicatePosition(position);
-                doMove(duplicate, move, position, position->board);
+                position = doMove(duplicate, move);
                 free(duplicate->board);
                 free(duplicate);
                 rotate(position, false);

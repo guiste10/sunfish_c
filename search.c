@@ -2,7 +2,6 @@
 #include <malloc.h>
 #include <stdio.h>
 #include "position.h"
-#include "constants.h"
 
 const int maxDepth = 6;
 
@@ -25,15 +24,14 @@ int negamax(Position* position, int depth, int alpha, int beta, Move** bestMoveT
     ArrayList* moves = genMoves(position);
 
     for (int i = 0; i < moves->size; i++) {
-        Position newPos;
-        Position* newPosition = &newPos;
-        char newBoard[SIZE];
         Move* move = arrayListGet(moves, i);
-        doMove(position, move, newPosition, newBoard);
+        Position* newPosition = doMove(position, move);
         rotate(newPosition, false);
         Move* bestChildMove = NULL;
 
         int score = -negamax(newPosition, depth - 1, -beta, -alpha, &bestChildMove);
+        free(newPosition->board);
+        free(newPosition);
         free(bestChildMove);
 
         if (score > max) {

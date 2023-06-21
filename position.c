@@ -8,9 +8,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-void initPosition(Position* position, char* boardCopy, char* boardSrc){
-    copyBoard(boardCopy, boardSrc);
-    position->board = boardCopy;
+Position* initPosition(char* boardSrc){
+    Position* position = malloc(sizeof(Position));
+    position->board = malloc(sizeof(char) * SIZE);
+    copyBoard(position->board, boardSrc);
     position->score = 0;
     position->wc[0] = true;
     position->wc[1] = true;
@@ -18,6 +19,7 @@ void initPosition(Position* position, char* boardCopy, char* boardSrc){
     position->bc[1] = true;
     position->ep = 0;
     position->kp = 0;
+    return position;
 }
 
 Position* duplicatePosition(Position* source){ // used only to set up the position, not for search
@@ -123,11 +125,10 @@ int value(const Position *position, const Move *move) {
     return score;
 }
 
-void doMove(Position* position, Move* move, Position* newPosition, char* newBoard) {
+Position* doMove(Position* position, Move* move) {
     // Copy board representation
-    Position newPos;
-    newPos.board = newBoard;
-    *newPosition = newPos; // problème, position doit être copie!!!
+    Position* newPosition = malloc(sizeof(Position));
+    newPosition->board = malloc(sizeof(char) * SIZE);
     copyBoard(newPosition->board, position->board);
     // Init helper variables
     int i = move->i, j = move->j;
@@ -184,6 +185,7 @@ void doMove(Position* position, Move* move, Position* newPosition, char* newBoar
             newPosition->board[j + SOUTH] = '.';
         }
     }
+    return newPosition;
 }
 
 
