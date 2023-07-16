@@ -4,10 +4,10 @@
 typedef struct {
     int i;
     int j;
-    char prom;
+    int prom;
 } Move;
 
-Move* createMove(int i, int j, char prom);
+Move* createMove(int i, int j, int prom);
 void render(int index, char* result);
 int parse(const char* c);
 

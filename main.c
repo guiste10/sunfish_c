@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include "pieceSquareTables.h"
-#include "uci.h"
 #include "debug.h"
+#include "chessBoard.h"
+#include "uci.h"
 
 int main() {
     initPst();
-    //playUci();
-    findBestMoveTimeStamped();
+    playUci();
+    //findBestMoveTimeStamped((char*)debugBoard);
 
     // Flush the output stream
     printf("\n");

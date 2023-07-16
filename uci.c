@@ -8,6 +8,7 @@
 #include "search.h"
 #include "debug.h"
 #include "chessBoard.h"
+#include "utils.h"
 
 const int MAX_ARGS = 1000;
 const char BOT_NAME[] = "Sunfish_c";
@@ -44,7 +45,7 @@ void playUci(){
             isWhite = true;
             for (int ply = 0; ply < numArgs - 3; ply++) {
                 int i, j;
-                char prom;
+                int prom;
                 char from [3], to[3];
                 char *uciMove = args[3 + ply];
                 char uciProm = *(uciMove+4);
@@ -54,7 +55,7 @@ void playUci(){
                 to[2] = '\0';
                 i = parse(from);
                 j = parse(to);
-                prom = uciProm == '\0' ? NO_PROMOTION : toupper(uciProm);
+                prom = uciProm == '\0' ? NO_PROMOTION : indexOf(PIECES, toupper(uciProm));
                 if (!isWhite) {
                     i = 119 - i;
                     j = 119 - j;
@@ -72,7 +73,7 @@ void playUci(){
             Move* bestMove = searchBestMove(position);
             int i = bestMove->i;
             int j = bestMove->j;
-            char prom = bestMove->prom;
+            char prom = PIECES[bestMove->prom];
             free(bestMove);
             if (!isWhite) {
                 i = 119 - i;

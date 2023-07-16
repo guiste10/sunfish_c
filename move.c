@@ -2,7 +2,7 @@
 #include "move.h"
 #include "chessBoard.h"
 
-Move* createMove(int i, int j, char prom) {
+Move* createMove(int i, int j, int prom) {
     Move* move = malloc(sizeof(Move));
     move->i = i;
     move->j = j;

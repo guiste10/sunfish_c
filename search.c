@@ -5,6 +5,7 @@
 #include "constants.h"
 
 const int maxDepth = 6;
+int numNodes = 0;
 
 void freeMoves(Move **bestMoveToSave, ArrayList *moves) {
     for (int i = 0; i < moves->size; i++) {
@@ -17,6 +18,7 @@ void freeMoves(Move **bestMoveToSave, ArrayList *moves) {
 }
 
 int negamax(Position* position, int depth, int alpha, int beta, Move** bestMoveToSave) {
+    numNodes++;
     if (depth == 0) {
         return position->score;
     }

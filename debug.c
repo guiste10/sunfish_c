@@ -5,6 +5,7 @@
 #include "position.h"
 #include "constants.h"
 #include "search.h"
+#include "chessBoard.h"
 
 const char debugBoard[] = "          "
                           "          "
@@ -67,21 +68,21 @@ void printMove(Move move, char board[]) {
     render(move.i, from);
     render(move.j, to);
 
-    printf("Move %c from i = %s to j = %s, prom = %c\n", board[move.i], from, to, move.prom);
-
+    printf("Move %c from i = %s to j = %s", board[move.i], from, to);
+    move.prom == NO_PROMOTION ? printf("\n") : printf(", prom = %c\n", PIECES[move.prom]);
     fflush(stdout);  // Flush the output stream
 }
 
-void findBestMoveTimeStamped() {
+void findBestMoveTimeStamped(char* boardToUse) {
     Position pos;
     Position* position = &pos;
     char board[SIZE];
-    initPosition(position, board, (char*)debugBoard);
+    initPosition(position, board, (char*)boardToUse);
     clock_t start = clock();  // Start measuring time
     Move* bestMove = searchBestMove(position);
     clock_t end = clock();  // Stop measuring time
     double elapsedTime = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;  // Calculate elapsed time in ms
-    printf("Best move search finished\nTime taken: %.2f ms\n", elapsedTime);
+    printf("Best move search finished\nTime taken: %.2f ms\nNum nodes: %d => %.2f nodes/sec\n", elapsedTime, numNodes, numNodes/(elapsedTime/1000.0));
     Position newPosition;
     char newBoard[SIZE];
     doMove(position, bestMove, &newPosition, newBoard);
@@ -90,6 +91,6 @@ void findBestMoveTimeStamped() {
     free(bestMove);
 }
 
-void findBestMoveFromUciPosition() {
-
+void findBestMoveFromUciPosition(char* uciPosition) {
+    // todo
 }

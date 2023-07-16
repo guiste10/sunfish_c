@@ -31,8 +31,7 @@ const char initialBoard[] = "          "
                             " RNBQKBNR "
                             "          "
                             "          ";
-const char PROMOTIONS[] = "NBRQ";
-const int NUM_PROMOTIONS = 4;
+const char PIECES[] = "PNBRQK";
 
 const int DIRECTIONS[NUM_PIECES][9] = {
         {NORTH, NORTH + NORTH, NORTH + WEST, NORTH + EAST, 0}, // pawn

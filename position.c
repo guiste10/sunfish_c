@@ -62,8 +62,8 @@ ArrayList* genMoves(Position* position) {
                         break;
                     // If we move to the last row, we can be anything
                     if (j >= A8 && j <= H8) {
-                        for (int promIndex = 0; promIndex < NUM_PROMOTIONS ; promIndex++)
-                            arrayListAdd(moves, createMove(i, j, PROMOTIONS[promIndex]));
+                        for (int promotion = Q; promotion > P ; promotion--)
+                            arrayListAdd(moves, createMove(i, j, promotion));
                         break;
                     }
                 }
@@ -86,7 +86,7 @@ ArrayList* genMoves(Position* position) {
 int value(const Position *position, const Move *move) {
     int i = move->i;
     int j = move->j;
-    char prom = move->prom;
+    int prom = move->prom;
     char p = position->board[i];
     char q = position->board[j];
 
@@ -110,12 +110,11 @@ int value(const Position *position, const Move *move) {
         score -= pst[R][j < i ? A1 : H1];
     }
 
-    // Special pawn stuff
     if (p == 'P') {
-        if (A8 <= j && j <= H8) {
-            score += pst[prom][j] - pst[P][j];
+        if (A8 <= j && j <= H8) { // promotion
+            score += pst[prom][j] - pst[P][j]; // invalid read of size 4
         }
-        if (j == position->ep) {
+        if (j == position->ep) { // en passant
             score += pst[P][SIZE - 1 - (j + SOUTH)];
         }
     }
@@ -131,7 +130,7 @@ void doMove(Position* position, Move* move, Position* newPosition, char* newBoar
     copyBoard(newPosition->board, position->board);
     // Init helper variables
     int i = move->i, j = move->j;
-    char prom = move->prom;
+    char prom = PIECES[move->prom];
     char p = position->board[i];
 
     // Copy variables and reset ep and kp

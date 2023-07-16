@@ -6,6 +6,7 @@
 void printIntArray(const int* arr, int size);
 void printCharArray(const char* arr, int size);
 void printMove(Move move, char board[]);
-void findBestMoveTimeStamped();
+void findBestMoveTimeStamped(char* boardToUse);
 extern const char debugBoard[SIZE];
+extern const char randomBoard[SIZE];
 #endif //SUNFISH_C_DEBUG_H

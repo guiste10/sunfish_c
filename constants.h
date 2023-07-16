@@ -5,6 +5,6 @@
 #define SIZE 120
 
 extern const int ARRAY_END;
-extern const char NO_PROMOTION;
+extern const int NO_PROMOTION;
 
 #endif //SUNFISH_C_CONSTANTS_H
