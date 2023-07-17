@@ -13,9 +13,50 @@
 const int MAX_ARGS = 1000;
 const char BOT_NAME[] = "Sunfish_c";
 
+void fillArgs(char* line, char* args[MAX_ARGS], int* numArgs){
+    *numArgs = 0;
+    char *token = strtok(line, " \n");
+    while (token != NULL && *numArgs < MAX_ARGS) {
+        args[(*numArgs)++] = token;
+        token = strtok(NULL, " \n");
+    }
+}
+
+void setupPosition(Position* position, char* initialBoardCopy, bool* isWhite, char* uciPosition[MAX_ARGS], int numArgs){
+    initPosition(position, initialBoardCopy, (char*)initialBoard);
+    *isWhite = true;
+    for (int ply = 0; ply < numArgs - 3; ply++) {
+        int i, j;
+        int prom;
+        char from[3], to[3];
+        char *uciMove = uciPosition[3 + ply];
+        char uciProm = *(uciMove+4);
+        strncpy(from, uciMove, 2);
+        from[2] = '\0';
+        strncpy(to, uciMove + 2, 2);
+        to[2] = '\0';
+        i = parse(from);
+        j = parse(to);
+        prom = uciProm == '\0' ? NO_PROMOTION : indexOf(PIECES, toupper(uciProm));
+        if (!*isWhite) {
+            i = 119 - i;
+            j = 119 - j;
+        }
+        Move* move = createMove(i, j, prom);
+        Position* duplicate = duplicatePosition(position);
+        doMove(duplicate, move, position, position->board);
+        free(duplicate->board);
+        free(duplicate);
+        rotate(position, false);
+        free(move);
+        *isWhite = !*isWhite;
+    }
+}
+
 void playUci(){
     char line[1000];
     char* args[MAX_ARGS];
+    int numArgs;
     bool isWhite = true;
     Position pos;
     Position* position = &pos;
@@ -23,12 +64,7 @@ void playUci(){
 
     while (1) {
         fgets(line, sizeof(line), stdin);
-        int numArgs = 0;
-        char *token = strtok(line, " \n");
-        while (token != NULL && numArgs < MAX_ARGS) {
-            args[numArgs++] = token;
-            token = strtok(NULL, " \n");
-        }
+        fillArgs(line, args, &numArgs);
 
         if (strcmp(args[0], "uci") == 0) {
             printf("id name %s\n", BOT_NAME);
@@ -41,34 +77,7 @@ void playUci(){
         } else if (strcmp(args[0], "quit") == 0) {
             break;
         } else if (numArgs >= 2 && strcmp(args[0], "position") == 0 && strcmp(args[1], "startpos") == 0) {
-            initPosition(position, initialBoardCopy, (char*)initialBoard);
-            isWhite = true;
-            for (int ply = 0; ply < numArgs - 3; ply++) {
-                int i, j;
-                int prom;
-                char from [3], to[3];
-                char *uciMove = args[3 + ply];
-                char uciProm = *(uciMove+4);
-                strncpy(from, uciMove, 2);
-                from[2] = '\0';
-                strncpy(to, uciMove + 2, 2);
-                to[2] = '\0';
-                i = parse(from);
-                j = parse(to);
-                prom = uciProm == '\0' ? NO_PROMOTION : indexOf(PIECES, toupper(uciProm));
-                if (!isWhite) {
-                    i = 119 - i;
-                    j = 119 - j;
-                }
-                Move* move = createMove(i, j, prom);
-                Position* duplicate = duplicatePosition(position);
-                doMove(duplicate, move, position, position->board);
-                free(duplicate->board);
-                free(duplicate);
-                rotate(position, false);
-                free(move);
-                isWhite = !isWhite;
-            }
+            setupPosition(position, initialBoardCopy, &isWhite, args, numArgs);
         } else if (strcmp(args[0], "go") == 0) {
             Move* bestMove = searchBestMove(position);
             int i = bestMove->i;

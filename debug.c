@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "search.h"
 #include "chessBoard.h"
+#include "uci.h"
 
 const char debugBoard[] = "          "
                           "          "
@@ -91,6 +92,17 @@ void findBestMoveTimeStamped(char* boardToUse) {
     free(bestMove);
 }
 
-void findBestMoveFromUciPosition(char* uciPosition) {
-    // todo
+void findBestMoveFromUciPosition(char uciPosition[MAX_ARGS]) {
+    bool isWhite = true;
+    Position pos;
+    Position* position = &pos;
+    char* args[MAX_ARGS];
+    int numArgs;
+
+    fillArgs(uciPosition, args, &numArgs);
+    char initialBoardCopy[SIZE];
+    setupPosition(position, initialBoardCopy, &isWhite, args, numArgs);
+    Move* bestMove = searchBestMove(position);
+    printMove(*bestMove, position->board);
+    free(bestMove);
 }

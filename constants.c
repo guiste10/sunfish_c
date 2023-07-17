@@ -1,2 +1,2 @@
 const int ARRAY_END = 0;
-const char NO_PROMOTION = -1;
+const int NO_PROMOTION = -1;
