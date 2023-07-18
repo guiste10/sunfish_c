@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include "position.h"
 #include "constants.h"
+#include "pieceSquareTables.h"
 
-const int maxDepth = 6;
+const int maxDepth = 4; // minimal 4 else can produce illegal moves when in check
 int numNodes = 0;
 
 void freeMoves(Move **bestMoveToSave, ArrayList *moves) {
@@ -19,6 +20,9 @@ void freeMoves(Move **bestMoveToSave, ArrayList *moves) {
 
 int negamax(Position* position, int depth, int alpha, int beta, Move** bestMoveToSave) {
     numNodes++;
+    if (position->score <= -MATE_LOWER) {
+        return -MATE_UPPER;
+    }
     if (depth == 0) {
         return position->score;
     }
@@ -37,6 +41,9 @@ int negamax(Position* position, int depth, int alpha, int beta, Move** bestMoveT
 
         int score = -negamax(newPosition, depth - 1, -beta, -alpha, &bestChildMove);
         free(bestChildMove);
+        if (score >= MATE_LOWER) {
+            return score - 1; // mate found, add one point penalty per depth
+        }
 
         if (score > max) {
             max = score;

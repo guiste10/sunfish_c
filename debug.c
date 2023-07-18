@@ -102,7 +102,13 @@ void findBestMoveFromUciPosition(char uciPosition[MAX_ARGS]) {
     fillArgs(uciPosition, args, &numArgs);
     char initialBoardCopy[SIZE];
     setupPosition(position, initialBoardCopy, &isWhite, args, numArgs);
+    printf("Current board\n");
+    printCharArray(initialBoardCopy, SIZE);
+    clock_t start = clock();  // Start measuring time
     Move* bestMove = searchBestMove(position);
+    clock_t end = clock();  // Stop measuring time
+    double elapsedTime = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;  // Calculate elapsed time in ms
+    printf("Best move search finished\nTime taken: %.2f ms\nNum nodes: %d => %.2f nodes/sec\n", elapsedTime, numNodes, numNodes/(elapsedTime/1000.0));
     printMove(*bestMove, position->board);
     free(bestMove);
 }
