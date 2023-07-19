@@ -177,7 +177,7 @@ void doMove(Position* position, Move* move, Position* newPosition, char* newBoar
             newPosition->board[j] = prom;
         }
         if (j - i == 2 * NORTH) {
-            newPosition->ep = j;
+            newPosition->ep = i + NORTH;
         }
         if (j == position->ep) {
             newPosition->board[j + SOUTH] = '.';
