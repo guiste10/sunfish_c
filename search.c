@@ -4,9 +4,12 @@
 #include "position.h"
 #include "constants.h"
 #include "pieceSquareTables.h"
+#include "debug.h"
 
 const int maxDepth = 4; // minimal 4 else can produce illegal moves when in check
 int numNodes = 0;
+
+bool kingMovesOnly(ArrayList *moves, const char *string);
 
 void freeMoves(Move **bestMoveToSave, ArrayList *moves) {
     for (int i = 0; i < moves->size; i++) {
@@ -30,6 +33,17 @@ int negamax(Position* position, int depth, int alpha, int beta, Move** bestMoveT
     int max = -INT_MAX;
     ArrayList* moves = genMoves(position);
 
+    if(kingMovesOnly(moves, position->board)) { // pat detection (if all moves are king moves only)
+        rotate(position, false);
+        Move* bestChildMove = NULL;
+        int score = negamax(position, 1, -INT_MAX, INT_MAX, &bestChildMove);
+        free(bestChildMove);
+        bool isInCheck = score >= MATE_LOWER;
+        if(!isInCheck){
+            // return 0 if all (king) moves lead to checkmate
+        }
+    }
+
     for (int i = 0; i < moves->size; i++) {
         Position newPos;
         Position* newPosition = &newPos;
@@ -42,7 +56,9 @@ int negamax(Position* position, int depth, int alpha, int beta, Move** bestMoveT
         int score = -negamax(newPosition, depth - 1, -beta, -alpha, &bestChildMove);
         free(bestChildMove);
         if (score >= MATE_LOWER) {
-            return score - 1; // mate found, add one point penalty per depth
+            score--; // winning mate found, add one point penalty per depth
+        } else if (score <= -MATE_LOWER) {
+            score++; // losing mate found, add one point penalty per depth
         }
 
         if (score > max) {
@@ -56,6 +72,16 @@ int negamax(Position* position, int depth, int alpha, int beta, Move** bestMoveT
     }
     freeMoves(bestMoveToSave, moves);
     return max;
+}
+
+bool kingMovesOnly(ArrayList *moves, const char *board) {
+    for(int i=0; i<moves->size; i++){
+        Move* move = arrayListGet(moves, i);
+        if(*(board + move->i) != 'K'){
+            return false;
+        }
+    }
+    return true;
 }
 
 Move* searchBestMove(Position* position) {

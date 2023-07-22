@@ -6,8 +6,8 @@ const int bishopVal = 320;
 const int rookVal = 479;
 const int queenVal = 929;
 const int kingVal = 60000;
-const int MATE_LOWER = kingVal - 10 * queenVal;
-const int MATE_UPPER = kingVal + 10 * queenVal;
+const int MATE_LOWER = kingVal - 10 * queenVal; // 50710
+const int MATE_UPPER = kingVal + 10 * queenVal; // 69290
 
 const int pieceValues[NUM_PIECES] = {pawnVal, knightVal, bishopVal,
                                      rookVal, queenVal, kingVal};

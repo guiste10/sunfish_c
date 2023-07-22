@@ -20,7 +20,7 @@ void initPosition(Position* position, char* boardCopy, char* boardSrc){
     position->kp = 0;
 }
 
-Position* duplicatePosition(Position* source){ // used only to set up the position, not for search
+Position* duplicatePosition(Position* source){
     Position* target = malloc(sizeof(Position));
     target->score = source->score;
     target->wc[0] = source->wc[0];
@@ -126,7 +126,7 @@ void doMove(Position* position, Move* move, Position* newPosition, char* newBoar
     // Copy board representation
     Position newPos;
     newPos.board = newBoard;
-    *newPosition = newPos; // problème, position doit être copie!!!
+    *newPosition = newPos;
     copyBoard(newPosition->board, position->board);
     // Init helper variables
     int i = move->i, j = move->j;
