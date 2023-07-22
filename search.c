@@ -9,7 +9,13 @@
 const int maxDepth = 4; // minimal 4 else can produce illegal moves when in check
 int numNodes = 0;
 
-bool kingMovesOnly(ArrayList *moves, const char *string);
+bool onlyKingMoves(ArrayList *moves, const char *string);
+
+bool isPat(Position *position, ArrayList *moves);
+
+bool isKingInCheck(Position *position);
+
+bool allKingMovesLeadToDeath(Position *position, ArrayList *moves);
 
 void freeMoves(Move **bestMoveToSave, ArrayList *moves) {
     for (int i = 0; i < moves->size; i++) {
@@ -21,7 +27,7 @@ void freeMoves(Move **bestMoveToSave, ArrayList *moves) {
     freeArrayList(moves);
 }
 
-int negamax(Position* position, int depth, int alpha, int beta, Move** bestMoveToSave) {
+int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck, Move** bestMoveToSave) {
     numNodes++;
     if (position->score <= -MATE_LOWER) {
         return -MATE_UPPER;
@@ -33,16 +39,9 @@ int negamax(Position* position, int depth, int alpha, int beta, Move** bestMoveT
     int max = -INT_MAX;
     ArrayList* moves = genMoves(position);
 
-    if(kingMovesOnly(moves, position->board)) { // pat detection (if all moves are king moves only)
-        rotate(position, false);
-        Move* bestChildMove = NULL;
-        int score = negamax(position, 1, -INT_MAX, INT_MAX, &bestChildMove);
-        free(bestChildMove);
-        bool isInCheck = score >= MATE_LOWER;
-        if(!isInCheck){
-            // return 0 if all (king) moves lead to checkmate
-        }
-    }
+    if(doPatCheck && isPat(position, moves) == true) {
+        return 0;
+    };
 
     for (int i = 0; i < moves->size; i++) {
         Position newPos;
@@ -53,7 +52,7 @@ int negamax(Position* position, int depth, int alpha, int beta, Move** bestMoveT
         rotate(newPosition, false);
         Move* bestChildMove = NULL;
 
-        int score = -negamax(newPosition, depth - 1, -beta, -alpha, &bestChildMove);
+        int score = -negamax(newPosition, depth - 1, -beta, -alpha, true, &bestChildMove);
         free(bestChildMove);
         if (score >= MATE_LOWER) {
             score--; // winning mate found, add one point penalty per depth
@@ -74,8 +73,17 @@ int negamax(Position* position, int depth, int alpha, int beta, Move** bestMoveT
     return max;
 }
 
-bool kingMovesOnly(ArrayList *moves, const char *board) {
-    for(int i=0; i<moves->size; i++){
+bool isPat(Position *position, ArrayList *moves) {
+    if(onlyKingMoves(moves, position->board)) {
+        if(!isKingInCheck(position)){
+            return allKingMovesLeadToDeath(position, moves);
+        }
+    }
+    return false;
+}
+
+bool onlyKingMoves(ArrayList *moves, const char *board) {
+    for (int i=0; i<moves->size; i++){
         Move* move = arrayListGet(moves, i);
         if(*(board + move->i) != 'K'){
             return false;
@@ -84,9 +92,37 @@ bool kingMovesOnly(ArrayList *moves, const char *board) {
     return true;
 }
 
+bool isKingInCheck(Position *position) {
+    Position* duplicatePos = duplicatePosition(position);
+    rotate(duplicatePos, false);
+    Move* bestChildMove = NULL;
+    int score = negamax(duplicatePos, 1, -INT_MAX, INT_MAX, false, &bestChildMove);
+    free(duplicatePos);
+    free(bestChildMove);
+    return score >= MATE_LOWER;
+}
+
+bool allKingMovesLeadToDeath(Position *position, ArrayList *moves) {
+    for (int i=0; i < moves->size; i++){
+        Position newPos;
+        Position* newPosition = &newPos;
+        char newBoard[SIZE];
+        Move* move = arrayListGet(moves, i);
+        doMove(position, move, newPosition, newBoard);
+        rotate(newPosition, false);
+        Move* bestChildMove = NULL;
+        int score = negamax(newPosition, 1, -INT_MAX, INT_MAX, false, &bestChildMove);
+        free(bestChildMove);
+        if (score < MATE_LOWER) { // one safe move has been found
+            return false;
+        }
+    }
+    return true;
+}
+
 Move* searchBestMove(Position* position) {
     Move* bestMove = NULL;
-    int score = negamax(position, maxDepth, -INT_MAX, INT_MAX, &bestMove);
+    int score = negamax(position, maxDepth, -INT_MAX, INT_MAX, false, &bestMove);
     printf("info depth %d score cp %d\n", maxDepth, score);
     fflush(stdout);
     //printf("Score: %d\n", score);
