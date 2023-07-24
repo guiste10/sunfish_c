@@ -1,7 +1,6 @@
 #include "position.h"
 #include "constants.h"
 #include "chessBoard.h"
-#include "arraylist.h"
 #include "move.h"
 #include "pieceSquareTables.h"
 #include <ctype.h>
@@ -35,10 +34,10 @@ Position* duplicatePosition(Position* source){
     return target;
 }
 
-ArrayList* genMoves(Position* position) {
+int genMoves(Position* position, Move moves[MAX_BRANCHING_FACTOR]) {
     // For each friendly piece, iterate through each possible 'ray' of moves as defined in the 'directions' map.
     // The rays are broken e.g. by captures or immediately in case of pieces such as knights.
-    ArrayList* moves = createArrayList();
+    int moveIndex = 0;
     for (int i = 0; i <SIZE ; i++) {
         char p = position->board[i];
         if (!isupper(p))
@@ -63,24 +62,24 @@ ArrayList* genMoves(Position* position) {
                     // If we move to the last row, we can be anything
                     if (j >= A8 && j <= H8) {
                         for (int promotion = Q; promotion > P ; promotion--)
-                            arrayListAdd(moves, createMove(i, j, promotion));
+                            moves[moveIndex++] = *createMove(i, j, promotion);
                         break;
                     }
                 }
                 // Move it
-                arrayListAdd(moves, createMove(i, j, NO_PROMOTION));
+                moves[moveIndex++] = *createMove(i, j, NO_PROMOTION);
                 // Stop crawlers from sliding, and sliding after captures
                 if (strchr("PNK", p) != NULL || islower(q))
                     break;
                 // Castling, by sliding the rook next to the king
                 if (i == A1 && position->board[j + EAST] == 'K' && position->wc[0])
-                    arrayListAdd(moves, createMove(j + EAST, j + WEST, NO_PROMOTION));
+                    moves[moveIndex++] = *createMove(j + EAST, j + WEST, NO_PROMOTION);
                 if (i == H1 && position->board[j + WEST] == 'K' && position->wc[1])
-                    arrayListAdd(moves, createMove(j + WEST, j + EAST, NO_PROMOTION));
+                    moves[moveIndex++] = *createMove(j + WEST, j + EAST, NO_PROMOTION);
             }
         }
     }
-    return moves;
+    return moveIndex;
 }
 
 int value(const Position *position, const Move *move) {

@@ -1,7 +1,7 @@
 #ifndef SUNFISH_C_POSITION_H
 #define SUNFISH_C_POSITION_H
-#include "arraylist.h"
 #include "move.h"
+#include "constants.h"
 #include <stdbool.h>
 
 typedef struct {
@@ -17,7 +17,7 @@ void initPosition(Position* position, char* boardCopy, char* boardSrc);
 
 Position* duplicatePosition(Position* source);
 
-ArrayList* genMoves(Position * position);
+int genMoves(Position * position, Move moves[MAX_BRANCHING_FACTOR]);
 
 void doMove(Position* position, Move* move, Position* newPosition, char* newBoard);
 
