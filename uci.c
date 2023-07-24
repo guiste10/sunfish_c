@@ -79,7 +79,8 @@ void playUci(){
         } else if (numArgs >= 2 && strcmp(args[0], "position") == 0 && strcmp(args[1], "startpos") == 0) {
             setupPosition(position, initialBoardCopy, &isWhite, args, numArgs);
         } else if (strcmp(args[0], "go") == 0) {
-            Move* bestMove = NULL;
+            Move best;
+            Move* bestMove = &best;
             searchBestMove(position, bestMove);
             int i = bestMove->i;
             int j = bestMove->j;
