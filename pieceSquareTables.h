@@ -4,6 +4,7 @@
 
 extern const int MATE_LOWER;
 extern const int MATE_UPPER;
+extern int pieceValues[NUM_PIECES];
 extern int pst[6][SIZE];
 
 void initPst();

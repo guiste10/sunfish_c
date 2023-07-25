@@ -6,6 +6,7 @@
 
 int main() {
     initPst();
+    initializePieceIndexArray();
 
     //findBestMoveTimeStamped((char*)randomBoard);
     // ok char uciPosition[] = "position startpos moves e2e4 e7e5 f1c4 b8c6 d1f3 d8h4 f3f7"; // mate in 2 (king eaten 4 plies)

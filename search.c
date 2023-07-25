@@ -5,8 +5,9 @@
 #include "constants.h"
 #include "pieceSquareTables.h"
 #include "debug.h"
+#include "chessBoard.h"
 
-const int maxDepth = 4;
+const int maxDepth = 6;
 int numNodes = 0;
 char* currentBoard;
 
@@ -14,7 +15,27 @@ bool onlyKingMoves(Move moves[MAX_BRANCHING_FACTOR], int numMoves, const char *s
 bool isPat(Position *position, int numMoves, Move moves[MAX_BRANCHING_FACTOR]);
 bool isKingInCheck(Position *position);
 bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[MAX_BRANCHING_FACTOR]);
-void sortMoves(Move moves[MAX_BRANCHING_FACTOR], int numMoves, Position* position);
+
+int compareMoves(const void* a, const void* b) {
+    Move* moveA = (Move*)a;
+    Move* moveB = (Move*)b;
+
+    char pieceToA = currentBoard[moveA->j];
+    char pieceToB = currentBoard[moveB->j];
+    if(pieceToA != '.' && pieceToB != '.'){
+        char pieceFromA = currentBoard[moveA->i];
+        char pieceFromB = currentBoard[moveB->i];
+        return (pieceValues[pieceIndexes[pieceToB]] - pieceValues[pieceIndexes[pieceFromB]]) -
+               (pieceValues[pieceIndexes[pieceToA]] - pieceValues[pieceIndexes[pieceFromA]]); // prioritize winning captures (e.g. pawn takes queen)
+    }
+    else if(pieceToA != '.'){
+        return -1;
+    }
+    else if(pieceToB != '.'){
+        return 1;
+    }
+    return 0;
+}
 
 int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck, Move moves[MAX_BRANCHING_FACTOR], Move* bestMoveToSave) {
     numNodes++;
@@ -25,15 +46,14 @@ int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck,
         return position->score;
     }
 
-
     int numMoves = genMoves(position, moves);
-
     int max = -INT_MAX;
-
-
     if(doPatCheck && isPat(position, numMoves, moves) == true) {
         return 0;
-    };
+    }
+
+    currentBoard = position->board;
+    qsort(moves, numMoves, sizeof(Move), compareMoves);
 
     for (int i = 0; i < numMoves; i++) {
         Position newPos;
@@ -62,6 +82,13 @@ int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck,
         }
     }
     return max;
+}
+
+void searchBestMove(Position* position, Move* bestMove) {
+    Move moves[MAX_BRANCHING_FACTOR];
+    int score = negamax(position, maxDepth, -INT_MAX, INT_MAX, false, moves, bestMove);
+    printf("info depth %d score cp %d\n", maxDepth, score);
+    fflush(stdout);
 }
 
 bool isPat(Position* position, int numMoves, Move moves[MAX_BRANCHING_FACTOR]) {
@@ -108,51 +135,4 @@ bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[MA
         }
     }
     return true;
-}
-
-void searchBestMove(Position* position, Move* bestMove) {
-    Move moves[MAX_BRANCHING_FACTOR];
-    int score = negamax(position, maxDepth, -INT_MAX, INT_MAX, false, moves, bestMove);
-    printf("info depth %d score cp %d\n", maxDepth, score);
-    fflush(stdout);
-}
-
-int compareMoves(const void* a, const void* b) {
-    Move* moveA = (Move*)a; // 0xc91780
-    Move* moveB = (Move*)b; // 0xc918ac
-    int i = moveA->i;
-    int j = moveA->j;
-    int ii = moveB->i;
-    int jj = moveB->j;
-    char pieceFromA = currentBoard[moveA->i]; //b930
-    char pieceToA = currentBoard[moveA->j];
-    char pieceFromB = currentBoard[moveB->i];
-    char pieceToB = currentBoard[moveB->j];
-    if(i > ii){
-        return 1;
-    } else if(i == ii){
-        return 0;
-    }
-    return -1;
-//    if(pieceToA == pieceToB){
-//        return 0;
-//    }
-//    if(pieceToA != '.'){
-//        return 1;
-//    }
-//    if(pieceToB != '.'){
-//        return -1;
-//    }
-      return 0;
-}
-
-void sortMoves(Move moves[MAX_BRANCHING_FACTOR], int numMoves, Position* position) {
-    currentBoard = position->board;
-
-//    Move moveArray[2];
-//    moveArray[0] = *((Move*)moves->array[0]);
-//    moveArray[1] = *((Move*)moves->array[1]);
-//    qsort(*(moves->array), moves->size, 32, compareMoves);
-
-    qsort(moves, numMoves, sizeof(Move), compareMoves);
 }

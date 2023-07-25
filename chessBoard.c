@@ -19,6 +19,8 @@ const int R = 3;
 const int Q = 4;
 const int K = 5;
 
+int pieceIndexes[PIECES_MAX_ASCII];
+
 const char initialBoard[] = "          "
                             "          "
                             " rnbqkbnr "
@@ -47,24 +49,21 @@ const int DIRECTIONS[NUM_PIECES][9] = {
          SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0}
 };
 
-int getPieceIndex(char piece) {
-    switch (piece) {
-        case 'P':
-            return 0;
-        case 'N':
-            return 1;
-        case 'B':
-            return 2;
-        case 'R':
-            return 3;
-        case 'Q':
-            return 4;
-        case 'K':
-            return 5;
-        default:
-            return -1;  // Return -1 for invalid characters
-    }
+void initializePieceIndexArray() {
+    pieceIndexes['P'] = 0;
+    pieceIndexes['N'] = 1;
+    pieceIndexes['B'] = 2;
+    pieceIndexes['R'] = 3;
+    pieceIndexes['Q'] = 4;
+    pieceIndexes['K'] = 5;
+    pieceIndexes['p'] = 0;
+    pieceIndexes['n'] = 1;
+    pieceIndexes['b'] = 2;
+    pieceIndexes['r'] = 3;
+    pieceIndexes['q'] = 4;
+    pieceIndexes['k'] = 5;
 }
+
 
 void copyBoard(char* dest, const char* src) {
     memcpy(dest, src, sizeof(char) * SIZE);
