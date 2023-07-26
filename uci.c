@@ -42,13 +42,14 @@ void setupPosition(Position* position, char* initialBoardCopy, bool* isWhite, ch
             i = 119 - i;
             j = 119 - j;
         }
-        Move* move = createMove(i, j, prom);
+        Move mv;
+        Move* move = &mv;
+        addMove(i, j, prom, move);
         Position* duplicate = duplicatePosition(position);
         doMove(duplicate, move, position, position->board);
         free(duplicate->board);
         free(duplicate);
         rotate(position, false);
-        free(move);
         *isWhite = !*isWhite;
     }
 }

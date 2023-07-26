@@ -34,9 +34,7 @@ Position* duplicatePosition(Position* source){
     return target;
 }
 
-int genMoves(Position* position, Move moves[MAX_BRANCHING_FACTOR]) {
-    // For each friendly piece, iterate through each possible 'ray' of moves as defined in the 'directions' map.
-    // The rays are broken e.g. by captures or immediately in case of pieces such as knights.
+int genMoves(Position* position, Move moves[MAX_BRANCHING_FACTOR]) { // For each friendly piece, iterate through each possible 'ray' of moves as defined in the 'directions' map. The rays are broken e.g. by captures or immediately in case of pieces such as knights.
     int moveIndex = 0;
     for (int i = 0; i <SIZE ; i++) {
         char p = position->board[i];
@@ -47,35 +45,28 @@ int genMoves(Position* position, Move moves[MAX_BRANCHING_FACTOR]) {
             int d = *(pieceDirections + dirIndex);
             for (int j = i + d; j >= 0 && j < SIZE; j += d) {
                 char q = position->board[j];
-                // Stay inside the board, and off friendly pieces
-                if (isspace(q) || isupper(q))
+                if (isspace(q) || isupper(q)) // Stay inside the board, and off friendly pieces
                     break;
-                // Pawn move, double move and capture
-                if (p == 'P') {
+                if (p == 'P') { // Pawn move, double move and capture
                     if ((d == NORTH || d == NORTH + NORTH) && q != '.')
                         break;
                     if (d == NORTH + NORTH && (i < A1 + NORTH || position->board[i + NORTH] != '.'))
                         break;
-                    if ((d == NORTH + WEST || d == NORTH + EAST) && q == '.' &&
-                        j != position->ep) //)&& j != position->kp && j != position->kp - 1 && j != position->kp + 1)
+                    if ((d == NORTH + WEST || d == NORTH + EAST) && q == '.' && j != position->ep)
                         break;
-                    // If we move to the last row, we can be anything
-                    if (j >= A8 && j <= H8) {
+                    if (j >= A8 && j <= H8) { // If we move to the last row, we can be anything
                         for (int promotion = Q; promotion > P ; promotion--)
-                            moves[moveIndex++] = *createMove(i, j, promotion);
+                            addMove(i, j, promotion, &moves[moveIndex++]);
                         break;
                     }
                 }
-                // Move it
-                moves[moveIndex++] = *createMove(i, j, NO_PROMOTION);
-                // Stop crawlers from sliding, and sliding after captures
-                if (strchr("PNK", p) != NULL || islower(q))
+                addMove(i, j, NO_PROMOTION, &moves[moveIndex++]); // Move it
+                if (strchr("PNK", p) != NULL || islower(q)) // Stop crawlers from sliding, and sliding after captures
                     break;
-                // Castling, by sliding the rook next to the king
-                if (i == A1 && position->board[j + EAST] == 'K' && position->wc[0])
-                    moves[moveIndex++] = *createMove(j + EAST, j + WEST, NO_PROMOTION);
+                if (i == A1 && position->board[j + EAST] == 'K' && position->wc[0]) // Castling, by sliding the rook next to the king
+                    addMove(j + EAST, j + WEST, NO_PROMOTION, &moves[moveIndex++]);
                 if (i == H1 && position->board[j + WEST] == 'K' && position->wc[1])
-                    moves[moveIndex++] = *createMove(j + WEST, j + EAST, NO_PROMOTION);
+                    addMove(j + WEST, j + EAST, NO_PROMOTION, &moves[moveIndex++]);
             }
         }
     }

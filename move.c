@@ -2,12 +2,10 @@
 #include "move.h"
 #include "chessBoard.h"
 
-Move* createMove(int i, int j, int prom) {
-    Move* move = malloc(sizeof(Move));
+void addMove(int i, int j, int prom, Move* move){
     move->i = i;
     move->j = j;
     move->prom = prom;
-    return move;
 }
 
 void render(int index, char* result) {
