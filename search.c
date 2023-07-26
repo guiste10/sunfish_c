@@ -11,10 +11,53 @@ const int maxDepth = 1;
 int numNodes = 0;
 char* currentBoard;
 
-bool onlyKingMoves(Move moves[MAX_BRANCHING_FACTOR], int numMoves, const char *string);
-bool isPat(Position *position, int numMoves, Move moves[MAX_BRANCHING_FACTOR]);
-bool isKingInCheck(Position *position);
-bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[MAX_BRANCHING_FACTOR]);
+int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck, Move moves[MAX_BRANCHING_FACTOR], Move* bestMoveToSave);
+
+bool onlyKingMoves(Move moves[MAX_BRANCHING_FACTOR], int numMoves, const char *board) {
+    for (int i=0; i<numMoves; i++){
+        if(*(board + moves[i].i) != 'K'){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool isKingInCheck(Position *position) {
+    Position* duplicatePos = duplicatePosition(position);
+    rotate(duplicatePos, false);
+    Move opponentMoves[MAX_BRANCHING_FACTOR];
+    Move bestChildMove;
+    int score = negamax(duplicatePos, 1, -INT_MAX, INT_MAX, false, opponentMoves, &bestChildMove);
+    free(duplicatePos);
+    return score >= MATE_LOWER;
+}
+
+bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[MAX_BRANCHING_FACTOR]) {
+    for (int i=0; i < numMoves; i++){
+        Position newPos;
+        Position* newPosition = &newPos;
+        char newBoard[SIZE];
+        Move* move = &kingMoves[i];
+        doMove(position, move, newPosition, newBoard);
+        rotate(newPosition, false);
+        Move opponentMoves[MAX_BRANCHING_FACTOR];
+        Move bestChildMove;
+        int score = negamax(newPosition, 1, -INT_MAX, INT_MAX, false, opponentMoves, &bestChildMove);
+        if (score < MATE_LOWER) { // one safe move has been found
+            return false;
+        }
+    }
+    return true;
+}
+
+bool isPat(Position* position, int numMoves, Move moves[MAX_BRANCHING_FACTOR]) {
+    if(onlyKingMoves(moves, numMoves, position->board)) {
+        if(!isKingInCheck(position)){
+            return allKingMovesLeadToDeath(position, numMoves, moves);
+        }
+    }
+    return false;
+}
 
 int compareMoves(const void* a, const void* b) {
     Move* moveA = (Move*)a;
@@ -89,50 +132,4 @@ void searchBestMove(Position* position, Move* bestMove) {
     int score = negamax(position, maxDepth, -INT_MAX, INT_MAX, false, moves, bestMove);
     printf("info depth %d score cp %d\n", maxDepth, score);
     fflush(stdout);
-}
-
-bool isPat(Position* position, int numMoves, Move moves[MAX_BRANCHING_FACTOR]) {
-    if(onlyKingMoves(moves, numMoves, position->board)) {
-        if(!isKingInCheck(position)){
-            return allKingMovesLeadToDeath(position, numMoves, moves);
-        }
-    }
-    return false;
-}
-
-bool onlyKingMoves(Move moves[MAX_BRANCHING_FACTOR], int numMoves, const char *board) {
-    for (int i=0; i<numMoves; i++){
-        if(*(board + moves[i].i) != 'K'){
-            return false;
-        }
-    }
-    return true;
-}
-
-bool isKingInCheck(Position *position) {
-    Position* duplicatePos = duplicatePosition(position);
-    rotate(duplicatePos, false);
-    Move opponentMoves[MAX_BRANCHING_FACTOR];
-    Move bestChildMove;
-    int score = negamax(duplicatePos, 1, -INT_MAX, INT_MAX, false, opponentMoves, &bestChildMove);
-    free(duplicatePos);
-    return score >= MATE_LOWER;
-}
-
-bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[MAX_BRANCHING_FACTOR]) {
-    for (int i=0; i < numMoves; i++){
-        Position newPos;
-        Position* newPosition = &newPos;
-        char newBoard[SIZE];
-        Move* move = &kingMoves[i];
-        doMove(position, move, newPosition, newBoard);
-        rotate(newPosition, false);
-        Move opponentMoves[MAX_BRANCHING_FACTOR];
-        Move bestChildMove;
-        int score = negamax(newPosition, 1, -INT_MAX, INT_MAX, false, opponentMoves, &bestChildMove);
-        if (score < MATE_LOWER) { // one safe move has been found
-            return false;
-        }
-    }
-    return true;
 }

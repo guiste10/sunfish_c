@@ -1,4 +1,3 @@
-#include <malloc.h>
 #include "move.h"
 #include "chessBoard.h"
 

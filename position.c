@@ -3,6 +3,7 @@
 #include "chessBoard.h"
 #include "move.h"
 #include "pieceSquareTables.h"
+#include "debug.h"
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
