@@ -7,7 +7,7 @@
 #include "debug.h"
 #include "chessBoard.h"
 
-const int maxDepth = 6;
+const int maxDepth = 1;
 int numNodes = 0;
 char* currentBoard;
 
@@ -47,7 +47,6 @@ int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck,
     }
 
     int numMoves = genMoves(position, moves);
-    int max = -INT_MAX;
     if(doPatCheck && isPat(position, numMoves, moves) == true) {
         return 0;
     }
@@ -55,6 +54,7 @@ int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck,
     currentBoard = position->board;
     qsort(moves, numMoves, sizeof(Move), compareMoves);
 
+    int max = -INT_MAX;
     for (int i = 0; i < numMoves; i++) {
         Position newPos;
         Position* newPosition = &newPos;

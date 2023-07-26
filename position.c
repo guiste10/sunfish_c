@@ -83,26 +83,23 @@ int value(const Position *position, const Move *move) {
     int friendlyPieceIndex = pieceIndexes[p];
     int score = pst[friendlyPieceIndex][j] - pst[friendlyPieceIndex][i];
 
-    // Capture
-    if (islower(q)) {
+    if (islower(q)) { // Capture
         int enemyPieceIndex = pieceIndexes[q];
         score += pst[enemyPieceIndex][SIZE - 1 - j];
     }
 
-    // Castling check detection
-    if (abs(j - position->kp) < 2) {
+    if (abs(j - position->kp) < 2) { // Castling check detection
         score += pst[K][SIZE - 1 - j];
     }
 
-    // Castling
-    if (p == 'K' && abs(i - j) == 2) {
+    if (p == 'K' && abs(i - j) == 2) { // Castling
         score += pst[R][(i + j) / 2];
         score -= pst[R][j < i ? A1 : H1];
     }
 
     if (p == 'P') {
         if (A8 <= j && j <= H8) { // promotion
-            score += pst[prom][j] - pst[P][j]; // invalid read of size 4
+            score += pst[prom][j] - pst[P][j];
         }
         if (j == position->ep) { // en passant
             score += pst[P][SIZE - 1 - (j + SOUTH)];
@@ -113,17 +110,15 @@ int value(const Position *position, const Move *move) {
 }
 
 void doMove(Position* position, Move* move, Position* newPosition, char* newBoard) {
-    // Copy board representation
-    Position newPos;
+    Position newPos; // Copy board representation
     newPos.board = newBoard;
     *newPosition = newPos;
     copyBoard(newPosition->board, position->board);
-    // Init helper variables
+
     int i = move->i, j = move->j;
     char prom = PIECES[move->prom];
     char p = position->board[i];
 
-    // Copy variables and reset ep and kp
     newPosition->wc[0] = position->wc[0];
     newPosition->wc[1] = position->wc[1];
     newPosition->bc[0] = position->bc[0];
@@ -132,12 +127,10 @@ void doMove(Position* position, Move* move, Position* newPosition, char* newBoar
     newPosition->kp = 0;
     newPosition->score = position->score + value(position, move);
 
-    // Actual move
-    newPosition->board[j] = newPosition->board[i];
+    newPosition->board[j] = newPosition->board[i]; // Actual move
     newPosition->board[i] = '.';
 
-    // Castling rights, we move the rook or capture the opponent's
-    if (i == A1) {
+    if (i == A1) { // Castling rights, we move the rook or capture the opponent's
         newPosition->wc[0] = false;
     }
     if (i == H1) {
@@ -150,8 +143,7 @@ void doMove(Position* position, Move* move, Position* newPosition, char* newBoar
         newPosition->bc[1] = false;
     }
 
-    // Castling
-    if (p == 'K') {
+    if (p == 'K') {  // Castling
         newPosition->wc[0] = false;
         newPosition->wc[1] = false;
         if (abs(j - i) == 2) {
@@ -161,8 +153,7 @@ void doMove(Position* position, Move* move, Position* newPosition, char* newBoar
         }
     }
 
-    // Pawn promotion, double move, and en passant capture
-    if (p == 'P') {
+    if (p == 'P') { // Pawn promotion, double move, and en passant capture
         if (A8 <= j && j <= H8) {
             newPosition->board[j] = prom;
         }
@@ -189,8 +180,7 @@ void rotate(Position* position, bool nullMove) {
         }
     }
 
-    // Update other attributes
-    position->score = -position->score;
+    position->score = -position->score; // Update other attributes
     position->ep = (position->ep && !nullMove) ? (119 - position->ep) : 0;
     position->kp = (position->kp && !nullMove) ? (119 - position->kp) : 0;
 }

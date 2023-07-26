@@ -101,9 +101,8 @@ int pst[NUM_PIECES][SIZE] = {
 
 void initPst(){
     for(int piece=0; piece < NUM_PIECES; piece++){
-        int* squareValuesForPiece = pst[piece];
         for(int j=0; j < SIZE; j++){
-            *(squareValuesForPiece + j) += pieceValues[piece];
+            pst[piece][j] += pieceValues[piece];
         }
     }
 }

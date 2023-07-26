@@ -37,31 +37,19 @@ const char PIECES[] = "PNBRQK";
 
 const int DIRECTIONS[NUM_PIECES][9] = {
         {NORTH, NORTH + NORTH, NORTH + WEST, NORTH + EAST, 0}, // pawn
-        {NORTH + NORTH + EAST, NORTH + NORTH + WEST, // knight
-         EAST + EAST + NORTH,EAST + EAST + SOUTH,
-         SOUTH + SOUTH + EAST, SOUTH + SOUTH + WEST,
-         WEST + WEST + + SOUTH,WEST + WEST + NORTH, 0},
+        {NORTH + NORTH + EAST, NORTH + NORTH + WEST, EAST + EAST + NORTH,EAST + EAST + SOUTH,SOUTH + SOUTH + EAST, SOUTH + SOUTH + WEST,WEST + WEST + + SOUTH,WEST + WEST + NORTH, 0}, // knight
         {NORTH + EAST, SOUTH + EAST, SOUTH + WEST, NORTH + WEST, 0}, // bishop
         {NORTH, EAST, SOUTH, WEST, 0}, // rook
-        {NORTH, EAST, SOUTH, WEST, NORTH + EAST, // queen
-         SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0},
-        {NORTH, EAST, SOUTH, WEST, NORTH + EAST, // king
-         SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0}
+        {NORTH, EAST, SOUTH, WEST, NORTH + EAST, SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0}, // queen
+        {NORTH, EAST, SOUTH, WEST, NORTH + EAST, SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0} // king
+
 };
 
 void initializePieceIndexArray() {
-    pieceIndexes['P'] = 0;
-    pieceIndexes['N'] = 1;
-    pieceIndexes['B'] = 2;
-    pieceIndexes['R'] = 3;
-    pieceIndexes['Q'] = 4;
-    pieceIndexes['K'] = 5;
-    pieceIndexes['p'] = 0;
-    pieceIndexes['n'] = 1;
-    pieceIndexes['b'] = 2;
-    pieceIndexes['r'] = 3;
-    pieceIndexes['q'] = 4;
-    pieceIndexes['k'] = 5;
+    char pieceChars[] = {'P', 'N', 'B', 'R', 'Q', 'K', 'p', 'n', 'b', 'r', 'q', 'k'};
+    for (int i = 0; i < 12; i++) {
+        pieceIndexes[pieceChars[i]] = i % 6;
+    }
 }
 
 

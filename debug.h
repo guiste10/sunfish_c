@@ -9,5 +9,6 @@ void printMove(Move move, char board[]);
 void findBestMoveTimeStamped(char* boardToUse);
 void findBestMoveFromUciPosition(char* uciPosition);
 extern const char debugBoard[SIZE];
+extern const char debugBoard2[SIZE];
 extern const char randomBoard[SIZE];
 #endif //SUNFISH_C_DEBUG_H

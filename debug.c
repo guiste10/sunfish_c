@@ -21,6 +21,19 @@ const char debugBoard[] = "          "
                           "          "
                         "          ";
 
+const char debugBoard2[] = "          "
+                           "          "
+                           " k....... "
+                           " ........ "
+                           " ........ "
+                           " ........ "
+                           " ........ "
+                           " ........ "
+                           " ........ "
+                           " ....K..R "
+                           "          "
+                           "          ";
+
 const char randomBoard[] = "          "
                           "          "
                           " r.k..b.r "
