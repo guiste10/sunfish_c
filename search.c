@@ -154,7 +154,7 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs) {
         timeTakenMs = clock() - start;
         printf("info depth %d score cp %d time %.2f nps %.2f\n", depth, score, timeTakenMs, timeTakenMs == 0.0 ? 0 : numNodes/(timeTakenMs/1000.0));
         fflush(stdout);
-        isMate = abs(score) < MATE_LOWER;
+        isMate = abs(score) >= MATE_LOWER;
         canFurtherIncreaseDepth = timeTakenMs < 150.0 && timeLeftMs > 10000;
     }
 }
