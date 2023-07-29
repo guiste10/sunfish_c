@@ -145,12 +145,12 @@ int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck,
 void searchBestMove(Position* position, Move* bestMove, int timeLeftMs) {
     double timeTakenMs = 0.0;
     clock_t start = clock();
-    for(int depth = 1; depth < maxDepth || timeTakenMs < 100.0; depth++){
+    for(int depth = 1; depth < maxDepth || (timeTakenMs < 150.0 && timeLeftMs > 10000); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
         int score = negamax(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
         timeTakenMs = clock() - start;
-        printf("info depth %d score cp %d nps %.2f\n", depth, score, timeTakenMs == 0.0 ? 0 : numNodes/timeTakenMs/1000.0);
+        printf("info depth %d score cp %d time %.2f nps %.2f\n", depth, score, timeTakenMs, timeTakenMs == 0.0 ? 0 : numNodes/(timeTakenMs/1000.0));
         fflush(stdout);
     }
 }
