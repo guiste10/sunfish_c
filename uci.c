@@ -44,10 +44,10 @@ void setupPosition(Position* position, char* initialBoardCopy, bool* isWhite, ch
         Move mv;
         Move* move = &mv;
         addMove(i, j, prom, move);
-        Position* duplicate = duplicatePosition(position);
-        doMove(duplicate, move, position, position->board);
-        free(duplicate->board);
-        free(duplicate);
+        Position target;
+        char targetBoard[SIZE];
+        Position* duplicatePos = duplicatePosition(position, &target, targetBoard);
+        doMove(duplicatePos, move, position, position->board);
         rotate(position, false);
         *isWhite = !*isWhite;
     }
@@ -81,7 +81,7 @@ void playUci(){
         } else if (strcmp(args[0], "go") == 0) {
             Move best;
             Move* bestMove = &best;
-            searchBestMove(position, bestMove);
+            searchBestMove(position, bestMove, atoi(isWhite ? args[2] : args[4]));
             int i = bestMove->i;
             int j = bestMove->j;
             char prom = PIECES[bestMove->prom];

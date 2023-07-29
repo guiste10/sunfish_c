@@ -47,6 +47,8 @@ const char randomBoard[] = "          "
                           "          "
                           "          ";
 
+const TIME_LEFT_DEBUG = 99999999;
+
 void printIntArray(const int* arr, int size) {
     printf("Array:");
     for (int i = 0; i < size; i++) {
@@ -92,10 +94,10 @@ void findBestMoveTimeStamped(char* boardToUse) {
     Position* position = &pos;
     char board[SIZE];
     initPosition(position, board, (char*)boardToUse);
-    clock_t start = clock();  // Start measuring time
+    clock_t start = clock();
     Move bestMove;
-    searchBestMove(position, &bestMove);
-    clock_t end = clock();  // Stop measuring time
+    searchBestMove(position, &bestMove, TIME_LEFT_DEBUG);
+    clock_t end = clock();
     double elapsedTime = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;  // Calculate elapsed time in ms
     printf("Best move search finished\nTime taken: %.2f ms\nNum nodes: %d => %.2f nodes/sec\n", elapsedTime, numNodes, numNodes/(elapsedTime/1000.0));
     Position newPosition;
@@ -119,7 +121,7 @@ void findBestMoveFromUciPosition(char uciPosition[MAX_ARGS]) {
     printCharArray(initialBoardCopy, SIZE);
     Move bestMove;
     clock_t start = clock();  // Start measuring time
-    searchBestMove(position, &bestMove);
+    searchBestMove(position, &bestMove, TIME_LEFT_DEBUG);
     clock_t end = clock();  // Stop measuring time
     double elapsedTime = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;  // Calculate elapsed time in ms
     printf("Best move search finished\nTime taken: %.2f ms\nNum nodes: %d => %.2f nodes/sec\n", elapsedTime, numNodes, numNodes/(elapsedTime/1000.0));

@@ -1,17 +1,18 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "position.h"
 #include "constants.h"
 #include "pieceSquareTables.h"
 #include "debug.h"
 #include "chessBoard.h"
 
-const int maxDepth = 1;
+const int maxDepth = 6;
 int numNodes = 0;
 char* currentBoard;
 
-int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck, Move moves[MAX_BRANCHING_FACTOR], Move* bestMoveToSave);
+int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove, Move moves[MAX_BRANCHING_FACTOR], Move* bestMoveToSave);
 
 bool onlyKingMoves(Move moves[MAX_BRANCHING_FACTOR], int numMoves, const char *board) {
     for (int i=0; i<numMoves; i++){
@@ -23,12 +24,13 @@ bool onlyKingMoves(Move moves[MAX_BRANCHING_FACTOR], int numMoves, const char *b
 }
 
 bool isKingInCheck(Position *position) {
-    Position* duplicatePos = duplicatePosition(position);
+    Position target;
+    char targetBoard[SIZE];
+    Position* duplicatePos = duplicatePosition(position, &target, targetBoard);
     rotate(duplicatePos, false);
     Move opponentMoves[MAX_BRANCHING_FACTOR];
     Move bestChildMove;
-    int score = negamax(duplicatePos, 1, -INT_MAX, INT_MAX, false, opponentMoves, &bestChildMove);
-    free(duplicatePos);
+    int score = negamax(duplicatePos, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
     return score >= MATE_LOWER;
 }
 
@@ -42,7 +44,7 @@ bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[MA
         rotate(newPosition, false);
         Move opponentMoves[MAX_BRANCHING_FACTOR];
         Move bestChildMove;
-        int score = negamax(newPosition, 1, -INT_MAX, INT_MAX, false, opponentMoves, &bestChildMove);
+        int score = negamax(newPosition, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
         if (score < MATE_LOWER) { // one safe move has been found
             return false;
         }
@@ -80,7 +82,7 @@ int compareMoves(const void* a, const void* b) {
     return 0;
 }
 
-int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck, Move moves[MAX_BRANCHING_FACTOR], Move* bestMoveToSave) {
+int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove, Move moves[MAX_BRANCHING_FACTOR], Move* bestMoveToSave) {
     numNodes++;
     if (position->score <= -MATE_LOWER) {
         return -MATE_UPPER;
@@ -92,6 +94,19 @@ int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck,
     int numMoves = genMoves(position, moves);
     if(doPatCheck && isPat(position, numMoves, moves) == true) {
         return 0;
+    }
+
+    if(canNullMove && depth > 3 && abs(position->score) < 500){
+        Position target;
+        char targetBoard[SIZE];
+        Position* duplicatePos = duplicatePosition(position, &target, targetBoard);
+        rotate(duplicatePos, true);
+        Move opponentMoves[MAX_BRANCHING_FACTOR];
+        Move bestChildMove;
+        int score = -negamax(duplicatePos, depth - 3, -beta, -alpha, false, false, opponentMoves, &bestChildMove);
+        if(score >= beta){
+            return beta;
+        }
     }
 
     currentBoard = position->board;
@@ -108,7 +123,7 @@ int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck,
         Move opponentMoves[MAX_BRANCHING_FACTOR];
         Move bestChildMove;
 
-        int score = -negamax(newPosition, depth - 1, -beta, -alpha, true, opponentMoves, &bestChildMove);
+        int score = -negamax(newPosition, depth - 1, -beta, -alpha, true, true, opponentMoves, &bestChildMove);
         if (score >= MATE_LOWER) {
             score--; // winning mate found, add one point penalty per depth
         } else if (score <= -MATE_LOWER) {
@@ -127,9 +142,15 @@ int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck,
     return max;
 }
 
-void searchBestMove(Position* position, Move* bestMove) {
-    Move moves[MAX_BRANCHING_FACTOR];
-    int score = negamax(position, maxDepth, -INT_MAX, INT_MAX, false, moves, bestMove);
-    printf("info depth %d score cp %d\n", maxDepth, score);
-    fflush(stdout);
+void searchBestMove(Position* position, Move* bestMove, int timeLeftMs) {
+    double timeTakenMs = 0.0;
+    clock_t start = clock();
+    for(int depth = 1; depth < maxDepth || timeTakenMs < 100.0; depth++){
+        Move moves[MAX_BRANCHING_FACTOR];
+        numNodes = 0;
+        int score = negamax(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
+        timeTakenMs = clock() - start;
+        printf("info depth %d score cp %d nps %.2f\n", depth, score, timeTakenMs == 0.0 ? 0 : numNodes/timeTakenMs/1000.0);
+        fflush(stdout);
+    }
 }

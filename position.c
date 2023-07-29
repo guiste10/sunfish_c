@@ -20,8 +20,7 @@ void initPosition(Position* position, char* boardCopy, char* boardSrc){
     position->kp = 0;
 }
 
-Position* duplicatePosition(Position* source){
-    Position* target = malloc(sizeof(Position));
+Position* duplicatePosition(Position* source, Position* target, char* targetBoard){
     target->score = source->score;
     target->wc[0] = source->wc[0];
     target->wc[1] = source->wc[1];
@@ -29,8 +28,7 @@ Position* duplicatePosition(Position* source){
     target->bc[1] = source->bc[1];
     target->ep = source->ep;
     target->kp = source->kp;
-    char* board = malloc(sizeof(char) * SIZE);
-    target->board = board;
+    target->board = targetBoard;
     copyBoard(target->board, source->board);
     return target;
 }
@@ -53,7 +51,8 @@ int genMoves(Position* position, Move moves[MAX_BRANCHING_FACTOR]) { // For each
                         break;
                     if (d == NORTH + NORTH && (i < A1 + NORTH || position->board[i + NORTH] != '.'))
                         break;
-                    if ((d == NORTH + WEST || d == NORTH + EAST) && q == '.' && j != position->ep)
+                    if ((d == NORTH + WEST || d == NORTH + EAST) && q == '.' && j != position->ep
+                    && j != position->kp - 1 && j != position->kp && j != position->kp + 1) // for castling check detection
                         break;
                     if (j >= A8 && j <= H8) { // If we move to the last row, we can be anything
                         for (int promotion = Q; promotion > P ; promotion--)
@@ -86,11 +85,11 @@ int value(const Position *position, const Move *move) {
 
     if (islower(q)) { // Capture
         int enemyPieceIndex = pieceIndexes[q];
-        score += pst[enemyPieceIndex][SIZE - 1 - j];
+        score += pst[enemyPieceIndex][119 - j];
     }
 
-    if (abs(j - position->kp) < 2) { // Castling check detection
-        score += pst[K][SIZE - 1 - j];
+    if (abs(j - position->kp) < 2) { // position->kp = square where opponent's rook is after castling, 0 if he has not just castled
+        score += pst[K][119 - j]; // Castling check detection, add king's value to score to make it >= Mate_lower because castling was illegal (king, or the 2 other adjacent squares were attacked)
     }
 
     if (p == 'K' && abs(i - j) == 2) { // Castling

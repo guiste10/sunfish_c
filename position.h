@@ -15,7 +15,7 @@ typedef struct {
 
 void initPosition(Position* position, char* boardCopy, char* boardSrc);
 
-Position* duplicatePosition(Position* source);
+Position* duplicatePosition(Position* source, Position* target, char* targetBoard);
 
 int genMoves(Position * position, Move moves[MAX_BRANCHING_FACTOR]);
 
