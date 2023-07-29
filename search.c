@@ -145,7 +145,7 @@ int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck,
 void searchBestMove(Position* position, Move* bestMove, int timeLeftMs) {
     double timeTakenMs = 0.0;
     clock_t start = clock();
-    for(int depth = 1; depth < maxDepth || (timeTakenMs < 150.0 && timeLeftMs > 10000); depth++){
+    for(int depth = 1; depth <= maxDepth || (timeTakenMs < 150.0 && timeLeftMs > 10000); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
         int score = negamax(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
