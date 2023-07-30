@@ -1,13 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <ctype.h>
 #include "position.h"
 #include "constants.h"
 #include "search.h"
-#include "debug.h"
 #include "chessBoard.h"
-#include "utils.h"
 
 const int MAX_ARGS = 1000;
 const char BOT_NAME[] = "Sunfish_c";
@@ -25,29 +22,13 @@ void setupPosition(Position* position, char* initialBoardCopy, bool* isWhite, ch
     initPosition(position, initialBoardCopy, (char*)initialBoard);
     *isWhite = true;
     for (int ply = 0; ply < numArgs - 3; ply++) {
-        int i, j;
-        int prom;
-        char from[3], to[3];
         char *uciMove = uciPosition[3 + ply];
-        char uciProm = *(uciMove+4);
-        strncpy(from, uciMove, 2);
-        from[2] = '\0';
-        strncpy(to, uciMove + 2, 2);
-        to[2] = '\0';
-        i = parse(from);
-        j = parse(to);
-        prom = uciProm == '\0' ? NO_PROMOTION : indexOf(PIECES, toupper(uciProm));
-        if (!*isWhite) {
-            i = 119 - i;
-            j = 119 - j;
-        }
-        Move mv;
-        Move* move = &mv;
-        addMove(i, j, prom, move);
+        Move move;
+        uciMoveToMove(*isWhite, uciMove, &move);
         Position target;
         char targetBoard[SIZE];
         Position* duplicatePos = duplicatePosition(position, &target, targetBoard);
-        doMove(duplicatePos, move, position, position->board);
+        doMove(duplicatePos, &move, position, position->board);
         rotate(position, false);
         *isWhite = !*isWhite;
     }
@@ -81,18 +62,9 @@ void playUci(){
         } else if (strcmp(args[0], "go") == 0) {
             Move best;
             Move* bestMove = &best;
-            searchBestMove(position, bestMove, atoi(isWhite ? args[2] : args[4]));
-            int i = bestMove->i;
-            int j = bestMove->j;
-            char prom = PIECES[bestMove->prom];
-            if (!isWhite) {
-                i = 119 - i;
-                j = 119 - j;
-            }
-            char from[3], to[3];
-            render(i, from);
-            render(j, to);
-            char uciMove[6] = {from[0], from[1], to[0], to[1], prom, '\0'};
+            searchBestMove(position, bestMove, atoi(isWhite ? args[2] : args[4]), isWhite);
+            char uciMove[6];
+            moveToUciMove(isWhite, bestMove, uciMove);
             printf("bestmove %s\n", uciMove);
             fflush(stdout);
         }

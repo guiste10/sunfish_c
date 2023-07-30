@@ -77,15 +77,10 @@ void printCharArray(const char* arr, int size) {
 }
 
 
-void printMove(Move move, char board[]) {
-    char from[3];  // Local character array to store the "from" position
-    char to[3];  // Local character array to store the "to" position
-
-    render(move.i, from);
-    render(move.j, to);
-
-    printf("Move %c from i = %s to j = %s", board[move.i], from, to);
-    move.prom == NO_PROMOTION ? printf("\n") : printf(", prom = %c\n", PIECES[move.prom]);
+void printMove(Move move) {
+    char uciMove[6];
+    moveToUciMove(true, &move, uciMove);
+    printf("Best move: %s\n", uciMove);
     fflush(stdout);  // Flush the output stream
 }
 
@@ -94,14 +89,16 @@ void findBestMoveTimeStamped(char* boardToUse) {
     Position* position = &pos;
     char board[SIZE];
     initPosition(position, board, (char*)boardToUse);
+    printf("Current board\n");
+    printCharArray(board, SIZE);
     clock_t start = clock();
     Move bestMove;
-    searchBestMove(position, &bestMove, TIME_LEFT_DEBUG);
+    searchBestMove(position, &bestMove, TIME_LEFT_DEBUG, true);
     printf("Best move search finished\nTime taken: %.2f ms\n", (double)clock()-start);
     Position newPosition;
     char newBoard[SIZE];
     doMove(position, &bestMove, &newPosition, newBoard);
-    printMove(bestMove, position->board);
+    printMove(bestMove);
     printCharArray(newBoard, SIZE);
 }
 
@@ -119,7 +116,7 @@ void findBestMoveFromUciPosition(char uciPosition[MAX_ARGS]) {
     printCharArray(initialBoardCopy, SIZE);
     Move bestMove;
     clock_t start = clock();
-    searchBestMove(position, &bestMove, TIME_LEFT_DEBUG);
+    searchBestMove(position, &bestMove, TIME_LEFT_DEBUG, isWhite);
     printf("Best move search finished\nTime taken: %.2f ms\n", (double)clock()-start);
-    printMove(bestMove, position->board);
+    printMove(bestMove);
 }

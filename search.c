@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <ctype.h>
 #include "position.h"
 #include "constants.h"
 #include "pieceSquareTables.h"
@@ -10,6 +11,7 @@
 
 int numNodes = 0;
 char* currentBoard;
+bool isEndGame = false;
 
 int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove, Move moves[MAX_BRANCHING_FACTOR], Move* bestMoveToSave);
 
@@ -95,7 +97,7 @@ int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck,
         return 0;
     }
 
-    if(canNullMove && depth > 3 && abs(position->score) < 500){
+    if(canNullMove && depth > 3 && !isEndGame){
         Position target;
         char targetBoard[SIZE];
         Position* duplicatePos = duplicatePosition(position, &target, targetBoard);
@@ -141,20 +143,35 @@ int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck,
     return max;
 }
 
-void searchBestMove(Position* position, Move* bestMove, int timeLeftMs) {
-    double timeTakenMs = 0.0;
-    int score = 0;
+void setIsEndGame(const char* board) {
+    int numFriendlyPieces = 0;
+    for(int square = 0; square < SIZE ; square++) {
+        char piece = board[square];
+        if(piece != '.' && isupper(piece) && piece != 'P'){
+            numFriendlyPieces++;
+        }
+    }
+    isEndGame = numFriendlyPieces <= 2;
+}
+
+void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isWhite) {
+    setIsEndGame(position->board);
+    double timeTakenMs;
+    int score;
     clock_t start = clock();
     bool isMate = false;
     bool canFurtherIncreaseDepth = true;
-    for(int depth = 1; !isMate && (depth <= 6 || canFurtherIncreaseDepth); depth++){
+    const int minimumDepth = 7;
+    for(int depth = 7; !isMate && (depth <= minimumDepth || canFurtherIncreaseDepth); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
         score = negamax(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
         timeTakenMs = clock() - start;
-        printf("info depth %d score cp %d time %.2f nps %.2f\n", depth, score, timeTakenMs, timeTakenMs == 0.0 ? 0 : numNodes/(timeTakenMs/1000.0));
+        char bestMoveUci[6];
+        moveToUciMove(isWhite, bestMove, bestMoveUci);
+        printf("info depth %d pv %s score cp %d time %.2f nps %.2f\n", depth, bestMoveUci, score, timeTakenMs, timeTakenMs == 0.0 ? 0 : numNodes/(timeTakenMs/1000.0));
         fflush(stdout);
         isMate = abs(score) >= MATE_LOWER;
-        canFurtherIncreaseDepth = timeTakenMs < 150.0 && timeLeftMs > 10000;
+        canFurtherIncreaseDepth = timeTakenMs < 800.0 && timeLeftMs > 10000;
     }
 }

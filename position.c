@@ -56,17 +56,17 @@ int genMoves(Position* position, Move moves[MAX_BRANCHING_FACTOR]) { // For each
                         break;
                     if (j >= A8 && j <= H8) { // If we move to the last row, we can be anything
                         for (int promotion = Q; promotion > P ; promotion--)
-                            addMove(i, j, promotion, &moves[moveIndex++]);
+                            createMove(i, j, promotion, &moves[moveIndex++]);
                         break;
                     }
                 }
-                addMove(i, j, NO_PROMOTION, &moves[moveIndex++]); // Move it
+                createMove(i, j, NO_PROMOTION, &moves[moveIndex++]); // Move it
                 if (strchr("PNK", p) != NULL || islower(q)) // Stop crawlers from sliding, and sliding after captures
                     break;
                 if (i == A1 && position->board[j + EAST] == 'K' && position->wc[0]) // Castling, by sliding the rook next to the king
-                    addMove(j + EAST, j + WEST, NO_PROMOTION, &moves[moveIndex++]);
+                    createMove(j + EAST, j + WEST, NO_PROMOTION, &moves[moveIndex++]);
                 if (i == H1 && position->board[j + WEST] == 'K' && position->wc[1])
-                    addMove(j + WEST, j + EAST, NO_PROMOTION, &moves[moveIndex++]);
+                    createMove(j + WEST, j + EAST, NO_PROMOTION, &moves[moveIndex++]);
             }
         }
     }
