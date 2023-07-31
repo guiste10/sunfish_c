@@ -41,6 +41,19 @@ void moveToUciMove(bool isWhite, const Move *move, char uciMove[6]) {
     uciMove[5] = '\0';
 }
 
+void moveListToUciString(bool isWhite, Move* moves, int moveCount, char uciMoves[]) {
+    strcpy(uciMoves, "");
+    for(int i = 0; i < moveCount; i++){
+        char uciMove[6];
+        if(i != 0){
+            strcat(uciMoves, " ");
+        }
+        moveToUciMove(isWhite, &moves[i], uciMove);
+        strcat(uciMoves, uciMove);
+        isWhite = !isWhite;
+    }
+}
+
 void uciMoveToMove(bool isWhite, const char uciMove[6], Move *move) {
     int i, j;
     int prom;

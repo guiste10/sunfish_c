@@ -34,6 +34,19 @@ const char debugBoard2[] = "          "
                            "          "
                            "          ";
 
+const char debugBoard3[] = "          "
+                          "          "
+                          " k....... "
+                          " ........ "
+                          " ........ "
+                          " ........ "
+                          " ........ "
+                          " ........ "
+                          " ........ "
+                          " K....... "
+                          "          "
+                          "          ";
+
 const char randomBoard[] = "          "
                           "          "
                           " r.k..b.r "
@@ -99,7 +112,7 @@ void findBestMoveTimeStamped(char* boardToUse) {
     char newBoard[SIZE];
     doMove(position, &bestMove, &newPosition, newBoard);
     printMove(bestMove);
-    printCharArray(newBoard, SIZE);
+    //printCharArray(newBoard, SIZE);
 }
 
 void findBestMoveFromUciPosition(char uciPosition[MAX_ARGS]) {

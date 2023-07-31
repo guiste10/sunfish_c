@@ -42,7 +42,6 @@ const int DIRECTIONS[NUM_PIECES][9] = {
         {NORTH, EAST, SOUTH, WEST, 0}, // rook
         {NORTH, EAST, SOUTH, WEST, NORTH + EAST, SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0}, // queen
         {NORTH, EAST, SOUTH, WEST, NORTH + EAST, SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0} // king
-
 };
 
 void initializePieceIndexArray() {
