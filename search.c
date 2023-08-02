@@ -16,7 +16,7 @@ int numNodes = 0;
 char* currentBoard;
 bool isEndGame = false;
 
-int negamax(Position* position, int depth, int initDepth, int alpha, int beta, bool doPatCheck, bool canNullMove, Move moves[], Line * pline);
+int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove, Move moves[], Line * pline);
 
 bool onlyKingMoves(Move moves[MAX_BRANCHING_FACTOR], int numMoves, const char *board) {
     for (int i=0; i<numMoves; i++){
@@ -34,7 +34,7 @@ bool isKingInCheck(Position *position) {
     rotate(duplicatePos, false);
     Move opponentMoves[MAX_BRANCHING_FACTOR];
     Line uselessPvLine;
-    int score = negamax(duplicatePos, 1, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &uselessPvLine);
+    int score = negamax(duplicatePos, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &uselessPvLine);
     return score >= MATE_LOWER;
 }
 
@@ -48,7 +48,7 @@ bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[MA
         rotate(newPosition, false);
         Move opponentMoves[MAX_BRANCHING_FACTOR];
         Line uselessPvLine;
-        int score = negamax(newPosition, 1, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &uselessPvLine);
+        int score = negamax(newPosition, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &uselessPvLine);
         if (score < MATE_LOWER) { // one safe move has been found
             return false;
         }
@@ -69,24 +69,33 @@ int compareMoves(const void* a, const void* b) {
     Move* moveA = (Move*)a;
     Move* moveB = (Move*)b;
 
-    char pieceToA = currentBoard[moveA->j];
-    char pieceToB = currentBoard[moveB->j];
-    if(pieceToA != '.' && pieceToB != '.'){
-        char pieceFromA = currentBoard[moveA->i];
-        char pieceFromB = currentBoard[moveB->i];
-        return (pieceValues[pieceIndexes[pieceToB]] - pieceValues[pieceIndexes[pieceFromB]]) -
-               (pieceValues[pieceIndexes[pieceToA]] - pieceValues[pieceIndexes[pieceFromA]]); // prioritize winning captures (e.g. pawn takes queen)
+    char toPieceA = currentBoard[moveA->j];
+    char toPieceB = currentBoard[moveB->j];
+    if(toPieceA != '.' && toPieceB != '.'){
+        char fromPieceA = currentBoard[moveA->i];
+        char fromPieceB = currentBoard[moveB->i];
+        return (pieceValues[pieceIndexes[toPieceB]] - pieceValues[pieceIndexes[fromPieceB]]) -
+               (pieceValues[pieceIndexes[toPieceA]] - pieceValues[pieceIndexes[fromPieceA]]); // prioritize winning captures (e.g. pawn takes queen)
     }
-    else if(pieceToA != '.'){
+    else if(toPieceA != '.'){
         return -1;
     }
-    else if(pieceToB != '.'){
+    else if(toPieceB != '.'){
         return 1;
     }
     return 0;
 }
 
-int negamax(Position* position, int depth, int initDepth, int alpha, int beta, bool doPatCheck, bool canNullMove, Move moves[], Line * pline) {
+int getQuiescentDepth(int depth, Position *position, Move *move) {
+    char fromPiece = position->board[move->i];
+    char toPiece = position->board[move->j];
+    if (depth == 1 && toPiece != '.' && pieceValues[pieceIndexes[fromPiece]] > pieceValues[pieceIndexes[toPiece]]) {
+        return depth; // search one more ply
+    }
+    return depth - 1;
+}
+
+int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove, Move moves[], Line * pline) {
     numNodes++;
     Line line;
     if (position->score <= -MATE_LOWER) {
@@ -111,7 +120,7 @@ int negamax(Position* position, int depth, int initDepth, int alpha, int beta, b
         rotate(duplicatePos, true);
         Move opponentMoves[MAX_BRANCHING_FACTOR];
         Line uselessPvLine;
-        int score = -negamax(duplicatePos, depth - 3, depth - 3, -beta, -alpha, false, false, opponentMoves, &uselessPvLine);
+        int score = -negamax(duplicatePos, depth - 3, -beta, -alpha, false, false, opponentMoves, &uselessPvLine);
         if(score >= beta){
             return beta;
         }
@@ -128,7 +137,7 @@ int negamax(Position* position, int depth, int initDepth, int alpha, int beta, b
         rotate(newPosition, false);
         Move opponentMoves[MAX_BRANCHING_FACTOR];
 
-        int score = -negamax(newPosition, depth - 1, initDepth, -beta, -alpha, true, true, opponentMoves, &line);
+        int score = -negamax(newPosition, getQuiescentDepth(depth, position, move), -beta, -alpha, true, true, opponentMoves, &line);
         if (score >= MATE_LOWER) {
             score--; // winning mate found, add one point penalty per depth
         } else if (score <= -MATE_LOWER) {
@@ -169,12 +178,12 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool canFurtherIncreaseDepth = true;
     const int minDepth = 6;
     const int maxDepth = 6;
-    for(int depth = 5; depth == 5; depth++){
-    //for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
+    //for(int depth = 6; depth == 6; depth++){
+    for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         Line pv;
         numNodes = 0;
-        score = negamax(position, depth, depth, -INT_MAX, INT_MAX, false, false, moves, &pv);
+        score = negamax(position, depth, -INT_MAX, INT_MAX, false, false, moves, &pv);
         timeTakenMs = clock() - start;
         double nps = timeTakenMs == 0.0 ? 0 : numNodes/(timeTakenMs/1000.0);
         printf("info depth %d time %.2f nps %.2f\n", depth, timeTakenMs, nps);
