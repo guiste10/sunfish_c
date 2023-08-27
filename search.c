@@ -16,7 +16,7 @@ int numNodes = 0;
 char* currentBoard;
 bool isEndGame = false;
 
-int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove, Move moves[], Line * pline);
+int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove, Move moves[MAX_BRANCHING_FACTOR], Move* bestMoveToSave);
 
 bool onlyKingMoves(Move moves[MAX_BRANCHING_FACTOR], int numMoves, const char *board) {
     for (int i=0; i<numMoves; i++){
@@ -33,8 +33,8 @@ bool isKingInCheck(Position *position) {
     Position* duplicatePos = duplicatePosition(position, &target, targetBoard);
     rotate(duplicatePos, false);
     Move opponentMoves[MAX_BRANCHING_FACTOR];
-    Line uselessPvLine;
-    int score = negamax(duplicatePos, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &uselessPvLine);
+    Move bestChildMove;
+    int score = negamax(duplicatePos, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
     return score >= MATE_LOWER;
 }
 
@@ -47,8 +47,8 @@ bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[MA
         doMove(position, move, newPosition, newBoard);
         rotate(newPosition, false);
         Move opponentMoves[MAX_BRANCHING_FACTOR];
-        Line uselessPvLine;
-        int score = negamax(newPosition, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &uselessPvLine);
+        Move bestChildMove;
+        int score = negamax(newPosition, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
         if (score < MATE_LOWER) { // one safe move has been found
             return false;
         }
@@ -95,21 +95,16 @@ int getQuiescentDepth(int depth, Position *position, Move *move) {
     return depth - 1;
 }
 
-int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove, Move moves[], Line * pline) {
-    numNodes++;
-    Line line;
+int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove, Move moves[MAX_BRANCHING_FACTOR], Move* bestMoveToSave) {    numNodes++;
     if (position->score <= -MATE_LOWER) {
-        pline->moveCount = 0;
         return -MATE_UPPER;
     }
     if (depth == 0) {
-        pline->moveCount = 0;
         return position->score;
     }
 
     int numMoves = genMoves(position, moves);
     if(doPatCheck && isPat(position, numMoves, moves) == true) {
-        pline->moveCount = 0;
         return 0;
     }
 
@@ -119,8 +114,8 @@ int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck,
         Position* duplicatePos = duplicatePosition(position, &target, targetBoard);
         rotate(duplicatePos, true);
         Move opponentMoves[MAX_BRANCHING_FACTOR];
-        Line uselessPvLine;
-        int score = -negamax(duplicatePos, depth - 3, -beta, -alpha, false, false, opponentMoves, &uselessPvLine);
+        Move bestChildMove;
+        int score = -negamax(duplicatePos, depth - 3, -beta, -alpha, false, false, opponentMoves, &bestChildMove);
         if(score >= beta){
             return beta;
         }
@@ -128,6 +123,7 @@ int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck,
 
     currentBoard = position->board;
     qsort(moves, numMoves, sizeof(Move), compareMoves);
+    int max = -INT_MAX;
     for (int i = 0; i < numMoves; i++) {
         Position newPos;
         Position* newPosition = &newPos;
@@ -136,26 +132,24 @@ int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck,
         doMove(position, move, newPosition, newBoard);
         rotate(newPosition, false);
         Move opponentMoves[MAX_BRANCHING_FACTOR];
-
-        int score = -negamax(newPosition, getQuiescentDepth(depth, position, move), -beta, -alpha, true, true, opponentMoves, &line);
+        Move bestChildMove;
+        int score = -negamax(newPosition, getQuiescentDepth(depth, position, move), -beta, -alpha, true, true, opponentMoves, &bestChildMove);
         if (score >= MATE_LOWER) {
             score--; // winning mate found, add one point penalty per depth
         } else if (score <= -MATE_LOWER) {
             score++; // losing mate found, add one point penalty per depth
         }
 
-        if (score >= beta) {
-            return beta; // Beta cutoff
-        }
-        if (score > alpha) {
-            alpha = score;
-            pline->moves[0] = *move; // add best move and pv from child
-            memcpy(pline->moves + 1, line.moves, line.moveCount * sizeof(Move));
-            pline->moveCount = line.moveCount + 1;
+        if (score > max) {
+            max = score;
+            *bestMoveToSave = *move;
         }
         alpha = (alpha > score) ? alpha : score;
+        if (alpha >= beta) {
+            break; // Beta cutoff
+        }
     }
-    return alpha;
+    return max;
 }
 
 void setIsEndGame(const char* board) {
@@ -181,18 +175,16 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     //for(int depth = 6; depth == 6; depth++){
     for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
-        Line pv;
         numNodes = 0;
-        score = negamax(position, depth, -INT_MAX, INT_MAX, false, false, moves, &pv);
+        score = negamax(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
         timeTakenMs = clock() - start;
         double nps = timeTakenMs == 0.0 ? 0 : numNodes/(timeTakenMs/1000.0);
         printf("info depth %d time %.2f nps %.2f\n", depth, timeTakenMs, nps);
-        char pvString[1000];
-        moveListToUciString(isWhite, pv.moves, pv.moveCount, pvString);
-        printf("info pv %s score cp %d\n", pvString, score);
+        char bestMoveUci[6];
+        moveToUciMove(isWhite, bestMove, bestMoveUci);
+        printf("info pv %s score cp %d\n", bestMoveUci, score);
         fflush(stdout);
         isMate = abs(score) >= MATE_LOWER;
         canFurtherIncreaseDepth = timeTakenMs < 800.0 && timeLeftMs > 10000;
-        *bestMove = pv.moves[0];
     }
 }
