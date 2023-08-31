@@ -68,7 +68,6 @@ bool isPat(Position* position, int numMoves, Move moves[MAX_BRANCHING_FACTOR]) {
 int compareMoves(const void* a, const void* b) {
     Move* moveA = (Move*)a;
     Move* moveB = (Move*)b;
-
     char toPieceA = currentBoard[moveA->j];
     char toPieceB = currentBoard[moveB->j];
     if(toPieceA != '.' && toPieceB != '.'){
@@ -78,12 +77,20 @@ int compareMoves(const void* a, const void* b) {
                (pieceValues[pieceIndexes[toPieceA]] - pieceValues[pieceIndexes[fromPieceA]]); // prioritize winning captures (e.g. pawn takes queen)
     }
     else if(toPieceA != '.'){
-        return -1;
+        return -1; // negative number -> move A is better than move B
     }
     else if(toPieceB != '.'){
         return 1;
     }
-    return 0;
+    char fromPieceA = currentBoard[moveA->i];
+    char fromPieceB = currentBoard[moveB->i];
+    int pieceIndexA = pieceIndexes[fromPieceA];
+    int pieceIndexB = pieceIndexes[fromPieceB];
+
+    int scoreA = pst[pieceIndexA][moveA->j] - pst[pieceIndexB][moveA->i];
+    int scoreB = pst[pieceIndexB][moveB->j] - pst[pieceIndexB][moveB->i];
+
+    return scoreB - scoreA;
 }
 
 int getQuiescentDepth(int depth, Position *position, Move *move) {
@@ -185,6 +192,6 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
         printf("info pv %s score cp %d\n", bestMoveUci, score);
         fflush(stdout);
         isMate = abs(score) >= MATE_LOWER;
-        canFurtherIncreaseDepth = timeTakenMs < 800.0 && timeLeftMs > 10000;
+        canFurtherIncreaseDepth = timeTakenMs < 700.0 && timeLeftMs > 10000;
     }
 }
