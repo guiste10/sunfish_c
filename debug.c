@@ -126,7 +126,8 @@ void findBestMoveFromUciPosition(char uciPosition[MAX_ARGS]) {
 
     fillArgs(uciPosition, args, &numArgs);
     char initialBoardCopy[SIZE];
-    setupPosition(position, initialBoardCopy, &isWhite, args, numArgs);
+    setupPositionWithMoveList(position, initialBoardCopy, &isWhite, args, numArgs);
+    setInitialZobristHash(position);
     printf("Current board\n");
     printCharArray(initialBoardCopy, SIZE);
     Move bestMove;

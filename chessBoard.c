@@ -47,7 +47,7 @@ const char PIECES[NUM_WHITE_PIECES] = "PNBRQK";
 const char PIECES_ALL[NUM_PIECES] = "PNBRQKpnbrqk";
 
 void initializePieceIndexArray() {
-    for (int i = 0; i < NUM_WHITE_PIECES; i++) {
+    for (int i = 0; i < NUM_PIECES; i++) {
         PIECE_INDEXES_IGNORE_COLOR[PIECES_ALL[i]] = i % 6;
     }
 }
