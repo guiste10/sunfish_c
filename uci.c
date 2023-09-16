@@ -20,11 +20,10 @@ void fillArgs(char* line, char* args[MAX_ARGS], int* numArgs){
 
 void setupPositionWithMoveList(Position* position, char* initialBoardCopy, bool* isWhite, char *uciMoves[1000], int numArgs){
     initPosition(position, initialBoardCopy, (char*)initialBoard);
-    *isWhite = true;
     for (int ply = 0; ply < numArgs - 3; ply++) {
         char *uciMove = uciMoves[3 + ply];
         Move move;
-        uciMoveToMove(*isWhite, uciMove, &move);
+        uciMoveToMove(uciMove, &move);
         Position target;
         char targetBoard[SIZE];
         Position* duplicatePos = duplicatePosition(position, &target, targetBoard);
@@ -64,7 +63,7 @@ void playUci(){
             Move* bestMove = &best;
             searchBestMove(position, bestMove, atoi(isWhite ? args[2] : args[4]), isWhite);
             char uciMove[6];
-            moveToUciMove(isWhite, bestMove, uciMove);
+            moveToUciMove(bestMove, uciMove);
             printf("bestmove %s\n", uciMove);
             fflush(stdout);
         }

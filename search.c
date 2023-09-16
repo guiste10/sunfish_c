@@ -188,7 +188,7 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
         double nps = timeTakenMs == 0.0 ? 0 : numNodes/(timeTakenMs/1000.0);
         printf("info depth %d time %.2f nps %.2f\n", depth, timeTakenMs, nps);
         char bestMoveUci[6];
-        moveToUciMove(isWhite, bestMove, bestMoveUci);
+        moveToUciMove(bestMove, bestMoveUci);
         printf("info pv %s score cp %d\n", bestMoveUci, score);
         fflush(stdout);
         isMate = abs(score) >= MATE_LOWER;

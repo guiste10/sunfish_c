@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include "constants.h"
 
 const int pawnVal = 100;
@@ -9,10 +10,13 @@ const int kingVal = 60000;
 const int MATE_LOWER = kingVal - 10 * queenVal; // 50710
 const int MATE_UPPER = kingVal + 10 * queenVal; // 69290
 
-const int pieceValues[NUM_WHITE_PIECES] = {pawnVal, knightVal, bishopVal, rookVal, queenVal, kingVal};
+const int pieceValues[NUM_PIECES] = {
+        pawnVal, knightVal, bishopVal, rookVal, queenVal, kingVal,
+        -pawnVal, -knightVal, -bishopVal, -rookVal, -queenVal, -kingVal
+};
 
-int pst[NUM_WHITE_PIECES][SIZE] = {
-        { // pawn
+int pst[NUM_PIECES][SIZE] = {
+        { // P
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0,   0,   0,   0,    0,   0,    0,   0,   0,
@@ -26,7 +30,7 @@ int pst[NUM_WHITE_PIECES][SIZE] = {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         },
-        { // knight
+        { // N
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, -66, -53, -75, -75, -10, -55, -58, -70, 0,
@@ -40,7 +44,7 @@ int pst[NUM_WHITE_PIECES][SIZE] = {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         },
-        { // bishop
+        { // B
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, -59, -78, -82, -76, -23, -107, -37, -50, 0,
@@ -54,7 +58,7 @@ int pst[NUM_WHITE_PIECES][SIZE] = {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         },
-        { // rook
+        { // R
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 35,  29,  33,  4,    37,  33,   56,  50,  0,
@@ -68,7 +72,7 @@ int pst[NUM_WHITE_PIECES][SIZE] = {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         },
-        { // queen
+        { // Q
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 6,   1,   -8,  -104, 69,  24,   88,  26,  0,
@@ -82,7 +86,7 @@ int pst[NUM_WHITE_PIECES][SIZE] = {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         },
-        { // king
+        { // K
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 4,   54,  47,  -99,  -99, 60,   83,  -62, 0,
@@ -95,11 +99,18 @@ int pst[NUM_WHITE_PIECES][SIZE] = {
                 0, 17,  30,  -3,  -14, 6,   -1,  40,  18,  0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        }
+        },
 };
 
 void initPst(){
-    for(int piece=0; piece < NUM_WHITE_PIECES; piece++){
+    for(int piece=NUM_WHITE_PIECES; piece < NUM_PIECES; piece++){ // initialize pst for black based on white's pst
+        for(int row = 0; row < NUM_ROWS; row++){
+            for(int col = 0; col < NUM_FILES; col++){
+                pst[piece][10*row+col] = -pst[toupper(piece-NUM_WHITE_PIECES)][10*(NUM_ROWS-row)+col];
+            }
+        }
+    }
+    for(int piece=0; piece < NUM_PIECES; piece++){ // add piece values to the pst's
         for(int square=0; square < SIZE; square++){
             pst[piece][square] += pieceValues[piece];
         }

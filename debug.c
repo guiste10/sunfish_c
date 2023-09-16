@@ -93,7 +93,7 @@ void printCharArray(const char* arr, int size) {
 
 void printMove(Move move) {
     char uciMove[6];
-    moveToUciMove(true, &move, uciMove);
+    moveToUciMove(&move, uciMove);
     printf("Best move: %s\n", uciMove);
     fflush(stdout);  // Flush the output stream
 }

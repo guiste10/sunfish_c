@@ -34,8 +34,14 @@ const char initialBoard[] = "          "
                             "          "
                             "          ";
 
-const int DIRECTIONS[NUM_WHITE_PIECES][9] = {
+const int DIRECTIONS[NUM_PIECES][9] = {
         {NORTH, NORTH + NORTH, NORTH + WEST, NORTH + EAST, 0}, // pawn
+        {NORTH + NORTH + EAST, NORTH + NORTH + WEST, EAST + EAST + NORTH,EAST + EAST + SOUTH,SOUTH + SOUTH + EAST, SOUTH + SOUTH + WEST,WEST + WEST + + SOUTH,WEST + WEST + NORTH, 0}, // knight
+        {NORTH + EAST, SOUTH + EAST, SOUTH + WEST, NORTH + WEST, 0}, // bishop
+        {NORTH, EAST, SOUTH, WEST, 0}, // rook
+        {NORTH, EAST, SOUTH, WEST, NORTH + EAST, SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0}, // queen
+        {NORTH, EAST, SOUTH, WEST, NORTH + EAST, SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0}, // king
+        {SOUTH, SOUTH + SOUTH, SOUTH + WEST, SOUTH + EAST, 0}, // pawn
         {NORTH + NORTH + EAST, NORTH + NORTH + WEST, EAST + EAST + NORTH,EAST + EAST + SOUTH,SOUTH + SOUTH + EAST, SOUTH + SOUTH + WEST,WEST + WEST + + SOUTH,WEST + WEST + NORTH, 0}, // knight
         {NORTH + EAST, SOUTH + EAST, SOUTH + WEST, NORTH + WEST, 0}, // bishop
         {NORTH, EAST, SOUTH, WEST, 0}, // rook

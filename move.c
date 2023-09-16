@@ -27,34 +27,17 @@ void render(int index, char* result) {
     result[1] = (char)('1' + rank);
 }
 
-void moveToUciMove(bool isWhite, const Move *move, char uciMove[6]) {
+void moveToUciMove(const Move *move, char uciMove[6]) {
     int i = move->i;
     int j = move->j;
     char prom = PIECES[move->prom];
-    if (!isWhite) {
-        i = 119 - i;
-        j = 119 - j;
-    }
     render(i, &uciMove[0]);
     render(j, &uciMove[2]);
     uciMove[4] = prom;
     uciMove[5] = '\0';
 }
 
-void moveListToUciString(bool isWhite, Move* moves, int moveCount, char uciMoves[]) {
-    strcpy(uciMoves, "");
-    for(int i = 0; i < moveCount; i++){
-        char uciMove[6];
-        if(i != 0){
-            strcat(uciMoves, " ");
-        }
-        moveToUciMove(isWhite, &moves[i], uciMove);
-        strcat(uciMoves, uciMove);
-        isWhite = !isWhite;
-    }
-}
-
-void uciMoveToMove(bool isWhite, const char uciMove[6], Move *move) {
+void uciMoveToMove(const char uciMove[6], Move *move) {
     int i, j;
     int prom;
     char from[3], to[3];
@@ -66,9 +49,5 @@ void uciMoveToMove(bool isWhite, const char uciMove[6], Move *move) {
     i = parse(from);
     j = parse(to);
     prom = uciProm == '\0' ? NO_PROMOTION : indexOf(PIECES, toupper(uciProm));
-    if (!isWhite) {
-        i = 119 - i;
-        j = 119 - j;
-    }
     createMove(i, j, prom, move);
 }

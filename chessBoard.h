@@ -21,8 +21,7 @@ extern const int K;
 
 extern int PIECE_INDEXES_IGNORE_COLOR[PIECES_MAX_ASCII];
 extern const char PIECES[];
-extern const int DIRECTIONS[NUM_WHITE_PIECES][9];
-
+extern const int DIRECTIONS[NUM_PIECES][9];
 extern const char initialBoard[];
 
 void initializePieceIndexArray();
