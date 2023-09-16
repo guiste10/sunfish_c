@@ -3,6 +3,7 @@
 #include "move.h"
 #include "constants.h"
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef struct {
     char *board;
@@ -11,6 +12,8 @@ typedef struct {
     bool bc[2];
     int ep;
     int kp; // square where the king has walked but not stopped during castling (e.g. f1 or d1 for white)
+    int turn;
+    uint64_t hash;
 } Position;
 
 void initPosition(Position* position, char* boardCopy, char* boardSrc);

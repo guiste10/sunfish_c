@@ -73,8 +73,8 @@ int compareMoves(const void* a, const void* b) {
     if(toPieceA != '.' && toPieceB != '.'){
         char fromPieceA = currentBoard[moveA->i];
         char fromPieceB = currentBoard[moveB->i];
-        return (pieceValues[pieceIndexes[toPieceB]] - pieceValues[pieceIndexes[fromPieceB]]) -
-               (pieceValues[pieceIndexes[toPieceA]] - pieceValues[pieceIndexes[fromPieceA]]); // prioritize winning captures (e.g. pawn takes queen)
+        return (pieceValues[PIECE_INDEXES_IGNORE_COLOR[toPieceB]] - pieceValues[PIECE_INDEXES_IGNORE_COLOR[fromPieceB]]) -
+               (pieceValues[PIECE_INDEXES_IGNORE_COLOR[toPieceA]] - pieceValues[PIECE_INDEXES_IGNORE_COLOR[fromPieceA]]); // prioritize winning captures (e.g. pawn takes queen)
     }
     else if(toPieceA != '.'){
         return -1; // negative number -> move A is better than move B
@@ -84,8 +84,8 @@ int compareMoves(const void* a, const void* b) {
     }
     char fromPieceA = currentBoard[moveA->i];
     char fromPieceB = currentBoard[moveB->i];
-    int pieceIndexA = pieceIndexes[fromPieceA];
-    int pieceIndexB = pieceIndexes[fromPieceB];
+    int pieceIndexA = PIECE_INDEXES_IGNORE_COLOR[fromPieceA];
+    int pieceIndexB = PIECE_INDEXES_IGNORE_COLOR[fromPieceB];
 
     int scoreA = pst[pieceIndexA][moveA->j] - pst[pieceIndexB][moveA->i];
     int scoreB = pst[pieceIndexB][moveB->j] - pst[pieceIndexB][moveB->i];
@@ -96,7 +96,7 @@ int compareMoves(const void* a, const void* b) {
 int getQuiescentDepth(int depth, Position *position, Move *move) {
     char fromPiece = position->board[move->i];
     char toPiece = position->board[move->j];
-    if (depth == 1 && toPiece != '.' && pieceValues[pieceIndexes[fromPiece]] > pieceValues[pieceIndexes[toPiece]]) {
+    if (depth == 1 && toPiece != '.' && pieceValues[PIECE_INDEXES_IGNORE_COLOR[fromPiece]] > pieceValues[PIECE_INDEXES_IGNORE_COLOR[toPiece]]) {
         return depth; // search one more ply
     }
     return depth - 1;

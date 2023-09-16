@@ -9,9 +9,9 @@ const int kingVal = 60000;
 const int MATE_LOWER = kingVal - 10 * queenVal; // 50710
 const int MATE_UPPER = kingVal + 10 * queenVal; // 69290
 
-const int pieceValues[NUM_PIECES] = {pawnVal, knightVal, bishopVal,rookVal, queenVal, kingVal};
+const int pieceValues[NUM_WHITE_PIECES] = {pawnVal, knightVal, bishopVal, rookVal, queenVal, kingVal};
 
-int pst[NUM_PIECES][SIZE] = {
+int pst[NUM_WHITE_PIECES][SIZE] = {
         { // pawn
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -99,7 +99,7 @@ int pst[NUM_PIECES][SIZE] = {
 };
 
 void initPst(){
-    for(int piece=0; piece < NUM_PIECES; piece++){
+    for(int piece=0; piece < NUM_WHITE_PIECES; piece++){
         for(int square=0; square < SIZE; square++){
             pst[piece][square] += pieceValues[piece];
         }

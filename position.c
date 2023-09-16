@@ -39,7 +39,7 @@ int genMoves(Position* position, Move moves[MAX_BRANCHING_FACTOR]) { // For each
         char p = position->board[i];
         if (!isupper(p))
             continue;
-        int* pieceDirections = (int*)DIRECTIONS[pieceIndexes[p]];
+        int* pieceDirections = (int*)DIRECTIONS[PIECE_INDEXES_IGNORE_COLOR[p]];
         for (int dirIndex = 0; *(pieceDirections + dirIndex) != ARRAY_END; dirIndex++) {
             int d = *(pieceDirections + dirIndex);
             for (int j = i + d; j >= 0 && j < SIZE; j += d) {
@@ -80,11 +80,11 @@ int value(const Position *position, const Move *move) {
     char p = position->board[i];
     char q = position->board[j];
 
-    int friendlyPieceIndex = pieceIndexes[p];
+    int friendlyPieceIndex = PIECE_INDEXES_IGNORE_COLOR[p];
     int score = pst[friendlyPieceIndex][j] - pst[friendlyPieceIndex][i];
 
     if (islower(q)) { // Capture
-        int enemyPieceIndex = pieceIndexes[q];
+        int enemyPieceIndex = PIECE_INDEXES_IGNORE_COLOR[q];
         score += pst[enemyPieceIndex][119 - j];
     }
 

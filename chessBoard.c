@@ -19,7 +19,7 @@ const int R = 3;
 const int Q = 4;
 const int K = 5;
 
-int pieceIndexes[PIECES_MAX_ASCII];
+int PIECE_INDEXES_IGNORE_COLOR[PIECES_MAX_ASCII];
 
 const char initialBoard[] = "          "
                             "          "
@@ -33,9 +33,8 @@ const char initialBoard[] = "          "
                             " RNBQKBNR "
                             "          "
                             "          ";
-const char PIECES[] = "PNBRQK";
 
-const int DIRECTIONS[NUM_PIECES][9] = {
+const int DIRECTIONS[NUM_WHITE_PIECES][9] = {
         {NORTH, NORTH + NORTH, NORTH + WEST, NORTH + EAST, 0}, // pawn
         {NORTH + NORTH + EAST, NORTH + NORTH + WEST, EAST + EAST + NORTH,EAST + EAST + SOUTH,SOUTH + SOUTH + EAST, SOUTH + SOUTH + WEST,WEST + WEST + + SOUTH,WEST + WEST + NORTH, 0}, // knight
         {NORTH + EAST, SOUTH + EAST, SOUTH + WEST, NORTH + WEST, 0}, // bishop
@@ -44,13 +43,14 @@ const int DIRECTIONS[NUM_PIECES][9] = {
         {NORTH, EAST, SOUTH, WEST, NORTH + EAST, SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0} // king
 };
 
+const char PIECES[NUM_WHITE_PIECES] = "PNBRQK";
+const char PIECES_ALL[NUM_PIECES] = "PNBRQKpnbrqk";
+
 void initializePieceIndexArray() {
-    char pieceChars[] = {'P', 'N', 'B', 'R', 'Q', 'K', 'p', 'n', 'b', 'r', 'q', 'k'};
-    for (int i = 0; i < 12; i++) {
-        pieceIndexes[pieceChars[i]] = i % 6;
+    for (int i = 0; i < NUM_WHITE_PIECES; i++) {
+        PIECE_INDEXES_IGNORE_COLOR[PIECES_ALL[i]] = i % 6;
     }
 }
-
 
 void copyBoard(char* dest, const char* src) {
     memcpy(dest, src, sizeof(char) * SIZE);

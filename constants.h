@@ -1,7 +1,8 @@
 #ifndef SUNFISH_C_CONSTANTS_H
 #define SUNFISH_C_CONSTANTS_H
 
-#define NUM_PIECES 6
+#define NUM_WHITE_PIECES 6
+#define NUM_PIECES 12
 #define SIZE 120
 
 extern const int ARRAY_END;

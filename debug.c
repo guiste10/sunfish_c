@@ -7,6 +7,7 @@
 #include "search.h"
 #include "chessBoard.h"
 #include "uci.h"
+#include "zobrist.h"
 
 const char debugBoard[] = "          "
                           "          "
@@ -102,6 +103,7 @@ void findBestMoveTimeStamped(char* boardToUse) {
     Position* position = &pos;
     char board[SIZE];
     initPosition(position, board, (char*)boardToUse);
+    setInitialZobristHash(position);
     printf("Current board\n");
     printCharArray(board, SIZE);
     clock_t start = clock();
