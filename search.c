@@ -34,11 +34,10 @@ bool isKingInCheck(Position *position) {
     Move bestChildMove;
     Move nullMove = {0, 666, 0};
     Position positionBackup;
-    Position* positionBkp = &positionBackup;
-    duplicatePosition(position, positionBkp);
+    duplicatePosition(position, &positionBackup);
     doMove(position, &nullMove);
     int score = alphaBeta(position, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
-    undoMove(position, &nullMove, positionBkp);
+    undoMove(position, &nullMove, positionBackup);
     return score >= MATE_LOWER;
 }
 
@@ -46,13 +45,12 @@ bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[MA
     for (int i=0; i < numMoves; i++){
         Move* move = &kingMoves[i];
         Position positionBackup;
-        Position* positionBkp = &positionBackup;
-        duplicatePosition(position, positionBkp);
+        duplicatePosition(position, &positionBackup);
         doMove(position, move);
         Move opponentMoves[MAX_BRANCHING_FACTOR];
         Move bestChildMove;
         int score = alphaBeta(position, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
-        undoMove(position, move, positionBkp);
+        undoMove(position, move, positionBackup);
         if (score < MATE_LOWER) { // one safe move has been found
             return false;
         }
@@ -98,9 +96,9 @@ int compareMoves(const void* x, const void* y) {
 int getQuiescentDepth(int depth, Position *position, Move *move) {
     char fromPiece = position->board[move->from];
     char toPiece = position->board[move->to];
-    if (depth == 1 && toPiece != '.' && pieceValues[PIECE_INDEXES_WHITE[fromPiece]] > pieceValues[PIECE_INDEXES_WHITE[toPiece]]) {
-        return depth; // search one more ply
-    }
+//    if (depth == 1 && toPiece != '.' && pieceValues[PIECE_INDEXES_WHITE[fromPiece]] > pieceValues[PIECE_INDEXES_WHITE[toPiece]]) {
+//        return depth; // search one more ply
+//    }
     return depth - 1;
 }
 
@@ -137,19 +135,18 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     currentBoard = position->board;
     qsort(moves, numMoves, sizeof(Move), compareMoves);
 
+    Position positionBackup;
+    duplicatePosition(position, &positionBackup);
     if(position->isWhite){
         int max = -INT_MAX;
         for (int i = 0; i < numMoves; i++) {
             Move* move = &moves[i];
-            Position positionBackup;
-            Position* positionBkp = &positionBackup;
-            duplicatePosition(position, positionBkp);
             doMove(position, move);
             Move opponentMoves[MAX_BRANCHING_FACTOR];
             Move bestChildMove;
             int score = alphaBeta(position, getQuiescentDepth(depth, position, move), alpha, beta, true, true,
                                   opponentMoves, &bestChildMove);
-            undoMove(position, move, positionBkp);
+            undoMove(position, move, positionBackup);
             if (score >= MATE_LOWER) {
                 score--; // winning mate found, add one point penalty per depth
             } else if (score <= -MATE_LOWER) {
@@ -170,15 +167,12 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
         int min = INT_MAX;
         for (int i = 0; i < numMoves; i++) {
             Move* move = &moves[i];
-            Position positionBackup;
-            Position* positionBkp = &positionBackup;
-            duplicatePosition(position, positionBkp);
             doMove(position, move);
             Move opponentMoves[MAX_BRANCHING_FACTOR];
             Move bestChildMove;
             int score = alphaBeta(position, getQuiescentDepth(depth, position, move), alpha, beta, true, true,
                                   opponentMoves, &bestChildMove);
-            undoMove(position, move, positionBkp);
+            undoMove(position, move, positionBackup);
             if (score >= MATE_LOWER) {
                 score--; // winning mate found, add one point penalty per depth
             } else if (score <= -MATE_LOWER) {

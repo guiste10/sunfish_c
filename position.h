@@ -16,12 +16,12 @@ typedef struct {
     uint64_t hash;
 } Position;
 
-void initPosition(Position* position, char* boardToUse);
+void initPosition(Position* position, char* boardCopy, char* boardToUse);
 
 Position* duplicatePosition(Position* source, Position* target);
 
 int genMoves(Position * position, Move moves[MAX_BRANCHING_FACTOR]);
 
 void doMove(Position* position, Move* move);
-void undoMove(Position* position, Move* move, Position* positionOld);
+void undoMove(Position* position, Move* move, Position positionOld);
 #endif //SUNFISH_C_POSITION_H

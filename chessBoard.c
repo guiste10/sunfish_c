@@ -29,7 +29,8 @@ const int k = 11;
 int PIECE_INDEXES_WHITE[PIECES_MAX_ASCII];
 int PIECE_INDEXES[PIECES_MAX_ASCII];
 
-char initialBoard[] = "          "
+// keep const keyword for initialboard!!!!
+char const initialBoard[] = "          "
                             "          "
                             " rnbqkbnr "
                             " pppppppp "

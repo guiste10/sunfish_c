@@ -102,7 +102,7 @@ void findBestMoveTimeStamped(char* boardToUse) {
     Position pos;
     Position* position = &pos;
     char board[SIZE];
-    initPosition(position, boardToUse);
+    initPosition(position, board, boardToUse);
     setInitialZobristHash(position);
     printf("Current board\n");
     printCharArray(board, SIZE);
@@ -123,7 +123,8 @@ void findBestMoveFromUciPosition(char uciPosition[MAX_ARGS]) {
     int numArgs;
 
     fillArgs(uciPosition, args, &numArgs);
-    setupPositionWithMoveList(position, &isWhite, args, numArgs);
+    char initialBoardCopy[SIZE];
+    setupPositionWithMoveList(position, initialBoardCopy, &isWhite, args, numArgs);
     setInitialZobristHash(position);
     printf("Current board\n");
     printCharArray(position->board, SIZE);

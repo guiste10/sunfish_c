@@ -11,7 +11,7 @@ typedef struct {
     char pieceTo;
 } Move;
 
-void createMove(int i, int j, int prom, char pieceTo, Move* move);
+void createMove(int from, int to, int prom, char pieceTo, Move* move);
 int parse(const char* c);
 void moveToUciMove(const Move *move, char uciMove[6]);
 void uciMoveToMove(const char uciMove[6], Move *move);

@@ -9,8 +9,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-void initPosition(Position* position, char* boardToUse){
-    position->board = boardToUse;
+void initPosition(Position* position, char* boardCopy, char* boardToUse){
+    copyBoard(boardCopy, boardToUse);
+    position->board = boardCopy;
     position->score = 0;
     position->wc[0] = true;
     position->wc[1] = true;
@@ -23,7 +24,7 @@ void initPosition(Position* position, char* boardToUse){
 }
 
 Position* duplicatePosition(Position* source, Position* target){
-    target->board = source->board;
+    target->board = source->board; // shallow copy!
     target->score = source->score;
     target->wc[0] = source->wc[0];
     target->wc[1] = source->wc[1];
@@ -152,8 +153,6 @@ void doMove(Position* position, Move* move) {
     char fromPiece = position->board[from];
     int isWhite = position->isWhite;
 
-    position->ep = 0;
-    position->kp = 0;
     if(to == NULL_MOVE){
         position->isWhite = !isWhite;
         return;
@@ -163,6 +162,9 @@ void doMove(Position* position, Move* move) {
 
     position->board[to] = position->board[from]; // Actual move
     position->board[from] = '.';
+
+    position->ep = 0;
+    position->kp = 0;
 
     if (isWhite && from == A1) { // Castling rights, we move the rook or pieceTo the opponent's
         position->wc[0] = false;
@@ -232,7 +234,7 @@ void doMove(Position* position, Move* move) {
     position->isWhite = !isWhite;
 }
 
-void undoMove(Position* position, Move* move, Position* positionOld){
+void undoMove(Position* position, Move* move, Position positionOld){
     int from = move->from, to = move->to;
     char prom = PIECES[move->prom];
     char fromPiece = position->board[to];
@@ -260,5 +262,5 @@ void undoMove(Position* position, Move* move, Position* positionOld){
         }
     }
 
-    *position = *positionOld;
+    *position = positionOld;
 }

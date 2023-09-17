@@ -4,9 +4,9 @@
 #include <string.h>
 #include <ctype.h>
 
-void createMove(int i, int j, int prom, char pieceTo, Move* move){
-    move->from = i;
-    move->to = j;
+void createMove(int from, int to, int prom, char pieceTo, Move* move){
+    move->from = from;
+    move->to = to;
     move->prom = prom;
     move->pieceTo = pieceTo;
 }

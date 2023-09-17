@@ -7,13 +7,8 @@
 int main() {
     initPst();
     initializePieceIndexArray();
-    char uciPosition[] = "position startpos moves"; // start pos
-    //char uciPosition[] = "position startpos moves d2d4 d7d5 c2c4 d5c4 e2e3 d8d5 b1c3 d5c6 g1f3 b8d7 a2a4 g8f6 f3d2 e7e6 f1c4 c6g2 d1f3 g2f3 d2f3 f8b4 h1g1 e8g8 e3e4 f6e4 c1h6 e4c3 h6g7 c3d5 e1d1 f8e8 g7h6 g8h8 h6g7 h8g8 c4d3 f7f5 f3e5 d7e5 d4e5 d5f4 d1c2 f4h3 g1g3 h3f2 g7h6 g8h8 h6g7 h8g8 a1g1 c8d7 g7f6 f2g4 h2h3 b4c5 g1g2 d7a4 b2b3 a4c6 h3g4 f5f4 d3h7 g8h7 g3h3 h7g6 g2h2 f4f3 h3h6 g6f7 h6h7 f7f8 h7h8";
-
-    // illegal rook move while in check using quiescence search
-    //char uciPosition[] = "position startpos moves d2d4 d7d5 c2c4 d5c4 e2e3 d8d5 b1c3 d5c6 g1f3 b8d7 a2a4 g8f6 f3d2 e7e6 f1c4 c6g2 d1f3 g2f3 d2f3 f8b4 h1g1 e8g8 e3e4 f6e4 c1h6 e4c3 h6g7 c3d5 e1d1 f8e8 g7h6 g8h8 h6g7 h8g8 c4d3 f7f5 f3e5 d7e5 d4e5 d5f4 d1c2 f4h3 g1g3 h3f2 g7h6 g8h8 h6g7 h8g8 a1g1 c8d7 g7f6 f2g4 h2h3 b4c5 g1g2 d7a4 b2b3 a4c6 h3g4 f5f4 d3h7 g8h7 g3h3 h7g6 g2h2 f4f3 h3h6 g6f7 h6h7 f7f8 h7h8";
-    //char uciPosition[] = "position startpos moves d2d4 d7d5 c2c4 d5c4 e2e3 d8d5 b1c3 d5c6 g1f3 b8d7 a2a4 g8f6 f3d2 e7e6 f1c4 c6g2 d1f3 g2f3 d2f3 f8b4 h1g1 e8g8 e3e4 f6e4 c1h6 e4c3 h6g7 c3d5 e1d1 f8e8 g7h6 g8h8 h6g7 h8g8 c4d3 f7f5 f3e5 d7e5 d4e5 d5f4 d1c2 f4h3 g1g3 h3f2 g7h6 g8h8 h6g7 h8g8 a1g1 c8d7 g7f6 f2g4 h2h3 b4c5 g1g2 d7a4 b2b3 a4c6 h3g4 f5f4 d3h7 g8h7 g3h3 h7g6 g2h2 f4f3 h3h6 g6f7 h6h7 f7f8 h7h8 f8f7 h2h7";
-
+    //char uciPosition[] = "position startpos moves"; // start pos
+    char uciPosition[] = "e2e4 e7e6 d2d4 b8c6 g1f3 h7h6 f1d3 c6b4 e1g1 d7d5 b1c3 c8d7 c1f4 c7c6 a2a3 b4d3 d1d3 g7g5 f4g3 f7f5 e4f5 e6f5 g3e5 h8h7 f1e1 e8f7 g2g4 g8f6 g4f5 f7g8 e5f6 d8f6 f3e5 d7f5 d3g3 f5c2 e1e2 f6f5 a1e1 a8d8 e2e3 f8d6 e3f3 f5e6 g3g4 h7e7 g4e6 e7e6 f3e3 a7a6 c3a4 c2a4 b2b4 d8f8 e5d7 e6e3 e1e3 f8d8 d7f6 g8f8 b4b5 a6b5 e3f3 f8g7 f6g4 a4d1 g1g2 d1f3 g2f3 c6c5 f3g2"; // capture own piece??? nok
 
     //char uciPosition[] = "position startpos moves e2e4 d7d5"; // mate in 2 (king eaten 4 plies)
     //char uciPosition[] = "position startpos moves d2d4 g8h6 c1h6"; // mate in 2 (king eaten 4 plies)
