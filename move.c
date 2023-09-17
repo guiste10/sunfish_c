@@ -1,14 +1,14 @@
 #include "move.h"
 #include "chessBoard.h"
 #include "utils.h"
-#include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
 
-void createMove(int i, int j, int prom, Move* move){
+void createMove(int i, int j, int prom, char pieceTo, Move* move){
     move->from = i;
     move->to = j;
     move->prom = prom;
+    move->pieceTo = pieceTo;
 }
 
 int parse(const char* c) {
@@ -49,5 +49,5 @@ void uciMoveToMove(const char uciMove[6], Move *move) {
     i = parse(from);
     j = parse(to);
     prom = uciProm == '\0' ? NO_PROMOTION : indexOf(PIECES, toupper(uciProm));
-    createMove(i, j, prom, move);
+    createMove(i, j, prom, '.', move);
 }

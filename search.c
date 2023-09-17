@@ -32,20 +32,26 @@ bool isKingInCheck(Position *position) {
     Move opponentMoves[MAX_BRANCHING_FACTOR];
     Move bestChildMove;
     Move nullMove = {0, 666, 0};
+    Position positionBackup;
+    Position* positionBkp = &positionBackup;
+    duplicatePosition(position, positionBkp);
     doMove(position, &nullMove);
     int score = negamax(position, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
-    // todo undo move
+    undoMove(position, &nullMove, positionBkp);
     return score >= MATE_LOWER;
 }
 
 bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[MAX_BRANCHING_FACTOR]) {
     for (int i=0; i < numMoves; i++){
         Move* move = &kingMoves[i];
+        Position positionBackup;
+        Position* positionBkp = &positionBackup;
+        duplicatePosition(position, positionBkp);
         doMove(position, move);
         Move opponentMoves[MAX_BRANCHING_FACTOR];
         Move bestChildMove;
         int score = negamax(position, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
-        // todo undo move
+        undoMove(position, move, positionBkp);
         if (score < MATE_LOWER) { // one safe move has been found
             return false;
         }
@@ -72,7 +78,7 @@ int compareMoves(const void* x, const void* y) {
                (pieceValues[PIECE_INDEXES_WHITE[toPieceA]] - pieceValues[PIECE_INDEXES_WHITE[fromPieceA]]); // prioritize winning captures (e.g. pawn takes queen)
     }
     else if(toPieceA != '.'){
-        return -1; // negative number -> move A must be ordered before move B since it is a capture
+        return -1; // negative number -> move A must be ordered before move B since it is a pieceTo
     }
     else if(toPieceB != '.'){
         return 1;
@@ -131,11 +137,14 @@ int negamax(Position* position, int depth, int alpha, int beta, bool doPatCheck,
     int max = -INT_MAX;
     for (int i = 0; i < numMoves; i++) {
         Move* move = &moves[i];
+        Position positionBackup;
+        Position* positionBkp = &positionBackup;
+        duplicatePosition(position, positionBkp);
         doMove(position, move);
         Move opponentMoves[MAX_BRANCHING_FACTOR];
         Move bestChildMove;
         int score = -negamax(position, getQuiescentDepth(depth, position, move), -beta, -alpha, true, true, opponentMoves, &bestChildMove);
-        // todo undo move
+        undoMove(position, move, positionBkp);
         if (score >= MATE_LOWER) {
             score--; // winning mate found, add one point penalty per depth
         } else if (score <= -MATE_LOWER) {
