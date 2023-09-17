@@ -23,9 +23,9 @@ void setupPositionWithMoveList(Position* position, char* initialBoardCopy, bool*
     for (int ply = 0; ply < numArgs - 3; ply++) {
         char *uciMove = uciMoves[3 + ply];
         Move move;
-        uciMoveToMove(uciMove, &move);
-        doMove(position, &move);
+        uciMoveToMove(uciMove, &move, *isWhite);
         *isWhite = !*isWhite;
+        doMove(position, &move);
     }
 }
 

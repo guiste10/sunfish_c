@@ -58,13 +58,12 @@ const int DIRECTIONS[NUM_PIECES][9] = {
         {NORTH, EAST, SOUTH, WEST, NORTH + EAST, SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0} // king
 };
 
-const char PIECES[NUM_WHITE_PIECES] = "PNBRQK";
-const char PIECES_ALL[NUM_PIECES] = "PNBRQKpnbrqk";
+const char ALL_PIECES[NUM_PIECES] = "PNBRQKpnbrqk";
 
 void initializePieceIndexArray() {
     for (int i = 0; i < NUM_PIECES; i++) {
-        PIECE_INDEXES_WHITE[PIECES_ALL[i]] = i % 6;
-        PIECE_INDEXES[PIECES_ALL[i]] = i;
+        PIECE_INDEXES_WHITE[ALL_PIECES[i]] = i % 6;
+        PIECE_INDEXES[ALL_PIECES[i]] = i;
     }
 }
 

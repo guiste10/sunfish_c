@@ -14,6 +14,6 @@ typedef struct {
 void createMove(int from, int to, int prom, char pieceTo, Move* move);
 int parse(const char* c);
 void moveToUciMove(const Move *move, char uciMove[6]);
-void uciMoveToMove(const char uciMove[6], Move *move);
+void uciMoveToMove(const char uciMove[6], Move *move, bool isWhite);
 
 #endif //SUNFISH_C_MOVE_H

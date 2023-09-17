@@ -30,14 +30,14 @@ void render(int index, char* result) {
 void moveToUciMove(const Move *move, char uciMove[6]) {
     int i = move->from;
     int j = move->to;
-    char prom = PIECES[move->prom];
+    char prom = ALL_PIECES[move->prom];
     render(i, &uciMove[0]);
     render(j, &uciMove[2]);
-    uciMove[4] = prom;
+    uciMove[4] = tolower(prom);
     uciMove[5] = '\0';
 }
 
-void uciMoveToMove(const char uciMove[6], Move *move) {
+void uciMoveToMove(const char uciMove[6], Move *move, bool isWhite) {
     int i, j;
     int prom;
     char from[3], to[3];
@@ -48,6 +48,6 @@ void uciMoveToMove(const char uciMove[6], Move *move) {
     to[2] = '\0';
     i = parse(from);
     j = parse(to);
-    prom = uciProm == '\0' ? NO_PROMOTION : indexOf(PIECES, toupper(uciProm));
+    prom = uciProm == '\0' ? NO_PROMOTION : indexOf(ALL_PIECES, isWhite ? toupper(uciProm) : uciProm);
     createMove(i, j, prom, '.', move);
 }

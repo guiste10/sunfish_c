@@ -121,8 +121,8 @@ int value(const Position *position, const Move *move) {
     }
 
     if (fromPiece == 'K' && abs(from - to) == 2) { // Castling
-        score += PST[R][(from + to) / 2];
-        score -= PST[R][to < from ? A1 : H1];
+        score += PST[R][(from + to) / 2]; // to
+        score -= PST[R][to < from ? A1 : H1]; // from
     } else if (fromPiece == 'k' && abs(from - to) == 2) { // Castling
         score += PST[r][(from + to) / 2];
         score -= PST[r][to < from ? A8 : H8];
@@ -149,7 +149,7 @@ int value(const Position *position, const Move *move) {
 
 void doMove(Position* position, Move* move) {
     int from = move->from, to = move->to;
-    char prom = PIECES[move->prom];
+    char prom = ALL_PIECES[move->prom];
     char fromPiece = position->board[from];
     int isWhite = position->isWhite;
 
@@ -236,11 +236,11 @@ void doMove(Position* position, Move* move) {
 
 void undoMove(Position* position, Move* move, Position positionOld){
     int from = move->from, to = move->to;
-    char prom = PIECES[move->prom];
     char fromPiece = position->board[to];
 
     position->board[from] = fromPiece;
     position->board[to] = move->pieceTo; // Undo move
+    *position = positionOld;
 
     if (fromPiece == 'K') {  // Castling
         if (abs(to - from) == 2) {
@@ -254,6 +254,9 @@ void undoMove(Position* position, Move* move, Position positionOld){
         }
     }
 
+    if (move->prom != NO_PROMOTION) {
+        position->board[from] = position->isWhite ? 'P' : 'p';
+    }
     if (to == position->ep) {
         if (fromPiece == 'P') { // en passant capture
             position->board[to + SOUTH] = 'p';
@@ -261,6 +264,4 @@ void undoMove(Position* position, Move* move, Position positionOld){
             position->board[to + NORTH] = 'P';
         }
     }
-
-    *position = positionOld;
 }

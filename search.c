@@ -68,6 +68,17 @@ bool isPat(Position* position, int numMoves, Move moves[MAX_BRANCHING_FACTOR]) {
 int compareMoves(const void* x, const void* y) {
     Move* moveA = (Move*)x;
     Move* moveB = (Move*)y;
+    int promA = moveA->prom;
+    int promB = moveB->prom;
+    if(promA != NO_PROMOTION && promB != NO_PROMOTION){
+        return promB - promA;
+    }
+    else if(promA != NO_PROMOTION){
+        return -1;
+    }
+    else if(promB != NO_PROMOTION){
+        return 1;
+    }
     char toPieceA = currentBoard[moveA->to];
     char toPieceB = currentBoard[moveB->to];
     if(toPieceA != '.' && toPieceB != '.'){
@@ -213,8 +224,8 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool canFurtherIncreaseDepth = true;
     const int minDepth = 6;
     const int maxDepth = 6;
-    //for(int depth = 6; depth == 6; depth++){
-    for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
+    for(int depth = 1; depth == 1; depth++){
+    //for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
         score = alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
