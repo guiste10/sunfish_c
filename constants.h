@@ -11,5 +11,6 @@
 extern const int ARRAY_END;
 extern const int NO_PROMOTION;
 extern const int MAX_BRANCHING_FACTOR;
+extern const int NULL_MOVE;
 
 #endif //SUNFISH_C_CONSTANTS_H

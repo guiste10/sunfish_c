@@ -69,7 +69,7 @@ void printIntArray(const int* arr, int size) {
         if(i % 10 == 0){
             printf("\n");
         }
-        printf("%d\t", arr[i]); // similar to  *(arr + i)
+        printf("%d\t", arr[i]); // similar to  *(arr + from)
         fflush(stdout);  // Flush the output stream
     }
     printf("\n");
@@ -102,7 +102,7 @@ void findBestMoveTimeStamped(char* boardToUse) {
     Position pos;
     Position* position = &pos;
     char board[SIZE];
-    initPosition(position, board, (char*)boardToUse);
+    initPosition(position, boardToUse);
     setInitialZobristHash(position);
     printf("Current board\n");
     printCharArray(board, SIZE);
@@ -110,9 +110,7 @@ void findBestMoveTimeStamped(char* boardToUse) {
     Move bestMove;
     searchBestMove(position, &bestMove, TIME_LEFT_DEBUG, true);
     printf("Best move search finished\nTime taken: %.2f ms\n", (double)clock()-start);
-    Position newPosition;
-    char newBoard[SIZE];
-    doMove(position, &bestMove, &newPosition, newBoard);
+    doMove(position, &bestMove);
     printMove(bestMove);
     //printCharArray(newBoard, SIZE);
 }

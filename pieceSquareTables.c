@@ -15,7 +15,7 @@ const int pieceValues[NUM_PIECES] = {
         -pawnVal, -knightVal, -bishopVal, -rookVal, -queenVal, -kingVal
 };
 
-int pst[NUM_PIECES][SIZE] = {
+int PST[NUM_PIECES][SIZE] = {
         { // P
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -103,16 +103,16 @@ int pst[NUM_PIECES][SIZE] = {
 };
 
 void initPst(){
-    for(int piece=NUM_WHITE_PIECES; piece < NUM_PIECES; piece++){ // initialize pst for black based on white's pst
+    for(int piece=NUM_WHITE_PIECES; piece < NUM_PIECES; piece++){ // initialize PST for black based on white's PST
         for(int row = 0; row < NUM_ROWS; row++){
             for(int col = 0; col < NUM_FILES; col++){
-                pst[piece][10*row+col] = -pst[toupper(piece-NUM_WHITE_PIECES)][10*(NUM_ROWS-row)+col];
+                PST[piece][10 * row + col] = -PST[toupper(piece - NUM_WHITE_PIECES)][10 * (NUM_ROWS - row) + col];
             }
         }
     }
-    for(int piece=0; piece < NUM_PIECES; piece++){ // add piece values to the pst's
+    for(int piece=0; piece < NUM_PIECES; piece++){ // add piece values to the PST's
         for(int square=0; square < SIZE; square++){
-            pst[piece][square] += pieceValues[piece];
+            PST[piece][square] += pieceValues[piece];
         }
     }
 }

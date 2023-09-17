@@ -12,17 +12,15 @@ typedef struct {
     bool bc[2];
     int ep;
     int kp; // square where the king has walked but not stopped during castling (e.g. f1 or d1 for white)
-    int turn;
+    int isWhite;
     uint64_t hash;
 } Position;
 
-void initPosition(Position* position, char* boardCopy, char* boardSrc);
+void initPosition(Position* position, char* boardToUse);
 
 Position* duplicatePosition(Position* source, Position* target, char* targetBoard);
 
 int genMoves(Position * position, Move moves[MAX_BRANCHING_FACTOR]);
 
-void doMove(Position* position, Move* move, Position* newPosition, char* newBoard);
-
-void rotate(Position* position, bool nullMove);
+void doMove(Position* position, Move* move);
 #endif //SUNFISH_C_POSITION_H

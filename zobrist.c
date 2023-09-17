@@ -38,13 +38,13 @@ void setInitialZobristHash(Position* position) {
     initializeZobristHashes();
     uint64_t hash = 0;
     char *board = position->board;
-    if (!position->turn){
-        hash ^= blackToMoveHash;
-    }
+//    if (!position->isWhite){ never true
+//        hash ^= blackToMoveHash;
+//    }
     for (int square = 0; square < SIZE; square++) {
         char piece = board[square];
         if (piece != '.') {
-            int pieceIndex = PIECE_INDEXES_IGNORE_COLOR[piece];
+            int pieceIndex = PIECE_INDEXES_WHITE[piece];
             hash ^= pieceHashForSquares[pieceIndex][square];
         }
     }

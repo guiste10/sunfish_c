@@ -6,8 +6,8 @@
 #include <ctype.h>
 
 void createMove(int i, int j, int prom, Move* move){
-    move->i = i;
-    move->j = j;
+    move->from = i;
+    move->to = j;
     move->prom = prom;
 }
 
@@ -28,8 +28,8 @@ void render(int index, char* result) {
 }
 
 void moveToUciMove(const Move *move, char uciMove[6]) {
-    int i = move->i;
-    int j = move->j;
+    int i = move->from;
+    int j = move->to;
     char prom = PIECES[move->prom];
     render(i, &uciMove[0]);
     render(j, &uciMove[2]);

@@ -5,8 +5,8 @@
 #include <stdbool.h>
 
 typedef struct {
-    int i;
-    int j;
+    int from;
+    int to;
     int prom;
 } Move;
 

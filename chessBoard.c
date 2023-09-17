@@ -19,9 +19,17 @@ const int R = 3;
 const int Q = 4;
 const int K = 5;
 
-int PIECE_INDEXES_IGNORE_COLOR[PIECES_MAX_ASCII];
+const int p = 6;
+const int n = 7;
+const int b = 8;
+const int r = 9;
+const int q = 10;
+const int k = 11;
 
-const char initialBoard[] = "          "
+int PIECE_INDEXES_WHITE[PIECES_MAX_ASCII];
+int PIECE_INDEXES[PIECES_MAX_ASCII];
+
+char initialBoard[] = "          "
                             "          "
                             " rnbqkbnr "
                             " pppppppp "
@@ -54,7 +62,8 @@ const char PIECES_ALL[NUM_PIECES] = "PNBRQKpnbrqk";
 
 void initializePieceIndexArray() {
     for (int i = 0; i < NUM_PIECES; i++) {
-        PIECE_INDEXES_IGNORE_COLOR[PIECES_ALL[i]] = i % 6;
+        PIECE_INDEXES_WHITE[PIECES_ALL[i]] = i % 6;
+        PIECE_INDEXES[PIECES_ALL[i]] = i;
     }
 }
 

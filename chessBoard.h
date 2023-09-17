@@ -19,10 +19,18 @@ extern const int R;
 extern const int Q;
 extern const int K;
 
-extern int PIECE_INDEXES_IGNORE_COLOR[PIECES_MAX_ASCII];
+extern const int p;
+extern const int n;
+extern const int b;
+extern const int r;
+extern const int q;
+extern const int k;
+
+extern int PIECE_INDEXES_WHITE[PIECES_MAX_ASCII];
+extern int PIECE_INDEXES[PIECES_MAX_ASCII];
 extern const char PIECES[];
 extern const int DIRECTIONS[NUM_PIECES][9];
-extern const char initialBoard[];
+extern char initialBoard[];
 
 void initializePieceIndexArray();
 void copyBoard(char* dest, const char* src);
