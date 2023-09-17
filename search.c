@@ -32,7 +32,7 @@ bool onlyKingMoves(Move moves[MAX_BRANCHING_FACTOR], int numMoves, const char *b
 bool isKingInCheck(Position *position) {
     Move opponentMoves[MAX_BRANCHING_FACTOR];
     Move bestChildMove;
-    Move nullMove = {0, 666, 0};
+    Move nullMove = {0, NULL_MOVE, 0};
     Position positionBackup;
     duplicatePosition(position, &positionBackup);
     doMove(position, &nullMove);
@@ -127,7 +127,8 @@ int getQuiescentDepth(int depth, Position *position, Move *move) {
 //    }
 
 int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove,
-              Move moves[MAX_BRANCHING_FACTOR], Move* bestMoveToSave) {    numNodes++;
+              Move moves[MAX_BRANCHING_FACTOR], Move* bestMoveToSave) {
+    numNodes++;
     if (position->score <= -MATE_LOWER) { // mated as white
         return -MATE_UPPER;
     }
@@ -224,8 +225,8 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool canFurtherIncreaseDepth = true;
     const int minDepth = 6;
     const int maxDepth = 6;
-    //for(int depth = 1; depth == 1; depth++){
-    for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
+    for(int depth = 3; depth <= 3; depth++){
+    //for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
         score = alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
@@ -239,4 +240,5 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
         isMate = abs(score) >= MATE_LOWER;
         canFurtherIncreaseDepth = timeTakenMs < 700.0 && timeLeftMs > 10000;
     }
+    printf("numNodes: %d\n", numNodes);
 }

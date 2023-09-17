@@ -237,10 +237,14 @@ void doMove(Position* position, Move* move) {
 void undoMove(Position* position, Move* move, Position positionOld){
     int from = move->from, to = move->to;
     char fromPiece = position->board[to];
+    *position = positionOld;
+
+    if(to == NULL_MOVE) {
+        return;
+    }
 
     position->board[from] = fromPiece;
     position->board[to] = move->pieceTo; // Undo move
-    *position = positionOld;
 
     if (fromPiece == 'K') {  // Castling
         if (abs(to - from) == 2) {
