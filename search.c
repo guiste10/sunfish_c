@@ -107,9 +107,9 @@ int compareMoves(const void* x, const void* y) {
 int getQuiescentDepth(int depth, Position *position, Move *move) {
     char fromPiece = position->board[move->from];
     char toPiece = position->board[move->to];
-//    if (depth == 1 && toPiece != '.' && pieceValues[PIECE_INDEXES_WHITE[fromPiece]] > pieceValues[PIECE_INDEXES_WHITE[toPiece]]) {
-//        return depth; // search one more ply
-//    }
+    if (depth == 1 && toPiece != '.' && pieceValues[PIECE_INDEXES_WHITE[fromPiece]] > pieceValues[PIECE_INDEXES_WHITE[toPiece]]) {
+        return depth; // search one more ply
+    }
     return depth - 1;
 }
 
@@ -224,8 +224,8 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool canFurtherIncreaseDepth = true;
     const int minDepth = 6;
     const int maxDepth = 6;
-    for(int depth = 1; depth == 1; depth++){
-    //for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
+    //for(int depth = 1; depth == 1; depth++){
+    for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
         score = alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
