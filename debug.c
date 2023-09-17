@@ -123,14 +123,14 @@ void findBestMoveFromUciPosition(char uciPosition[MAX_ARGS]) {
     int numArgs;
 
     fillArgs(uciPosition, args, &numArgs);
-    char initialBoardCopy[SIZE];
-    setupPositionWithMoveList(position, initialBoardCopy, &isWhite, args, numArgs);
+    setupPositionWithMoveList(position, &isWhite, args, numArgs);
     setInitialZobristHash(position);
     printf("Current board\n");
-    printCharArray(initialBoardCopy, SIZE);
+    printCharArray(position->board, SIZE);
     Move bestMove;
     clock_t start = clock();
     searchBestMove(position, &bestMove, TIME_LEFT_DEBUG, isWhite);
     printf("Best move search finished\nTime taken: %.2f ms\n", (double)clock()-start);
     printMove(bestMove);
+    printCharArray(position->board, SIZE);
 }

@@ -4,6 +4,7 @@
 #include "move.h"
 #include "pieceSquareTables.h"
 #include "zobrist.h"
+#include "debug.h"
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
@@ -22,6 +23,7 @@ void initPosition(Position* position, char* boardToUse){
 }
 
 Position* duplicatePosition(Position* source, Position* target){
+    target->board = source->board;
     target->score = source->score;
     target->wc[0] = source->wc[0];
     target->wc[1] = source->wc[1];
@@ -258,5 +260,5 @@ void undoMove(Position* position, Move* move, Position* positionOld){
         }
     }
 
-    position = positionOld;
+    *position = *positionOld;
 }

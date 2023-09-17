@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include "constants.h"
+#include "debug.h"
 
 const int pawnVal = 100;
 const int knightVal = 280;
@@ -106,10 +107,11 @@ void initPst(){
     for(int piece=NUM_WHITE_PIECES; piece < NUM_PIECES; piece++){ // initialize PST for black based on white's PST
         for(int row = 0; row < NUM_ROWS; row++){
             for(int col = 0; col < NUM_FILES; col++){
-                PST[piece][10 * row + col] = -PST[toupper(piece - NUM_WHITE_PIECES)][10 * (NUM_ROWS - row) + col];
+                PST[piece][(10 * row) + col] = -PST[piece - NUM_WHITE_PIECES][10 * (NUM_ROWS - row - 1) + col];
             }
         }
     }
+    //printIntArray(PST[7], 120);
     for(int piece=0; piece < NUM_PIECES; piece++){ // add piece values to the PST's
         for(int square=0; square < SIZE; square++){
             PST[piece][square] += pieceValues[piece];
