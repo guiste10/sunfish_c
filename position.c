@@ -151,7 +151,11 @@ void doMove(Position* position, Move* move) {
     int from = move->from, to = move->to;
     char prom = ALL_PIECES[move->prom];
     char fromPiece = position->board[from];
+    char toPiece = position->board[to];
+    int fromPieceIndex = PIECE_INDEXES[fromPiece];
     int isWhite = position->isWhite;
+
+    position->hash ^= blackToMoveHash;
 
     if(to == NULL_MOVE){
         position->isWhite = !isWhite;
@@ -160,52 +164,53 @@ void doMove(Position* position, Move* move) {
 
     position->score = position->score + value(position, move);
 
+    position->hash ^= pieceHashForSquares[fromPieceIndex][from] ^ pieceHashForSquares[fromPieceIndex][to];
+    if(toPiece != '.') {
+        position->hash ^= pieceHashForSquares[PIECE_INDEXES[toPiece]][to];
+    }
+
     position->board[to] = position->board[from]; // Actual move
     position->board[from] = '.';
 
     position->ep = 0;
     position->kp = 0;
 
-    if (isWhite && from == A1) { // Castling rights, we move the rook or pieceTo the opponent's
+    if (position->wc[0] && ((isWhite && from == A1) || (!isWhite && to == A1))) { // Castling rights, we move the rook or pieceTo the opponent's
         position->wc[0] = false;
+        position->hash ^= castlingRightsHash[0][0];
     }
-    if (!isWhite && from == A8) {
+    if (position->bc[0] && ((!isWhite && from == A8) || (isWhite && to == A8))) {
         position->bc[0] = false;
+        position->hash ^= castlingRightsHash[1][0];
     }
-    if (isWhite && from == H1) {
+    if (position->wc[1] && ((isWhite && from == H1) || (!isWhite && to == H1))) {
         position->wc[1] = false;
+        position->hash ^= castlingRightsHash[0][1];
     }
-    if (!isWhite && from == H8) {
+    if (position->bc[1] && ((!isWhite && from == H8) || (isWhite && to == H8))) {
         position->bc[1] = false;
-    }
-    if (isWhite && to == A8) {
-        position->bc[0] = false;
-    }
-    if (!isWhite && to == A1) {
-        position->wc[0] = false;
-    }
-    if (isWhite && to == H8) {
-        position->bc[1] = false;
-    }
-    if (!isWhite && to == H1) {
-        position->wc[1] = false;
+        position->hash ^= castlingRightsHash[1][1];
     }
 
     if (fromPiece == 'K') {  // Castling
         position->wc[0] = false;
         position->wc[1] = false;
         if (abs(to - from) == 2) {
-            position->kp = (from + to) / 2; // 96 if short castle, 94 if long castle
-            position->board[(to < from) ? A1 : H1] = '.';
+            int rookFrom = (to < from) ? A1 : H1;
+            position->kp = (from + to) / 2; // square 96 if short castle, 94 if long castle
+            position->board[rookFrom] = '.';
             position->board[position->kp] = 'R';
+            position->hash ^= pieceHashForSquares[3][rookFrom] ^ pieceHashForSquares[3][position->kp];
         }
     } else if (fromPiece == 'k') {  // Castling
         position->bc[0] = false;
         position->bc[1] = false;
         if (abs(to - from) == 2) {
+            int rookFrom = (to < from) ? A8 : H8;
             position->kp = (from + to) / 2;
-            position->board[(to < from) ? A8 : H8] = '.';
+            position->board[rookFrom] = '.';
             position->board[position->kp] = 'r';
+            position->hash ^= pieceHashForSquares[9][rookFrom] ^ pieceHashForSquares[9][position->kp];
         }
     }
 
@@ -215,6 +220,7 @@ void doMove(Position* position, Move* move) {
         }
         if (to - from == 2 * NORTH) {
             position->ep = from + NORTH;
+            position->hash ^= enPassantFileHash[to % 10];
         }
         if (to == position->ep) {
             position->board[to + SOUTH] = '.';
@@ -226,6 +232,7 @@ void doMove(Position* position, Move* move) {
         }
         if (to - from == 2 * SOUTH) {
             position->ep = from + SOUTH;
+            position->hash ^= enPassantFileHash[to % 10];
         }
         if (to == position->ep) {
             position->board[to + NORTH] = '.';

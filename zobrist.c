@@ -5,9 +5,6 @@
 #include "chessBoard.h"
 #include "randomUnsigned64bitIntegers.h"
 
-#define NUM_CASTLING_SIDES 2
-#define NUM_FILES 10
-
 uint64_t blackToMoveHash = UINT64_MAX;
 uint64_t castlingRightsHash[NUM_COLORS][NUM_CASTLING_SIDES];
 uint64_t enPassantFileHash[NUM_FILES];
@@ -38,9 +35,6 @@ void setInitialZobristHash(Position* position) {
     initializeZobristHashes();
     uint64_t hash = 0;
     char *board = position->board;
-//    if (!position->isWhite){ never true
-//        hash ^= blackToMoveHash;
-//    }
     for (int square = 0; square < SIZE; square++) {
         char piece = board[square];
         if (piece != '.') {
