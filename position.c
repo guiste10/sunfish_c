@@ -172,6 +172,7 @@ void doMove(Position* position, Move* move) {
     position->board[to] = position->board[from]; // Actual move
     position->board[from] = '.';
 
+    int oldPosEp = position->ep;
     position->ep = 0;
     position->kp = 0;
 
@@ -217,25 +218,25 @@ void doMove(Position* position, Move* move) {
     if (fromPiece == 'P') { // Pawn promotion, double move, and en passant capture
         if (A8 <= to && to <= H8) {
             position->board[to] = prom;
-        }
-        if (to - from == 2 * NORTH) {
+            // todo hash (+ capture?)
+        } else if (to - from == 2 * NORTH) {
             position->ep = from + NORTH;
             position->hash ^= enPassantFileHash[to % 10];
-        }
-        if (to == position->ep) {
+        } else if (to == oldPosEp) {
             position->board[to + SOUTH] = '.';
+            // todo hash
         }
     }
     if (fromPiece == 'p') { // Pawn promotion, double move, and en passant capture
         if (A1 <= to && to <= H1) {
             position->board[to] = prom;
-        }
-        if (to - from == 2 * SOUTH) {
-            position->ep = from + SOUTH;
+            // todo hash (+ capture?)
+        } else if (to - from == 2 * SOUTH) {
+            position->ep = from + SOUTH; // que garder lui!!!
             position->hash ^= enPassantFileHash[to % 10];
-        }
-        if (to == position->ep) {
+        } else if (to == oldPosEp) {
             position->board[to + NORTH] = '.';
+            // todo hash
         }
     }
     position->isWhite = !isWhite;
@@ -244,35 +245,32 @@ void doMove(Position* position, Move* move) {
 void undoMove(Position* position, Move* move, Position positionOld){
     int from = move->from, to = move->to;
     char fromPiece = position->board[to];
-    *position = positionOld;
 
     if(to == NULL_MOVE) {
+        *position = positionOld;
         return;
     }
 
     position->board[from] = fromPiece;
     position->board[to] = move->pieceTo; // Undo move
 
-    if (fromPiece == 'K') {  // Castling
-        if (abs(to - from) == 2) {
-            position->board[(to < from) ? A1 : H1] = 'R';
-            position->board[position->kp] = '.';
-        }
-    } else if (fromPiece == 'k') {  // Castling
-        if (abs(to - from) == 2) {
-            position->board[(to < from) ? A8 : H8] = 'r';
-            position->board[position->kp] = '.';
-        }
+    if (fromPiece == 'K' && abs(to - from) == 2) {  // Castling
+        position->board[(to < from) ? A1 : H1] = 'R';
+        position->board[position->kp] = '.';
+    } else if (fromPiece == 'k' && abs(to - from) == 2) {  // Castling
+        position->board[(to < from) ? A8 : H8] = 'r';
+        position->board[position->kp] = '.';
     }
 
     if (move->prom != NO_PROMOTION) {
-        position->board[from] = position->isWhite ? 'P' : 'p';
+        position->board[from] = positionOld.isWhite ? 'P' : 'p';
     }
-    if (to == position->ep) {
+    if (to == positionOld.ep) {
         if (fromPiece == 'P') { // en passant capture
             position->board[to + SOUTH] = 'p';
         } else if (fromPiece == 'p') { // en passant capture
             position->board[to + NORTH] = 'P';
         }
     }
+    *position = positionOld;
 }
