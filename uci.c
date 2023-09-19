@@ -30,10 +30,10 @@ void setupPositionWithMoveList(Position* position, char* initialBoardCopy, bool*
 }
 
 void playUci(){
-    char line[1000];
+    char line[10000];
     char* args[MAX_ARGS];
     int numArgs;
-    bool isWhite = true;
+    bool isWhite;
     Position pos;
     Position* position = &pos;
     char initialBoardCopy[SIZE];
@@ -53,6 +53,7 @@ void playUci(){
         } else if (strcmp(args[0], "quit") == 0) {
             break;
         } else if (numArgs >= 2 && strcmp(args[0], "position") == 0 && strcmp(args[1], "startpos") == 0) {
+            isWhite = true;
             setupPositionWithMoveList(position, initialBoardCopy, &isWhite, args, numArgs);
         } else if (strcmp(args[0], "go") == 0) {
             Move best;

@@ -51,7 +51,7 @@ bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[MA
         Move bestChildMove;
         int score = alphaBeta(position, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
         undoMove(position, move, positionBackup);
-        if (score < MATE_LOWER) { // one safe move has been found
+        if (abs(score) < MATE_LOWER) { // one safe move has been found
             return false;
         }
     }
@@ -225,7 +225,7 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool canFurtherIncreaseDepth = true;
     const int minDepth = 6;
     const int maxDepth = 6;
-    //for(int depth = 6; depth <= 6; depth++){
+    //for(int depth = 4; depth <= 4; depth++){
     for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
