@@ -172,7 +172,7 @@ void doMove(Position* position, Move* move) {
     position->board[to] = position->board[from]; // Actual move
     position->board[from] = '.';
 
-    int oldPosEp = position->ep;
+    int oldPositionEp = position->ep;
     position->ep = 0;
     position->kp = 0;
 
@@ -201,7 +201,7 @@ void doMove(Position* position, Move* move) {
             position->kp = (from + to) / 2; // square 96 if short castle, 94 if long castle
             position->board[rookFrom] = '.';
             position->board[position->kp] = 'R';
-            position->hash ^= pieceHashForSquares[3][rookFrom] ^ pieceHashForSquares[3][position->kp];
+            position->hash ^= pieceHashForSquares[R][rookFrom] ^ pieceHashForSquares[R][position->kp];
         }
     } else if (fromPiece == 'k') {  // Castling
         position->bc[0] = false;
@@ -211,32 +211,32 @@ void doMove(Position* position, Move* move) {
             position->kp = (from + to) / 2;
             position->board[rookFrom] = '.';
             position->board[position->kp] = 'r';
-            position->hash ^= pieceHashForSquares[9][rookFrom] ^ pieceHashForSquares[9][position->kp];
+            position->hash ^= pieceHashForSquares[r][rookFrom] ^ pieceHashForSquares[r][position->kp];
         }
     }
 
     if (fromPiece == 'P') { // Pawn promotion, double move, and en passant capture
         if (A8 <= to && to <= H8) {
             position->board[to] = prom;
-            // todo hash (+ capture?)
+            position->hash ^= pieceHashForSquares[P][to] ^ pieceHashForSquares[PIECE_INDEXES[prom]][to];
         } else if (to - from == 2 * NORTH) {
             position->ep = from + NORTH;
             position->hash ^= enPassantFileHash[to % 10];
-        } else if (to == oldPosEp) {
+        } else if (to == oldPositionEp) {
             position->board[to + SOUTH] = '.';
-            // todo hash
+            position->hash ^= pieceHashForSquares[p][to + SOUTH];
         }
     }
     if (fromPiece == 'p') { // Pawn promotion, double move, and en passant capture
         if (A1 <= to && to <= H1) {
             position->board[to] = prom;
-            // todo hash (+ capture?)
+            position->hash ^= pieceHashForSquares[p][to] ^ pieceHashForSquares[PIECE_INDEXES[prom]][to];
         } else if (to - from == 2 * SOUTH) {
-            position->ep = from + SOUTH; // que garder lui!!!
+            position->ep = from + SOUTH;
             position->hash ^= enPassantFileHash[to % 10];
-        } else if (to == oldPosEp) {
+        } else if (to == oldPositionEp) {
             position->board[to + NORTH] = '.';
-            // todo hash
+            position->hash ^= pieceHashForSquares[P][to + NORTH];
         }
     }
     position->isWhite = !isWhite;
