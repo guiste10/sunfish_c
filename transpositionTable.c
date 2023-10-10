@@ -4,8 +4,6 @@
 #include <string.h>
 #include "transpositionTable.h"
 
-#define TABLE_SIZE_LOG2 20 // Use a table size of 2^20 (adjust as needed)
-
 TranspositionEntry* transpositionTable = NULL;
 
 const int LOWER = 0;
