@@ -10,6 +10,7 @@
 #include "debug.h"
 #include "chessBoard.h"
 #include "search.h"
+#include "transpositionTable.h"
 
 
 int numNodes = 0;
@@ -108,7 +109,7 @@ int getQuiescentDepth(int depth, Position *position, Move *move) {
     char fromPiece = position->board[move->from];
     char toPiece = position->board[move->to];
     if (depth == 1 && toPiece != '.' && pieceValues[PIECE_INDEXES_WHITE[fromPiece]] > pieceValues[PIECE_INDEXES_WHITE[toPiece]]) {
-        return depth; // search one more ply
+        //return depth; // search one more ply
     }
     return depth - 1;
 }
@@ -127,8 +128,21 @@ int getQuiescentDepth(int depth, Position *position, Move *move) {
 //    }
 
 int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove,
-              Move moves[MAX_BRANCHING_FACTOR], Move* bestMoveToSave) {
+                    Move moves[MAX_BRANCHING_FACTOR], Move* bestMoveToSave) {
     numNodes++;
+    TranspositionEntry* ttEntry = lookupTT(position->hash);
+
+    if (ttEntry != NULL && ttEntry->depth >= depth) {
+        if (ttEntry->type == EXACT) {
+            *bestMoveToSave = ttEntry->bestMove;
+            return ttEntry->score;
+        } else if (ttEntry->type == LOWER && ttEntry->score >= beta) {
+            return ttEntry->score;
+        } else if (ttEntry->type == UPPER && ttEntry->score <= alpha) {
+            return ttEntry->score;
+        }
+    }
+
     if (position->score <= -MATE_LOWER) { // mated as white
         return -MATE_UPPER;
     }
@@ -140,7 +154,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     }
 
     int numMoves = genMoves(position, moves);
-    if(doPatCheck && isPat(position, numMoves, moves) == true) {
+    if (doPatCheck && isPat(position, numMoves, moves)) {
         return 0;
     }
 
@@ -149,7 +163,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
 
     Position positionBackup;
     duplicatePosition(position, &positionBackup);
-    if(position->isWhite){
+    if (position->isWhite) {
         int max = -INT_MAX;
         for (int i = 0; i < numMoves; i++) {
             Move* move = &moves[i];
@@ -174,6 +188,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
                 break;
             }
         }
+        saveScore(position->hash, depth, max, (max <= alpha) ? UPPER : (max >= beta) ? LOWER : EXACT, *bestMoveToSave);
         return max;
     } else {
         int min = INT_MAX;
@@ -183,7 +198,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
             Move opponentMoves[MAX_BRANCHING_FACTOR];
             Move bestChildMove;
             int score = alphaBeta(position, getQuiescentDepth(depth, position, move), alpha, beta, true, true,
-                                  opponentMoves, &bestChildMove);
+                                        opponentMoves, &bestChildMove);
             undoMove(position, move, positionBackup);
             if (score >= MATE_LOWER) {
                 score--; // winning mate found, add one point penalty per depth
@@ -200,9 +215,9 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
                 break;
             }
         }
+        saveScore(position->hash, depth, min, (min <= alpha) ? UPPER : (min >= beta) ? LOWER : EXACT, *bestMoveToSave);
         return min;
     }
-
 }
 
 void setIsEndGame(const char* board) {
@@ -223,10 +238,11 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     clock_t start = clock();
     bool isMate = false;
     bool canFurtherIncreaseDepth = true;
+    initTranspositionTable();
     const int minDepth = 6;
     const int maxDepth = 6;
-    //for(int depth = 4; depth <= 4; depth++){
-    for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
+    for(int depth = 1; depth <= 8; depth++){
+    //for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
         score = alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
@@ -241,4 +257,5 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
         canFurtherIncreaseDepth = timeTakenMs < 700.0 && timeLeftMs > 10000;
     }
     printf("numNodes: %d\n", numNodes);
+    clearTranspositionTable();
 }
