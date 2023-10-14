@@ -1,6 +1,4 @@
-#include <ctype.h>
 #include "constants.h"
-#include "debug.h"
 
 const int pawnVal = 100;
 const int knightVal = 280;

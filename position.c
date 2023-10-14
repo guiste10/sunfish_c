@@ -4,7 +4,6 @@
 #include "move.h"
 #include "pieceSquareTables.h"
 #include "zobrist.h"
-#include "debug.h"
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
@@ -245,11 +244,6 @@ void doMove(Position* position, Move* move) {
 void undoMove(Position* position, Move* move, Position positionOld){
     int from = move->from, to = move->to;
     char fromPiece = position->board[to];
-
-    if(to == NULL_MOVE) {
-        *position = positionOld;
-        return;
-    }
 
     position->board[from] = fromPiece;
     position->board[to] = move->pieceTo; // Undo move

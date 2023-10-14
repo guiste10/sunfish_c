@@ -133,5 +133,6 @@ void findBestMoveFromUciPosition(char uciPosition[MAX_ARGS]) {
     searchBestMove(position, &bestMove, TIME_LEFT_DEBUG, isWhite);
     printf("Best move search finished\nTime taken: %.2f ms\n", (double)clock()-start);
     printMove(bestMove);
-    //printCharArray(position->board, SIZE);
+//    doMove(position, &bestMove);
+//    printCharArray(position->board, SIZE);
 }

@@ -1,4 +1,5 @@
 #include "randomUnsigned64bitIntegers.h"
+// true random numbers generated using random.org
 uint64_t const randomIntegers[2000] = {12013100004592448217ULL,
                                  3953978712919200258ULL,
                                  1188325448217204436ULL,

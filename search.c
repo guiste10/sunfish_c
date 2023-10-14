@@ -30,16 +30,18 @@ bool onlyKingMoves(Move moves[], int numMoves, const char *board) {
     return true;
 }
 
-bool isKingInCheck(Position *position) {
+int getNullMoveScore(Position *position, int depth) {
     Move opponentMoves[MAX_BRANCHING_FACTOR];
     Move bestChildMove;
     Move nullMove = {0, NULL_MOVE, 0};
-    Position positionBackup;
-    duplicatePosition(position, &positionBackup);
-    doMove(position, &nullMove);
-    int score = alphaBeta(position, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
-    undoMove(position, &nullMove, positionBackup);
-    return abs(score) >= MATE_LOWER;
+    Position duplicate;
+    duplicatePosition(position, &duplicate);
+    doMove(&duplicate, &nullMove);
+    return alphaBeta(&duplicate, depth, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
+}
+
+bool isKingInCheck(Position *position) {
+    return abs(getNullMoveScore(position, 1)) >= MATE_LOWER;
 }
 
 bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[]) {
@@ -114,18 +116,6 @@ int getQuiescentDepth(int depth, Position *position, Move *move) {
     return depth - 1;
 }
 
-//    if(canNullMove && depth > 3 && !isEndGame){ // null move
-//        Position target;
-//        char targetBoard[SIZE];
-//        Position* duplicatePos = duplicatePosition(position, &target, targetBoard);
-//        rotate(duplicatePos, true);
-//        Move opponentMoves[MAX_BRANCHING_FACTOR];
-//        Move bestChildMove;
-//        int score = -alphaBeta(duplicatePos, depth - 3, -beta, -alpha, false, false, opponentMoves, &bestChildMove);
-//        if(score >= beta){
-//            return beta;
-//        }
-//    }
 
 int mtdf(Position* position, int firstGuess, int depth, Move* bestMove) {
     int g = firstGuess;
@@ -154,19 +144,19 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
                     Move moves[], Move* bestMoveToSave) {
     numNodes++;
 
-    TranspositionEntry* ttEntry = lookupTT(position->hash);
-    if (ttEntry != NULL && ttEntry->depth >= depth) {
-        if (ttEntry->type == EXACT) {
-            return ttEntry->score;
-        } else if (ttEntry->type == LOWER) {
-            alpha = (alpha > ttEntry->score ? alpha : ttEntry->score);
-        } else if (ttEntry->type == UPPER) {
-            beta = (beta < ttEntry->score ? beta : ttEntry->score);
-        }
-        if(alpha >= beta) {
-            return ttEntry->score;
-        }
-    }
+//    TranspositionEntry* ttEntry = lookupTT(position->hash);
+//    if (ttEntry != NULL && ttEntry->depth >= depth) {
+//        if (ttEntry->type == EXACT) {
+//            return ttEntry->score;
+//        } else if (ttEntry->type == LOWER) {
+//            alpha = (alpha > ttEntry->score ? alpha : ttEntry->score);
+//        } else if (ttEntry->type == UPPER) {
+//            beta = (beta < ttEntry->score ? beta : ttEntry->score);
+//        }
+//        if(alpha >= beta) {
+//            return ttEntry->score;
+//        }
+//    }
     int alphaOrig = alpha;
     int betaOrig = beta;
 
@@ -176,21 +166,30 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     if (position->score >= MATE_LOWER) {
         return MATE_UPPER;
     }
-    if (depth == 0) {
+    if (depth <= 0) {
         return position->score;
     }
 
     int numMoves = genMoves(position, moves);
-    if (doPatCheck && isPat(position, numMoves, moves)) {
-        return 0;
-    }
+//    if (doPatCheck && isPat(position, numMoves, moves)) {
+//        return 0;
+//    }
 
     currentBoard = position->board;
     qsort(moves, numMoves, sizeof(Move), compareMoves);
 
+    int g;
+    if(canNullMove && depth == 4 && !isEndGame){ // null move
+        getNullMoveScore(position, depth - 3); // why produces different score when commented???
+    }
+//    if(canNullMove && depth > 2 && !isEndGame){ // null move
+//    //if(false){ // no null move
+//        g = getNullMoveScore(position, depth - 3);
+//    } else {
+//        g = position->isWhite ? -INT_MAX : INT_MAX;
+//    }
     Position positionBackup;
     duplicatePosition(position, &positionBackup);
-    int g;
     if (position->isWhite) {
         g = -INT_MAX;
         for (int i = 0; beta > alpha && i < numMoves; i++) {
@@ -236,7 +235,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
             beta = (beta < score) ? beta : score;
         }
     }
-    saveScore(position->hash, depth, g, (g <= alphaOrig) ? UPPER : (g >= betaOrig) ? LOWER : EXACT, *bestMoveToSave);
+    //saveScore(position->hash, depth, g, (g <= alphaOrig) ? UPPER : (g >= betaOrig) ? LOWER : EXACT, *bestMoveToSave);
     return g;
 }
 
@@ -261,8 +260,8 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     initTranspositionTable();
     const int minDepth = 6;
     const int maxDepth = 6;
-    //for(int depth = 3; depth <= 3; depth++){
-    for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
+    for(int depth = 1; depth <= 5; depth++){
+    //for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
         score = alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
