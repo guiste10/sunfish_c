@@ -39,7 +39,7 @@ bool isKingInCheck(Position *position) {
     doMove(position, &nullMove);
     int score = alphaBeta(position, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
     undoMove(position, &nullMove, positionBackup);
-    return score >= MATE_LOWER;
+    return abs(score) >= MATE_LOWER;
 }
 
 bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[]) {
@@ -261,8 +261,8 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     initTranspositionTable();
     const int minDepth = 6;
     const int maxDepth = 6;
-    for(int depth = 3; depth <= 3; depth++){
-    //for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
+    //for(int depth = 3; depth <= 3; depth++){
+    for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
         score = alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
