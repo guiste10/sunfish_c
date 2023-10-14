@@ -18,9 +18,9 @@ char* currentBoard;
 bool isEndGame = false;
 
 int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove,
-              Move moves[MAX_BRANCHING_FACTOR], Move* bestMoveToSave);
+              Move moves[], Move* bestMoveToSave);
 
-bool onlyKingMoves(Move moves[MAX_BRANCHING_FACTOR], int numMoves, const char *board) {
+bool onlyKingMoves(Move moves[], int numMoves, const char *board) {
     for (int i=0; i<numMoves; i++){
         char fromPiece = *(board + moves[i].from);
         if(fromPiece != 'K' && fromPiece != 'k'){
@@ -42,7 +42,7 @@ bool isKingInCheck(Position *position) {
     return score >= MATE_LOWER;
 }
 
-bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[MAX_BRANCHING_FACTOR]) {
+bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[]) {
     for (int i=0; i < numMoves; i++){
         Move* move = &kingMoves[i];
         Position positionBackup;
@@ -59,7 +59,7 @@ bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[MA
     return true;
 }
 
-bool isPat(Position* position, int numMoves, Move moves[MAX_BRANCHING_FACTOR]) {
+bool isPat(Position* position, int numMoves, Move moves[]) {
     if(onlyKingMoves(moves, numMoves, position->board) && !isKingInCheck(position)) {
         return allKingMovesLeadToDeath(position, numMoves, moves);
     }
@@ -151,25 +151,24 @@ int mtdf(Position* position, int firstGuess, int depth, Move* bestMove) {
 }
 
 int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove,
-                    Move moves[MAX_BRANCHING_FACTOR], Move* bestMoveToSave) {
+                    Move moves[], Move* bestMoveToSave) {
     numNodes++;
 
     TranspositionEntry* ttEntry = lookupTT(position->hash);
     if (ttEntry != NULL && ttEntry->depth >= depth) {
-        if (ttEntry->type == LOWER) {
-            if(ttEntry->score >= beta){
-                return ttEntry->score;
-            }
+        if (ttEntry->type == EXACT) {
+            return ttEntry->score;
+        } else if (ttEntry->type == LOWER) {
             alpha = (alpha > ttEntry->score ? alpha : ttEntry->score);
         } else if (ttEntry->type == UPPER) {
-            if(ttEntry->score <= alpha) {
-                return ttEntry->score;
-            }
             beta = (beta < ttEntry->score ? beta : ttEntry->score);
-        } else { // exact minimax value is stored
+        }
+        if(alpha >= beta) {
             return ttEntry->score;
         }
     }
+    int alphaOrig = alpha;
+    int betaOrig = beta;
 
     if (position->score <= -MATE_LOWER) { // mated as white
         return -MATE_UPPER;
@@ -194,13 +193,12 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     int g;
     if (position->isWhite) {
         g = -INT_MAX;
-        int al = alpha;
-        for (int i = 0; g < beta && i < numMoves; i++) {
+        for (int i = 0; beta > alpha && i < numMoves; i++) {
             Move* move = &moves[i];
             doMove(position, move);
             Move opponentMoves[MAX_BRANCHING_FACTOR];
             Move bestChildMove;
-            int score = alphaBeta(position, getQuiescentDepth(depth, position, move), al, beta, true, true,
+            int score = alphaBeta(position, getQuiescentDepth(depth, position, move), alpha, beta, true, true,
                                   opponentMoves, &bestChildMove);
             undoMove(position, move, positionBackup);
             if (score >= MATE_LOWER) {
@@ -213,18 +211,17 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
                 g = score;
                 *bestMoveToSave = *move;
             }
-            al = (al > score) ? al : score;
+            alpha = (alpha > score) ? alpha : score;
         }
     } else {
         g = INT_MAX;
-        int be = beta;
-        for (int i = 0; g > alpha && i < numMoves; i++) {
+        for (int i = 0; beta > alpha && i < numMoves; i++) {
             Move* move = &moves[i];
             doMove(position, move);
             Move opponentMoves[MAX_BRANCHING_FACTOR];
             Move bestChildMove;
-            int score = alphaBeta(position, getQuiescentDepth(depth, position, move), alpha, be, true, true,
-                                        opponentMoves, &bestChildMove);
+            int score = alphaBeta(position, getQuiescentDepth(depth, position, move), alpha, beta, true, true,
+                                  opponentMoves, &bestChildMove);
             undoMove(position, move, positionBackup);
             if (score >= MATE_LOWER) {
                 score--; // winning mate found, add one point penalty per depth
@@ -236,10 +233,10 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
                 g = score;
                 *bestMoveToSave = *move;
             }
-            be = (be < score) ? be : score;
+            beta = (beta < score) ? beta : score;
         }
     }
-    saveScore(position->hash, depth, g, (g <= alpha) ? UPPER : (g >= beta) ? LOWER : EXACT, *bestMoveToSave);
+    saveScore(position->hash, depth, g, (g <= alphaOrig) ? UPPER : (g >= betaOrig) ? LOWER : EXACT, *bestMoveToSave);
     return g;
 }
 
@@ -264,7 +261,7 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     initTranspositionTable();
     const int minDepth = 6;
     const int maxDepth = 6;
-    for(int depth = 1; depth <= 8; depth++){
+    for(int depth = 3; depth <= 3; depth++){
     //for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
