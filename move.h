@@ -11,6 +11,8 @@ typedef struct {
     char pieceTo;
 } Move;
 
+extern const Move nullMove;
+
 void createMove(int from, int to, int prom, char pieceTo, Move* move);
 int parse(const char* c);
 void moveToUciMove(const Move *move, char uciMove[6]);

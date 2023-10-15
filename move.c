@@ -4,6 +4,8 @@
 #include <string.h>
 #include <ctype.h>
 
+const Move nullMove = {0, NULL_MOVE, 0};
+
 void createMove(int from, int to, int prom, char pieceTo, Move* move){
     move->from = from;
     move->to = to;

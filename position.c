@@ -146,7 +146,7 @@ int value(const Position *position, const Move *move) {
     return score;
 }
 
-void doMove(Position* position, Move* move) {
+void doMove(Position* position, const Move* move) {
     int from = move->from, to = move->to;
     char prom = ALL_PIECES[move->prom];
     char fromPiece = position->board[from];
@@ -158,6 +158,8 @@ void doMove(Position* position, Move* move) {
 
     if(to == NULL_MOVE){
         position->isWhite = !isWhite;
+        position->kp = 0;
+        position->ep = 0;
         return;
     }
 

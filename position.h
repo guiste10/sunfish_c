@@ -22,6 +22,6 @@ Position* duplicatePosition(Position* source, Position* target);
 
 int genMoves(Position * position, Move moves[MAX_BRANCHING_FACTOR]);
 
-void doMove(Position* position, Move* move);
+void doMove(Position* position, const Move* move);
 void undoMove(Position* position, Move* move, Position positionOld);
 #endif //SUNFISH_C_POSITION_H

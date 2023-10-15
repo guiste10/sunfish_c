@@ -17,8 +17,7 @@ int numNodes = 0;
 char* currentBoard;
 bool isEndGame = false;
 
-int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove,
-              Move moves[], Move* bestMoveToSave);
+int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove, Move moves[], Move* bestMoveToSave);
 
 bool onlyKingMoves(Move moves[], int numMoves, const char *board) {
     for (int i=0; i<numMoves; i++){
@@ -33,11 +32,8 @@ bool onlyKingMoves(Move moves[], int numMoves, const char *board) {
 int getNullMoveScore(Position *position, int depth) {
     Move opponentMoves[MAX_BRANCHING_FACTOR];
     Move bestChildMove;
-    Move nullMove = {0, NULL_MOVE, 0};
     Position duplicate;
     duplicatePosition(position, &duplicate);
-    duplicate.kp = 0;
-    duplicate.ep = 0;
     doMove(&duplicate, &nullMove);
     return alphaBeta(&duplicate, depth, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
 }
@@ -110,13 +106,12 @@ int compareMoves(const void* x, const void* y) {
 }
 
 int getQuiescentDepth(int depth, Position *position, Move *move) {
+    char fromPiece = position->board[move->from];
+    char toPiece = position->board[move->to];
+    if (depth == 1 && toPiece != '.' && pieceValues[PIECE_INDEXES_WHITE[fromPiece]] > pieceValues[PIECE_INDEXES_WHITE[toPiece]]) {
+        return depth; // search one more ply because risky capture
+    }
     return depth - 1;
-//    char fromPiece = position->board[move->from];
-//    char toPiece = position->board[move->to];
-//    if (depth == 1 && toPiece != '.' && pieceValues[PIECE_INDEXES_WHITE[fromPiece]] > pieceValues[PIECE_INDEXES_WHITE[toPiece]]) {
-//        return depth; // search one more ply
-//    }
-//    return depth - 1;
 }
 
 
@@ -257,7 +252,6 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool canFurtherIncreaseDepth = true;
     initTranspositionTable();
     const int minDepth = 7;
-    const int maxDepth = 6;
     //for(int depth = 1; depth <= 8; depth++){
     for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
