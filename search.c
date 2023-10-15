@@ -18,7 +18,7 @@ char* currentBoard;
 bool isEndGame = false;
 
 int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove,
-              Move moves[], Move* bestMoveToSave, bool nullMoveFlow);
+              Move moves[], Move* bestMoveToSave);
 
 bool onlyKingMoves(Move moves[], int numMoves, const char *board) {
     for (int i=0; i<numMoves; i++){
@@ -39,7 +39,7 @@ int getNullMoveScore(Position *position, int depth) {
     duplicate.kp = 0;
     duplicate.ep = 0;
     doMove(&duplicate, &nullMove);
-    return alphaBeta(&duplicate, depth, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove, true);
+    return alphaBeta(&duplicate, depth, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
 }
 
 bool isKingInCheck(Position *position) {
@@ -54,7 +54,7 @@ bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[])
         doMove(position, move);
         Move opponentMoves[MAX_BRANCHING_FACTOR];
         Move bestChildMove;
-        int score = alphaBeta(position, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove, false);
+        int score = alphaBeta(position, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
         undoMove(position, move, positionBackup);
         if (abs(score) < MATE_LOWER) { // one safe move has been found
             return false;
@@ -110,43 +110,42 @@ int compareMoves(const void* x, const void* y) {
 }
 
 int getQuiescentDepth(int depth, Position *position, Move *move) {
-    char fromPiece = position->board[move->from];
-    char toPiece = position->board[move->to];
-    if (depth == 1 && toPiece != '.' && pieceValues[PIECE_INDEXES_WHITE[fromPiece]] > pieceValues[PIECE_INDEXES_WHITE[toPiece]]) {
-        return depth; // search one more ply
-    }
     return depth - 1;
+//    char fromPiece = position->board[move->from];
+//    char toPiece = position->board[move->to];
+//    if (depth == 1 && toPiece != '.' && pieceValues[PIECE_INDEXES_WHITE[fromPiece]] > pieceValues[PIECE_INDEXES_WHITE[toPiece]]) {
+//        return depth; // search one more ply
+//    }
+//    return depth - 1;
 }
 
 
-//int mtdf(Position* position, int firstGuess, int depth, Move* bestMove) {
-//    int g = firstGuess;
-//    int upperBound = INT_MAX;
-//    int lowerBound = INT_MIN;
-//
-//    while (lowerBound < upperBound) {
-//        int beta;
-//        if (g == lowerBound)
-//            beta = g + 1;
-//        else
-//            beta = g;
-//
-//        Move moves[MAX_BRANCHING_FACTOR];
-//        g = alphaBeta(position, depth, beta - 1, beta, true, true, moves, bestMove);
-//        if (g < beta)
-//            upperBound = g;
-//        else
-//            lowerBound = g;
-//    }
-//
-//    return g;
-//}
+int mtdf(Position* position, int firstGuess, int depth, Move* bestMove) {
+    int g = firstGuess;
+    int upperBound = INT_MAX;
+    int lowerBound = INT_MIN;
+
+    while (lowerBound < upperBound) {
+        int beta;
+        if (g == lowerBound)
+            beta = g + 1;
+        else
+            beta = g;
+
+        Move moves[MAX_BRANCHING_FACTOR];
+        g = alphaBeta(position, depth, beta - 1, beta, true, true, moves, bestMove);
+        if (g < beta)
+            upperBound = g;
+        else
+            lowerBound = g;
+    }
+
+    return g;
+}
 
 int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove,
-                    Move moves[], Move* bestMoveToSave, bool nullMoveFlow) {
-    if(!nullMoveFlow){
-        numNodes++;
-    }
+                    Move moves[], Move* bestMoveToSave) {
+    numNodes++;
 
     TranspositionEntry* ttEntry = lookupTT(position->hash);
     if (ttEntry != NULL && ttEntry->depth >= depth) {
@@ -198,7 +197,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
             Move opponentMoves[MAX_BRANCHING_FACTOR];
             Move bestChildMove;
             int score = alphaBeta(position, getQuiescentDepth(depth, position, move), alpha, beta, true, true,
-                                  opponentMoves, &bestChildMove, nullMoveFlow);
+                                  opponentMoves, &bestChildMove);
             undoMove(position, move, positionBackup);
             if (score >= MATE_LOWER) {
                 score--; // winning mate found, add one point penalty per depth
@@ -219,7 +218,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
             Move opponentMoves[MAX_BRANCHING_FACTOR];
             Move bestChildMove;
             int score = alphaBeta(position, getQuiescentDepth(depth, position, move), alpha, beta, true, true,
-                                  opponentMoves, &bestChildMove, nullMoveFlow);
+                                  opponentMoves, &bestChildMove);
             undoMove(position, move, positionBackup);
             if (score >= MATE_LOWER) {
                 score--; // winning mate found, add one point penalty per depth
@@ -235,10 +234,6 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
         }
     }
     saveScore(position->hash, depth, bestScore, (bestScore <= alphaOrig) ? UPPER : (bestScore >= betaOrig) ? LOWER : EXACT, *bestMoveToSave);
-    //if(!nullMoveFlow){
-        //printf("depth %d score %d numNodes %d ", depth, bestScore, numNodes);
-        //fflush(stdout);
-    //}
     return bestScore;
 }
 
@@ -261,14 +256,14 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool isMate = false;
     bool canFurtherIncreaseDepth = true;
     initTranspositionTable();
-    const int minDepth = 6;
+    const int minDepth = 7;
     const int maxDepth = 6;
     //for(int depth = 1; depth <= 8; depth++){
     for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
-        score = alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove, false);
-        //score = mtdf(position, score, depth, bestMove);
+        //score = alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove, false);
+        score = mtdf(position, score, depth, bestMove);
         timeTakenMs = clock() - start;
         double nps = timeTakenMs == 0.0 ? 0 : numNodes/(timeTakenMs/1000.0);
         printf("info depth %d time %.2f nps %.2f\n", depth, timeTakenMs, nps);
