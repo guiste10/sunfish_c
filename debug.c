@@ -102,7 +102,8 @@ void findBestMoveTimeStamped(char* boardToUse) {
     Position pos;
     Position* position = &pos;
     char board[SIZE];
-    initPosition(position, board, boardToUse);
+    uint64_t history[MAX_PLY_CHESS_GAME];
+    initPosition(position, board, boardToUse, 0);
     printf("Current board\n");
     printCharArray(board, SIZE);
     clock_t start = clock();
@@ -123,7 +124,8 @@ void findBestMoveFromUciPosition(char uciPosition[MAX_ARGS]) {
 
     fillArgs(uciPosition, args, &numArgs);
     char initialBoardCopy[SIZE];
-    setupPositionWithMoveList(position, initialBoardCopy, &isWhite, args, numArgs);
+    uint64_t history[MAX_PLY_CHESS_GAME];
+    setupPositionWithMoveList(position, initialBoardCopy, &isWhite, args, numArgs, history);
     printf("Current board\n");
     printCharArray(position->board, SIZE);
     Move bestMove;

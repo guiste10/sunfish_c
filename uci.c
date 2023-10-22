@@ -18,8 +18,8 @@ void fillArgs(char* line, char* args[MAX_ARGS], int* numArgs){
     }
 }
 
-void setupPositionWithMoveList(Position* position, char* initialBoardCopy, bool* isWhite, char *uciMoves[1000], int numArgs){
-    initPosition(position, initialBoardCopy, (char*)initialBoard);
+void setupPositionWithMoveList(Position* position, char* initialBoardCopy, bool* isWhite, char *uciMoves[1000], int numArgs, uint64_t* history){
+    initPosition(position, initialBoardCopy, (char *) initialBoard, history);
     for (int ply = 0; ply < numArgs - 3; ply++) {
         char *uciMove = uciMoves[3 + ply];
         Move move;
@@ -37,6 +37,7 @@ void playUci(){
     Position pos;
     Position* position = &pos;
     char initialBoardCopy[SIZE];
+    uint64_t history[MAX_PLY_CHESS_GAME];
 
     while (1) {
         fgets(line, sizeof(line), stdin);
@@ -54,7 +55,7 @@ void playUci(){
             break;
         } else if (numArgs >= 2 && strcmp(args[0], "position") == 0 && strcmp(args[1], "startpos") == 0) {
             isWhite = true;
-            setupPositionWithMoveList(position, initialBoardCopy, &isWhite, args, numArgs);
+            setupPositionWithMoveList(position, initialBoardCopy, &isWhite, args, numArgs, history);
         } else if (strcmp(args[0], "go") == 0) {
             Move best;
             Move* bestMove = &best;

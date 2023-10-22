@@ -142,6 +142,16 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
                     Move moves[], Move* bestMoveToSave) {
     numNodes++;
 
+    int repetitionCount = 0;
+    for(int ply = position->plyIrreversible; ply < position->currentPly; ply++){
+        if(position->history[ply] == position->hash){
+            repetitionCount++;
+        }
+        if(repetitionCount == 2) {
+            return 0;
+        }
+    }
+
     TranspositionEntry* ttEntry = lookupTT(position->hash);
     if (ttEntry != NULL && ttEntry->depth >= depth) {
         if (ttEntry->type == EXACT) {
@@ -252,7 +262,7 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool canFurtherIncreaseDepth = true;
     initTranspositionTable();
     const int minDepth = 7;
-    //for(int depth = 1; depth <= 8; depth++){
+    //for(int depth = 1; depth <= 7; depth++){
     for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;

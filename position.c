@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-void initPosition(Position* position, char* boardCopy, char* boardToUse){
+void initPosition(Position *position, char *boardCopy, char *boardToUse, uint64_t* history) {
     copyBoard(boardCopy, boardToUse);
     position->board = boardCopy;
     position->score = 0;
@@ -20,6 +20,10 @@ void initPosition(Position* position, char* boardCopy, char* boardToUse){
     position->kp = 0;
     position->isWhite = 1;
     setInitialZobristHash(position);
+    position->history = history;
+    position->history[0] = position->hash;
+    position->plyIrreversible = 0;
+    position->currentPly = 0;
 }
 
 Position* duplicatePosition(Position* source, Position* target){
@@ -33,6 +37,9 @@ Position* duplicatePosition(Position* source, Position* target){
     target->kp = source->kp;
     target->isWhite = source->isWhite;
     target->hash = source->hash;
+    target->history = source->history; // shallow copy!
+    target->plyIrreversible = source->plyIrreversible;
+    target->currentPly = source->currentPly;
     return target;
 }
 
@@ -146,6 +153,12 @@ int value(const Position *position, const Move *move) {
     return score;
 }
 
+bool isIrreversibleMove(const Move* move, Position* position){
+    return move->pieceTo != EMPTY_SQUARE || position->ep != 0 || position->kp != 0
+    || toupper(position->board[move->from]) == 'P';
+}
+
+
 void doMove(Position* position, const Move* move) {
     int from = move->from, to = move->to;
     char prom = ALL_PIECES[move->prom];
@@ -154,12 +167,15 @@ void doMove(Position* position, const Move* move) {
     int fromPieceIndex = PIECE_INDEXES[fromPiece];
     int isWhite = position->isWhite;
 
+    position->currentPly++;
     position->hash ^= blackToMoveHash;
 
     if(to == NULL_MOVE){
         position->isWhite = !isWhite;
         position->kp = 0;
         position->ep = 0;
+        position->history[position->currentPly] = position->hash;
+        position->plyIrreversible = position->currentPly;
         return;
     }
 
@@ -241,6 +257,10 @@ void doMove(Position* position, const Move* move) {
         }
     }
     position->isWhite = !isWhite;
+    position->history[position->currentPly] = position->hash;
+    if(isIrreversibleMove(move, position)){
+        position->plyIrreversible = position->currentPly;
+    }
 }
 
 void undoMove(Position* position, Move* move, Position positionOld){

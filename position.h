@@ -14,9 +14,12 @@ typedef struct {
     int kp; // square where the king has walked but not stopped during castling (e.g. f1 or d1 for white)
     int isWhite;
     uint64_t hash;
+    uint64_t *history;
+    int plyIrreversible;
+    int currentPly;
 } Position;
 
-void initPosition(Position* position, char* boardCopy, char* boardToUse);
+void initPosition(Position *position, char *boardCopy, char *boardToUse, uint64_t* history);
 
 Position* duplicatePosition(Position* source, Position* target);
 
