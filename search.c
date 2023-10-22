@@ -106,8 +106,8 @@ int compareMoves(const void* x, const void* y) {
 }
 
 int getQuiescentDepth(int depth, Position *position, Move *move) {
-    char fromPiece = position->board[move->from];
-    char toPiece = position->board[move->to];
+    char fromPiece = position->board[move->to];
+    char toPiece = move->pieceTo;
     if (depth == 1 && toPiece != '.' && pieceValues[PIECE_INDEXES_WHITE[fromPiece]] > pieceValues[PIECE_INDEXES_WHITE[toPiece]]) {
         return depth; // search one more ply because risky capture
     }
@@ -261,7 +261,7 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool isMate = false;
     bool canFurtherIncreaseDepth = true;
     initTranspositionTable();
-    const int minDepth = 7;
+    const int minDepth = 6;
     //for(int depth = 1; depth <= 7; depth++){
     for(int depth = 1; !isMate && (depth <= minDepth || canFurtherIncreaseDepth); depth++){
         Move moves[MAX_BRANCHING_FACTOR];
