@@ -8,5 +8,6 @@ extern int pieceValues[NUM_WHITE_PIECES];
 extern int PST[6][SIZE];
 
 void initPst();
+void initEndGamePst();
 
 #endif //SUNFISH_C_PIECESQUARETABLES_H

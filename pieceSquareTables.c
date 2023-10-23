@@ -1,4 +1,5 @@
 #include "constants.h"
+#include "chessBoard.h"
 
 const int pawnVal = 100;
 const int knightVal = 280;
@@ -101,6 +102,21 @@ int PST[NUM_PIECES][SIZE] = {
         },
 };
 
+int pstKingEndGame[SIZE] = {
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 5, 5, 5, 5, 5, 5, 0, 0,
+        0, 0, 5, 10, 10, 10, 10, 5, 0, 0,
+        0, 0, 5, 10, 10, 10, 10, 5, 0, 0,
+        0, 0, 5, 10, 10, 10, 10, 5, 0, 0,
+        0, 0, 5, 10, 10, 10, 10, 5, 0, 0,
+        0, 0, 5, 5, 5, 5, 5, 5, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
 void initPst(){
     for(int piece=NUM_WHITE_PIECES; piece < NUM_PIECES; piece++){ // initialize PST for black based on white's PST
         for(int row = 0; row < NUM_ROWS; row++){
@@ -109,10 +125,22 @@ void initPst(){
             }
         }
     }
-    //printIntArray(PST[7], 120);
     for(int piece=0; piece < NUM_PIECES; piece++){ // add piece values to the PST's
         for(int square=0; square < SIZE; square++){
             PST[piece][square] += pieceValues[piece];
         }
+    }
+}
+
+void initEndGamePst() {
+    for (int row = 0; row < NUM_ROWS; row++) {
+        for (int col = 0; col < NUM_FILES; col++) {
+            PST[K][(10 * row) + col] = pstKingEndGame[(10 * row) + col];
+            PST[k][(10 * row) + col] = -pstKingEndGame[(10 * row) + col];
+        }
+    }
+    for (int square = 0; square < SIZE; square++) {
+        PST[K][square] += pieceValues[K];
+        PST[k][square] += pieceValues[k];
     }
 }
