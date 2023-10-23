@@ -278,7 +278,7 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
         score = mtdf(position, score, depth, bestMove);
         timeTakenMs = clock() - start;
         double nps = timeTakenMs == 0.0 ? 0 : numNodes/(timeTakenMs/1000.0);
-        printf("info depth %d time %d nps %.2f\n", depth, (int)timeTakenMs, nps);
+        printf("info depth %d time %d nps %d\n", depth, (int)timeTakenMs, (int)nps);
         char bestMoveUci[6];
         moveToUciMove(bestMove, bestMoveUci);
         printf("info pv %s score cp %d\n", bestMoveUci, score);
