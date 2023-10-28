@@ -176,8 +176,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     Position positionBackup;
     if(alpha <= beta) { // only sort moves if there is no alpha-beta pruning caused by null move heuristic
         flagMovesWithType(moves, numMoves, depth, hasBestTTMove, &bestMoveTT);
-        currentBoard = position->board;
-        sortMoves(moves, numMoves);
+        sortMoves(moves, numMoves, position->board);
         duplicatePosition(position, &positionBackup);
     }
 

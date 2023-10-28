@@ -46,21 +46,22 @@ Position* duplicatePosition(Position* source, Position* target){
 int genMoves(Position* position, Move moves[MAX_BRANCHING_FACTOR]) { // For each friendly piece, iterate through each possible 'ray' of moves as defined in the 'directions' map. The rays are broken e.g. by captures or immediately in case of pieces such as knights.
     int moveIndex = 0;
     int isWhite = position->isWhite;
+    char* board = position->board;
     for (int from = 0; from < SIZE ; from++) {
-        char pieceFrom = position->board[from];
+        char pieceFrom = board[from];
         if ((isWhite && !isupper(pieceFrom)) || (!isWhite && !islower(pieceFrom)))
             continue;
         int* pieceDirections = (int*)DIRECTIONS[PIECE_INDEXES[pieceFrom]];
         for (int dirIndex = 0; *(pieceDirections + dirIndex) != ARRAY_END; dirIndex++) {
             int d = *(pieceDirections + dirIndex);
             for (int to = from + d; to >= 0 && to < SIZE; to += d) {
-                char pieceTo = position->board[to];
+                char pieceTo = board[to];
                 if (isspace(pieceTo) || ((isWhite && isupper(pieceTo)) || (!isWhite && islower(pieceTo)))) // Stay inside the board, and off friendly pieces
                     break;
                 if (pieceFrom == 'P') { // Pawn move, double move and pieceTo
                     if ((d == NORTH || d == NORTH + NORTH) && pieceTo != '.')
                         break;
-                    if (d == NORTH + NORTH && (from < A1 + NORTH || position->board[from + NORTH] != '.')) // forbidden double move (pawn is not on initial rank or obstruction mid-road
+                    if (d == NORTH + NORTH && (from < A1 + NORTH || board[from + NORTH] != '.')) // forbidden double move (pawn is not on initial rank or obstruction mid-road
                         break;
                     if ((d == NORTH + WEST || d == NORTH + EAST) && pieceTo == '.' && to != position->ep
                         && to != position->kp - 1 && to != position->kp && to != position->kp + 1) // for castling check detection
@@ -74,7 +75,7 @@ int genMoves(Position* position, Move moves[MAX_BRANCHING_FACTOR]) { // For each
                 if (pieceFrom == 'p') { // Pawn move, double move and pieceTo
                     if ((d == SOUTH || d == SOUTH + SOUTH) && pieceTo != '.')
                         break;
-                    if (d == SOUTH + SOUTH && (from > H8 + SOUTH || position->board[from + SOUTH] != '.'))
+                    if (d == SOUTH + SOUTH && (from > H8 + SOUTH || board[from + SOUTH] != '.'))
                         break;
                     if ((d == SOUTH + WEST || d == SOUTH + EAST) && pieceTo == '.' && to != position->ep
                         && to != position->kp - 1 && to != position->kp && to != position->kp + 1) // for castling check detection
@@ -91,13 +92,13 @@ int genMoves(Position* position, Move moves[MAX_BRANCHING_FACTOR]) { // For each
                 if (!isWhite && strchr("pnk", pieceFrom) != NULL || isupper(pieceTo)) // Stop crawlers from sliding, and sliding after captures
                     break;
                 if (
-                        (isWhite && from == A1 && position->board[to + EAST] == 'K' && position->wc[0]) ||
-                        (!isWhite && from == A8 && position->board[to + EAST] == 'k' && position->bc[0])
+                        (isWhite && from == A1 && board[to + EAST] == 'K' && position->wc[0]) ||
+                        (!isWhite && from == A8 && board[to + EAST] == 'k' && position->bc[0])
                         ) // Castling, by sliding the rook next to the king, from = king's square
                     createMove(to + EAST, to + WEST, NO_PROMOTION, pieceTo, &moves[moveIndex++]);
                 if (
-                        (isWhite && from == H1 && position->board[to + WEST] == 'K' && position->wc[1]) ||
-                        (!isWhite && from == H8 && position->board[to + WEST] == 'k' && position->bc[1])
+                        (isWhite && from == H1 && board[to + WEST] == 'K' && position->wc[1]) ||
+                        (!isWhite && from == H8 && board[to + WEST] == 'k' && position->bc[1])
                         ) // Castling, by sliding the rook next to the king, from = king's square
                     createMove(to + WEST, to + EAST, NO_PROMOTION, pieceTo, &moves[moveIndex++]);
             }

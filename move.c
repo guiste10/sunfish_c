@@ -7,13 +7,15 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-const int nullType = 0;
+const int nullType = -1;
+const int unknownType = 0;
 const int pvType = 1;
 const int winningCaptureType = 3;
 const int killerType = 2; // non capturing!
 const int equalCaptureType = 4;
 const int losingCaptureType = 5;
-const int quietType = 6;
+const int promotionType = 6;
+const int quietType = 7;
 
 const Move nullMove = {nullType};
 
@@ -24,7 +26,7 @@ void createMove(int from, int to, int prom, char pieceTo, Move* move){
     move->to = to;
     move->prom = prom;
     move->pieceTo = pieceTo;
-    move->moveType = 3;
+    move->moveType = unknownType;
 }
 
 int parseUciSquareToBoardIndex(const char* uciSquare) {
@@ -136,6 +138,7 @@ int compareMoves(const void* x, const void* y) { // todo order losing captures a
     return isupper(fromPieceA) ? scoreB - scoreA : scoreA - scoreB;
 }
 
-void sortMoves(Move moves[], int numMoves) {
+void sortMoves(Move moves[], int numMoves, char *board) {
+    currentBoard = board;
     qsort(moves, numMoves, sizeof(Move), compareMoves);
 }
