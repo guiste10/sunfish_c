@@ -183,12 +183,8 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
         return 0;
     }
 
-    currentBoard = position->board;
-    qsort(moves, numMoves, sizeof(Move), compareMoves);
-
     int bestScore;
     if(canNullMove && depth > 2 && !isEndGame){ // null move
-    //if(false){ // no null move
         bestScore = getNullMoveScore(position, depth - 3);
         if(position->isWhite) {
             alpha = (alpha > bestScore) ? alpha : bestScore;
@@ -198,8 +194,14 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     } else {
         bestScore = position->isWhite ? -INT_MAX : INT_MAX;
     }
+
     Position positionBackup;
-    duplicatePosition(position, &positionBackup);
+    if(alpha <= beta) {
+        currentBoard = position->board;
+        qsort(moves, numMoves, sizeof(Move), compareMoves);
+        duplicatePosition(position, &positionBackup);
+    }
+
     if (position->isWhite) {
         for (int i = 0; beta > alpha && i < numMoves; i++) {
             Move* move = &moves[i];
