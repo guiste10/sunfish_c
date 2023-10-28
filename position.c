@@ -118,7 +118,7 @@ int value(const Position *position, const Move *move) {
     int friendlyPieceIndex = PIECE_INDEXES[fromPiece];
     int score = PST[friendlyPieceIndex][to] - PST[friendlyPieceIndex][from];
 
-    if (isalpha(toPiece)) { // Capture
+    if (toPiece != '.') { // Capture
         int enemyPieceIndex = PIECE_INDEXES[toPiece];
         score -= PST[enemyPieceIndex][to];
     }
@@ -180,7 +180,6 @@ void doMove(Position* position, const Move* move) {
         return;
     }
 
-    //position->score = position->score + move->moveValue;
     position->score = position->score + value(position, move);
 
     position->hash ^= pieceHashForSquares[fromPieceIndex][from] ^ pieceHashForSquares[fromPieceIndex][to];
@@ -304,17 +303,16 @@ void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, bool hasTTBes
             move->moveType = pvType; // pv move will first move in the moves lost after sorting
         } else if(move->prom != NO_PROMOTION) {
             move->moveType = promotionType;
-        } else if(board[from] == 'P' || board[from] == 'p' && to == position->ep) {
-            move->moveType = equalCaptureType;
-        } else if(move->pieceTo == '.') {
-            move->moveType = nonCaptureType;
-        } else {
+        } else if(move->pieceTo != '.' || (board[from] == 'P' || board[from] == 'p' && to == position->ep)) { // capture or en passant
             char fromPiece = board[from];
             char toPiece = board[to];
-            move->moveType = PIECE_INDEXES_WHITE[fromPiece] == PIECE_INDEXES_WHITE[toPiece]
-                    ? equalCaptureType : move->moveValue > 0 ? winningCaptureType : losingCaptureType;
+            move->moveValue = move->pieceTo != '.' ? pieceValues[PIECE_INDEXES_WHITE[toPiece]] - pieceValues[PIECE_INDEXES_WHITE[fromPiece]] : 0;
+            move->moveType = move->moveValue == 0 ? equalCaptureType : move->moveValue > 0 ? winningCaptureType : losingCaptureType;
+        } else {
+            move->moveType = nonCaptureType;
+            int pieceIndex = PIECE_INDEXES_WHITE[board[move->from]];
+            move->moveValue = PST[pieceIndex][move->to] - PST[pieceIndex][move->from];
         }
-        //move->moveValue = value(position, move);
 
 
 //        for(int killerMove = 0; killerMove < NUM_KILLER_MOVES_TO_SAVE_PER_DEPTH; killerMove++) {

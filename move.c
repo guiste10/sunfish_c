@@ -13,8 +13,8 @@ const int promotionType = 2;
 const int winningCaptureType = 3;
 const int equalCaptureType = 4;
 const int killerType = 5; // non capturing!
-const int nonCaptureType = 7;
-const int losingCaptureType = 6;
+const int nonCaptureType = 6;
+const int losingCaptureType = 7;
 
 const Move nullMove = {nullType};
 
@@ -26,6 +26,7 @@ void createMove(int from, int to, int prom, char pieceTo, Move* move){
     move->prom = prom;
     move->pieceTo = pieceTo;
     move->moveType = unknownType;
+    move->moveValue = 0;
 }
 
 int parseUciSquareToBoardIndex(const char* uciSquare) {
@@ -80,16 +81,11 @@ bool equalMoves(const Move* moveA, const Move* moveB) {
 int compareMoves(const void* x, const void* y) { // todo find move order according to type
     Move* moveA = (Move*)x;
     Move* moveB = (Move*)y;
-//    if(moveA->moveType != moveB->moveType) {
+//    if(moveA->moveType != moveB->moveType) { // why not better???
 //        return moveA->moveType - moveB->moveType; // moveType closer to 0 is ordered first
 //    }
-//  return isupper(currentBoard[moveA->from]) ? moveB->moveValue - moveA->moveValue : moveA->moveValue - moveB->moveValue;
-    if(moveA->moveType == pvType){
-        return -1;
-    }
-    if(moveB->moveType == pvType){
-        return 1;
-    }
+//    return moveB->moveValue - moveA->moveValue;
+
     int promA = moveA->prom;
     int promB = moveB->prom;
     if(promA != NO_PROMOTION && promB != NO_PROMOTION){
