@@ -154,7 +154,7 @@ int value(const Position *position, const Move *move) {
     return score;
 }
 
-bool isIrreversibleMove(const Move* move, Position* position){
+bool isIrreversibleMove(const Move* move, Position* position){ // to know where to start checking for threefold repetition
     return move->pieceTo != EMPTY_SQUARE || position->ep != 0 || position->kp != 0
     || toupper(position->board[move->from]) == 'P';
 }
@@ -292,13 +292,29 @@ void undoMove(Position* position, Move* move, Position positionOld){
     *position = positionOld;
 }
 
-void assignMoveTypesToMoves(Move *moves, int numMoves, int depth, bool hasTTBestMove, Move *ttBestMove, Position* position) {
+void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, bool hasTTBestMove, Move *ttBestMove, Position* position) {
     Move* move;
     for (int bestTTMoveIndex=0; bestTTMoveIndex < numMoves; bestTTMoveIndex++) {
         move = &moves[bestTTMoveIndex];
+        char* board = position->board;
+        int from = move->from;
+        int to = move->to;
         if(hasTTBestMove && equalMoves(move, ttBestMove)) {
             move->moveType = pvType; // pv move will first move in the moves lost after sorting
+        } else if(move->prom != NO_PROMOTION) {
+            move->moveType = promotionType;
+        } else if(board[from] == 'P' || board[from] == 'p' && to == position->ep) {
+            move->moveType = equalCaptureType;
+        } else if(move->pieceTo == '.') {
+            move->moveType = nonCaptureType;
+        } else {
+            char fromPiece = board[from];
+            char toPiece = board[to];
+            move->moveType = PIECE_INDEXES_WHITE[fromPiece] == PIECE_INDEXES_WHITE[toPiece]
+                    ? equalCaptureType : move->moveValue > 0 ? winningCaptureType : losingCaptureType;
         }
+        move->moveValue = value(position, move);
+
 
 //        for(int killerMove = 0; killerMove < NUM_KILLER_MOVES_TO_SAVE_PER_DEPTH; killerMove++) {
 //            if(equalMoves(move, &killerMovesTable[depth][killerMove])) {

@@ -10,6 +10,7 @@ typedef struct {
     int to;
     int prom;
     char pieceTo;
+    int moveValue;
 } Move;
 
 extern char* currentBoard; // for sorting the moves
@@ -17,12 +18,12 @@ extern char* currentBoard; // for sorting the moves
 extern const int nullType;
 extern const int unknownType;
 extern const int pvType;
-extern const int winningCaptureType;
-extern const int killerType; // non capturing!
-extern const int equalCaptureType;
-extern const int losingCaptureType;
 extern const int promotionType;
+extern const int winningCaptureType;
+extern const int equalCaptureType;
+extern const int killerType; // non capturing!
 extern const int nonCaptureType;
+extern const int losingCaptureType;
 
 extern const Move nullMove;
 

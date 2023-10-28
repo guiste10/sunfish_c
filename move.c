@@ -1,8 +1,6 @@
 #include "move.h"
 #include "chessBoard.h"
 #include "utils.h"
-#include "killerMovesTable.h"
-#include "pieceSquareTables.h"
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -14,8 +12,8 @@ const int promotionType = 2;
 const int winningCaptureType = 3;
 const int equalCaptureType = 4;
 const int killerType = 5; // non capturing!
-const int nonCaptureType = 6;
-const int losingCaptureType = 7;
+const int nonCaptureType = 7;
+const int losingCaptureType = 6;
 
 const Move nullMove = {nullType};
 
@@ -78,49 +76,13 @@ bool equalMoves(const Move* moveA, const Move* moveB) {
 }
 
 
-int compareMoves(const void* x, const void* y) { // todo order losing captures after non captures
+int compareMoves(const void* x, const void* y) { // todo find move order according to type
     Move* moveA = (Move*)x;
     Move* moveB = (Move*)y;
-    if(moveA->moveType == pvType){
-        return -1;
-    }
-    if(moveB->moveType == pvType){
-        return 1;
-    }
-    int promA = moveA->prom;
-    int promB = moveB->prom;
-    if(promA != NO_PROMOTION && promB != NO_PROMOTION){
-        return promB - promA;
-    }
-    else if(promA != NO_PROMOTION){
-        return -1;
-    }
-    else if(promB != NO_PROMOTION){
-        return 1;
-    }
-    char toPieceA = currentBoard[moveA->to];
-    char toPieceB = currentBoard[moveB->to];
-    if(toPieceA != '.' && toPieceB != '.'){
-        char fromPieceA = currentBoard[moveA->from];
-        char fromPieceB = currentBoard[moveB->from];
-        return (pieceValues[PIECE_INDEXES_WHITE[toPieceB]] - pieceValues[PIECE_INDEXES_WHITE[fromPieceB]]) -
-               (pieceValues[PIECE_INDEXES_WHITE[toPieceA]] - pieceValues[PIECE_INDEXES_WHITE[fromPieceA]]); // prioritize winning captures (e.g. pawn takes queen)
-    }
-    else if(toPieceA != '.'){
-        return -1; // negative number -> move A must be ordered before move B since it is a pieceTo
-    }
-    else if(toPieceB != '.'){
-        return 1;
-    }
-    char fromPieceA = currentBoard[moveA->from];
-    char fromPieceB = currentBoard[moveB->from];
-    int pieceIndexA = PIECE_INDEXES[fromPieceA];
-    int pieceIndexB = PIECE_INDEXES[fromPieceB];
-
-    int scoreA = PST[pieceIndexA][moveA->to] - PST[pieceIndexB][moveA->from];
-    int scoreB = PST[pieceIndexB][moveB->to] - PST[pieceIndexB][moveB->from];
-
-    return isupper(fromPieceA) ? scoreB - scoreA : scoreA - scoreB;
+//    if(moveA->moveType != moveB->moveType) {
+//        return moveA->moveType - moveB->moveType; // moveType closer to 0 is ordered first
+//    }
+    return isupper(currentBoard[moveA->from]) ? moveB->moveValue - moveA->moveValue : moveA->moveValue - moveB->moveValue;
 }
 
 void sortMoves(Move moves[], int numMoves, char *board) {
