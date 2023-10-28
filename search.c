@@ -258,8 +258,8 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     //initKillerMovesTable();
     const int minDepth = 6;
     const int maxDepth = 8;
-    //for(int depth = 1; depth <= 6; depth++){
-    for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
+    for(int depth = 1; depth <= 7; depth++){
+    //for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
         //score = alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);

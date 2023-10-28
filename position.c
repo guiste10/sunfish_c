@@ -180,6 +180,7 @@ void doMove(Position* position, const Move* move) {
         return;
     }
 
+    //position->score = position->score + move->moveValue;
     position->score = position->score + value(position, move);
 
     position->hash ^= pieceHashForSquares[fromPieceIndex][from] ^ pieceHashForSquares[fromPieceIndex][to];
@@ -313,7 +314,7 @@ void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, bool hasTTBes
             move->moveType = PIECE_INDEXES_WHITE[fromPiece] == PIECE_INDEXES_WHITE[toPiece]
                     ? equalCaptureType : move->moveValue > 0 ? winningCaptureType : losingCaptureType;
         }
-        move->moveValue = value(position, move);
+        //move->moveValue = value(position, move);
 
 
 //        for(int killerMove = 0; killerMove < NUM_KILLER_MOVES_TO_SAVE_PER_DEPTH; killerMove++) {
