@@ -11,10 +11,10 @@
 #include "chessBoard.h"
 #include "search.h"
 #include "transpositionTable.h"
+#include "killerMovesTable.h"
 
 
 int numNodes = 0;
-char* currentBoard;
 bool isEndGame = false;
 
 int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove, Move moves[], Move* bestMoveToSave);
@@ -66,51 +66,6 @@ bool isPat(Position* position, int numMoves, Move moves[]) {
     return false;
 }
 
-int compareMoves(const void* x, const void* y) { // todo order losing captures after non captures
-    Move* moveA = (Move*)x;
-    Move* moveB = (Move*)y;
-    if(moveA->isPvMove == true){
-        return -1;
-    }
-    if(moveB->isPvMove == true){
-        return 1;
-    }
-    int promA = moveA->prom;
-    int promB = moveB->prom;
-    if(promA != NO_PROMOTION && promB != NO_PROMOTION){
-        return promB - promA;
-    }
-    else if(promA != NO_PROMOTION){
-        return -1;
-    }
-    else if(promB != NO_PROMOTION){
-        return 1;
-    }
-    char toPieceA = currentBoard[moveA->to];
-    char toPieceB = currentBoard[moveB->to];
-    if(toPieceA != '.' && toPieceB != '.'){
-        char fromPieceA = currentBoard[moveA->from];
-        char fromPieceB = currentBoard[moveB->from];
-        return (pieceValues[PIECE_INDEXES_WHITE[toPieceB]] - pieceValues[PIECE_INDEXES_WHITE[fromPieceB]]) -
-               (pieceValues[PIECE_INDEXES_WHITE[toPieceA]] - pieceValues[PIECE_INDEXES_WHITE[fromPieceA]]); // prioritize winning captures (e.g. pawn takes queen)
-    }
-    else if(toPieceA != '.'){
-        return -1; // negative number -> move A must be ordered before move B since it is a pieceTo
-    }
-    else if(toPieceB != '.'){
-        return 1;
-    }
-    char fromPieceA = currentBoard[moveA->from];
-    char fromPieceB = currentBoard[moveB->from];
-    int pieceIndexA = PIECE_INDEXES[fromPieceA];
-    int pieceIndexB = PIECE_INDEXES[fromPieceB];
-
-    int scoreA = PST[pieceIndexA][moveA->to] - PST[pieceIndexB][moveA->from];
-    int scoreB = PST[pieceIndexB][moveB->to] - PST[pieceIndexB][moveB->from];
-
-    return isupper(fromPieceA) ? scoreB - scoreA : scoreA - scoreB;
-}
-
 int getQuiescentDepth(int depth, Position *position, Move *move) {
     char fromPiece = position->board[move->to];
     char toPiece = move->pieceTo;
@@ -157,16 +112,6 @@ int isThreefoldRepetition(const Position *position) {
     return false;
 }
 
-void flagPvMove(Move *moves, Move *bestMoveTT, int numMoves) {
-    Move* move;
-    for (int bestTTMoveIndex=0; bestTTMoveIndex < numMoves; bestTTMoveIndex++) {
-        move = &moves[bestTTMoveIndex];
-        if(move->from == (*bestMoveTT).from && move->to == (*bestMoveTT).to && move->prom == (*bestMoveTT).prom) {
-            move->isPvMove = true; // pv move will first move in the moves lost after sorting
-            return;
-        }
-    }
-}
 
 int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove,
                     Move moves[], Move* bestMoveToSave) {
@@ -230,11 +175,9 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
 
     Position positionBackup;
     if(alpha <= beta) { // only sort moves if there is no alpha-beta pruning caused by null move heuristic
+        flagMovesWithType(moves, numMoves, depth, hasBestTTMove, &bestMoveTT);
         currentBoard = position->board;
-        if(hasBestTTMove) {
-            flagPvMove(moves, &bestMoveTT, numMoves);
-        }
-        qsort(moves, numMoves, sizeof(Move), compareMoves);
+        sortMoves(moves, numMoves);
         duplicatePosition(position, &positionBackup);
     }
 
@@ -312,6 +255,7 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool isMate = false;
     bool canFurtherIncreaseDepth = true;
     initTranspositionTable();
+    //initKillerMovesTable();
     const int minDepth = 6;
     const int maxDepth = 8;
     //for(int depth = 1; depth <= 7; depth++){
@@ -332,4 +276,5 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
         canFurtherIncreaseDepth = timeTakenMs < 700.0 && timeLeftMs > 10000;
     }
     clearTranspositionTable();
+    //clearKillerMovesTable();
 }

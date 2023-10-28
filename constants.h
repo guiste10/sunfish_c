@@ -9,6 +9,7 @@
 #define SIZE 120
 #define NULL_MOVE 666
 #define MAX_PLY_CHESS_GAME 1024
+#define MAX_SEARCH_DEPTH 40
 
 extern const int ARRAY_END;
 extern const int NO_PROMOTION;
