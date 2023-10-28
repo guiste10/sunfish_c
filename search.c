@@ -66,7 +66,7 @@ bool isPat(Position* position, int numMoves, Move moves[]) {
     return false;
 }
 
-int compareMoves(const void* x, const void* y) {
+int compareMoves(const void* x, const void* y) { // todo order losing captures after non captures
     Move* moveA = (Move*)x;
     Move* moveB = (Move*)y;
     int promA = moveA->prom;
@@ -153,8 +153,8 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     }
 
     TranspositionEntry* ttEntry = lookupTT(position->hash);
-    if (ttEntry != NULL && ttEntry->depth >= depth) {
-        if (ttEntry->type == EXACT) {
+    if (ttEntry != NULL && ttEntry->depth >= depth) { // todo use best move first in search just before/after null move and swap it with first move
+        if (ttEntry->type == EXACT) { // todo search killer moves after winning/equal captures
             return ttEntry->score;
         } else if (ttEntry->type == LOWER) {
             alpha = (alpha > ttEntry->score ? alpha : ttEntry->score);
@@ -190,6 +190,11 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     if(canNullMove && depth > 2 && !isEndGame){ // null move
     //if(false){ // no null move
         bestScore = getNullMoveScore(position, depth - 3);
+        if(position->isWhite) {
+            alpha = (alpha > bestScore) ? alpha : bestScore;
+        } else {
+            beta = (beta < bestScore) ? beta : bestScore;
+        }
     } else {
         bestScore = position->isWhite ? -INT_MAX : INT_MAX;
     }
@@ -279,6 +284,7 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
         timeTakenMs = clock() - start;
         double nps = timeTakenMs == 0.0 ? 0 : numNodes/(timeTakenMs/1000.0);
         printf("info depth %d time %d nps %d\n", depth, (int)timeTakenMs, (int)nps);
+        printf("numNodes %d\n", numNodes);
         char bestMoveUci[6];
         moveToUciMove(bestMove, bestMoveUci);
         printf("info pv %s score cp %d\n", bestMoveUci, score);
