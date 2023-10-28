@@ -170,7 +170,7 @@ void doMove(Position* position, const Move* move) {
     position->currentPly++;
     position->hash ^= blackToMoveHash;
 
-    if(to == NULL_MOVE){
+    if(move->moveType == nullType){
         position->isWhite = !isWhite;
         position->kp = 0;
         position->ep = 0;
