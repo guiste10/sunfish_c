@@ -69,6 +69,12 @@ bool isPat(Position* position, int numMoves, Move moves[]) {
 int compareMoves(const void* x, const void* y) { // todo order losing captures after non captures
     Move* moveA = (Move*)x;
     Move* moveB = (Move*)y;
+    if(moveA->isPvMove == true){
+        return -1;
+    }
+    if(moveB->isPvMove == true){
+        return 1;
+    }
     int promA = moveA->prom;
     int promB = moveB->prom;
     if(promA != NO_PROMOTION && promB != NO_PROMOTION){
@@ -138,33 +144,60 @@ int mtdf(Position* position, int firstGuess, int depth, Move* bestMove) {
     return g;
 }
 
-int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove,
-                    Move moves[], Move* bestMoveToSave) {
-    numNodes++;
-
+int isThreefoldRepetition(const Position *position) {
     int repetitionCount = 0;
     for(int ply = position->plyIrreversible; ply < position->currentPly; ply++){
         if(position->history[ply] == position->hash){
             repetitionCount++;
         }
         if(repetitionCount == 2) {
-            return 0;
+            return true;
         }
+    }
+    return false;
+}
+
+void flagPvMove(Move *moves, Move *bestMoveTT, int numMoves) {
+    Move* move;
+    for (int bestTTMoveIndex=0; bestTTMoveIndex < numMoves; bestTTMoveIndex++) {
+        move = &moves[bestTTMoveIndex];
+        if(move->from == (*bestMoveTT).from && move->to == (*bestMoveTT).to && move->prom == (*bestMoveTT).prom) {
+            move->isPvMove = true; // pv move will first move in the moves lost after sorting
+            return;
+        }
+    }
+}
+
+int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove,
+                    Move moves[], Move* bestMoveToSave) {
+    numNodes++;
+
+    if(isThreefoldRepetition(position)) {
+        return 0;
     }
 
     TranspositionEntry* ttEntry = lookupTT(position->hash);
-    if (ttEntry != NULL && ttEntry->depth >= depth) { // todo use best move first in search just before/after null move and swap it with first move
-        if (ttEntry->type == EXACT) { // todo search killer moves after winning/equal captures
-            return ttEntry->score;
-        } else if (ttEntry->type == LOWER) {
-            alpha = (alpha > ttEntry->score ? alpha : ttEntry->score);
-        } else if (ttEntry->type == UPPER) {
-            beta = (beta < ttEntry->score ? beta : ttEntry->score);
+    bool hasBestTTMove = false;
+    Move bestMoveTT;
+    if(ttEntry != NULL) {
+        if (ttEntry->depth >= depth) {
+            if (ttEntry->type == EXACT) { // todo search killer moves after winning/equal captures
+                return ttEntry->score;
+            } else if (ttEntry->type == LOWER) {
+                alpha = (alpha > ttEntry->score ? alpha : ttEntry->score);
+            } else if (ttEntry->type == UPPER) {
+                beta = (beta < ttEntry->score ? beta : ttEntry->score);
+            }
+            if (alpha >= beta) {
+                return ttEntry->score;
+            }
         }
-        if(alpha >= beta) {
-            return ttEntry->score;
+        if(ttEntry->type == EXACT) {
+            hasBestTTMove = true;
+            bestMoveTT = ttEntry->bestMove;
         }
     }
+
     int alphaOrig = alpha;
     int betaOrig = beta;
 
@@ -196,15 +229,19 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     }
 
     Position positionBackup;
-    if(alpha <= beta) {
+    if(alpha <= beta) { // only sort moves if there is no alpha-beta pruning caused by null move heuristic
         currentBoard = position->board;
+        if(hasBestTTMove) {
+            flagPvMove(moves, &bestMoveTT, numMoves);
+        }
         qsort(moves, numMoves, sizeof(Move), compareMoves);
         duplicatePosition(position, &positionBackup);
     }
 
+    Move* move;
     if (position->isWhite) {
         for (int i = 0; beta > alpha && i < numMoves; i++) {
-            Move* move = &moves[i];
+            move = &moves[i];
             doMove(position, move);
             Move opponentMoves[MAX_BRANCHING_FACTOR];
             Move bestChildMove;
@@ -225,7 +262,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
         }
     } else {
         for (int i = 0; beta > alpha && i < numMoves; i++) {
-            Move* move = &moves[i];
+            move = &moves[i];
             doMove(position, move);
             Move opponentMoves[MAX_BRANCHING_FACTOR];
             Move bestChildMove;
@@ -281,7 +318,7 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
-        //score = alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove, false);
+        //score = alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
         score = mtdf(position, score, depth, bestMove);
         timeTakenMs = clock() - start;
         double nps = timeTakenMs == 0.0 ? 0 : numNodes/(timeTakenMs/1000.0);

@@ -11,11 +11,12 @@ void createMove(int from, int to, int prom, char pieceTo, Move* move){
     move->to = to;
     move->prom = prom;
     move->pieceTo = pieceTo;
+    move->isPvMove = false;
 }
 
-int parse(const char* c) {
-    int file = c[0] - 'a';
-    int rank = c[1] - '1';
+int parseUciSquareToBoardIndex(const char* uciSquare) {
+    int file = uciSquare[0] - 'a';
+    int rank = uciSquare[1] - '1';
     return A1 + file - 10 * rank;
 }
 
@@ -48,8 +49,8 @@ void uciMoveToMove(const char uciMove[6], Move *move, bool isWhite) {
     from[2] = '\0';
     strncpy(to, uciMove + 2, 2);
     to[2] = '\0';
-    i = parse(from);
-    j = parse(to);
+    i = parseUciSquareToBoardIndex(from);
+    j = parseUciSquareToBoardIndex(to);
     prom = uciProm == '\0' ? NO_PROMOTION : indexOf(ALL_PIECES, isWhite ? toupper(uciProm) : uciProm);
     createMove(i, j, prom, '.', move);
 }
