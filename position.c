@@ -291,3 +291,19 @@ void undoMove(Position* position, Move* move, Position positionOld){
     }
     *position = positionOld;
 }
+
+void assignMoveTypesToMoves(Move *moves, int numMoves, int depth, bool hasTTBestMove, Move *ttBestMove, Position* position) {
+    Move* move;
+    for (int bestTTMoveIndex=0; bestTTMoveIndex < numMoves; bestTTMoveIndex++) {
+        move = &moves[bestTTMoveIndex];
+        if(hasTTBestMove && equalMoves(move, ttBestMove)) {
+            move->moveType = pvType; // pv move will first move in the moves lost after sorting
+        }
+
+//        for(int killerMove = 0; killerMove < NUM_KILLER_MOVES_TO_SAVE_PER_DEPTH; killerMove++) {
+//            if(equalMoves(move, &killerMovesTable[depth][killerMove])) {
+//                move->moveType = killerType;
+//            }
+//        }
+    }
+}

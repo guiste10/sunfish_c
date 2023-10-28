@@ -10,12 +10,12 @@
 const int nullType = -1;
 const int unknownType = 0;
 const int pvType = 1;
+const int promotionType = 2;
 const int winningCaptureType = 3;
-const int killerType = 2; // non capturing!
 const int equalCaptureType = 4;
-const int losingCaptureType = 5;
-const int promotionType = 6;
-const int quietType = 7;
+const int killerType = 5; // non capturing!
+const int nonCaptureType = 6;
+const int losingCaptureType = 7;
 
 const Move nullMove = {nullType};
 
@@ -77,21 +77,6 @@ bool equalMoves(const Move* moveA, const Move* moveB) {
     moveA->pieceTo == moveB->pieceTo;
 }
 
-void flagMovesWithType(Move *moves, int numMoves, int depth, bool hasBestMoveTT, Move *bestMoveTT){
-    Move* move;
-    for (int bestTTMoveIndex=0; bestTTMoveIndex < numMoves; bestTTMoveIndex++) {
-        move = &moves[bestTTMoveIndex];
-        if(hasBestMoveTT && equalMoves(move, bestMoveTT)) {
-            move->moveType = pvType; // pv move will first move in the moves lost after sorting
-            return;
-        }
-//        for(int killerMove = 0; killerMove < NUM_KILLER_MOVES_TO_SAVE_PER_DEPTH; killerMove++) {
-//            if(equalMoves(move, &killerMovesTable[depth][killerMove])) {
-//                move->moveType = killerType;
-//            }
-//        }
-    }
-}
 
 int compareMoves(const void* x, const void* y) { // todo order losing captures after non captures
     Move* moveA = (Move*)x;

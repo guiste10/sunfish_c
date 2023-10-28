@@ -3,7 +3,7 @@
 #define SUNFISH_C_KILLERMOVESTABLE_H
 
 #include <stdint.h>
-#include "position.h"
+#include "move.h"
 
 extern const int NUM_KILLER_MOVES_TO_SAVE_PER_DEPTH;
 extern Move** killerMovesTable;

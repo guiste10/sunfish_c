@@ -27,4 +27,6 @@ int genMoves(Position * position, Move moves[MAX_BRANCHING_FACTOR]);
 
 void doMove(Position* position, const Move* move);
 void undoMove(Position* position, Move* move, Position positionOld);
+
+void assignMoveTypesToMoves(Move *moves, int numMoves, int depth, bool hasTTBestMove, Move *ttBestMove, Position* position);
 #endif //SUNFISH_C_POSITION_H
