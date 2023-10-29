@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <ctype.h>
-#include <string.h>
 #include "position.h"
 #include "constants.h"
 #include "pieceSquareTables.h"
@@ -11,12 +9,11 @@
 #include "chessBoard.h"
 #include "search.h"
 #include "transpositionTable.h"
-#include "killerMovesTable.h"
 
 const int minDepth = 6;
-const bool useNullMove = false; // not used in endgames anyway
+const bool useNullMove = true; // not used in endgames anyway
 const bool useTT = true;
-const bool useMtdf = false;
+const bool useMtdf = true;
 
 int numNodes = 0;
 bool isEndGame = false;
@@ -222,10 +219,6 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
             }
 
             if (score < bestScore) {
-//                if(depth == 9 && move->to == 46) {
-//                    int a = alphaBeta(position, getQuiescentDepth(depth, position, move), alpha, beta, true, true,
-//                                                  opponentMoves, &bestChildMove);
-//                }
                 bestScore = score;
                 *bestMoveToSave = *move;
             }
@@ -263,8 +256,8 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool isMate = false;
     bool canFurtherIncreaseDepth = true;
     //initKillerMovesTable();
-    const int maxDepth = timeLeftMs > 10000 ? 10 : timeLeftMs > 5000 ? 6 : 4;
-    //for(int depth = startDepth; depth <= 7; depth++){
+    const int maxDepth = timeLeftMs > 40000 ? 10 : timeLeftMs > 15000 ? 6 : 4;
+    //for(int depth = 1; depth <= 8; depth++){
     for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
