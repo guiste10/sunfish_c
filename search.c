@@ -13,7 +13,7 @@
 #include "transpositionTable.h"
 #include "killerMovesTable.h"
 
-const int startDepth = 1;
+const int startDepth = 7;
 const int minDepth = 6;
 const bool useNullMove = false; // not used in endgames anyway
 const bool useTT = true;
@@ -130,7 +130,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     bool hasBestTTMove = false;
     Move bestMoveTT;
     if(useTT && ttEntry != NULL) {
-        if (ttEntry->depth >= depth) {
+        if (ttEntry->depth == depth) {
             if (ttEntry->type == EXACT) { // todo search killer moves after winning/equal captures
                 return ttEntry->score;
             } else if (ttEntry->type == LOWER) {
@@ -233,11 +233,9 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
             beta = (beta < bestScore) ? beta : bestScore;
         }
     }
-    if(depth != 9) {
-        saveScore(position->hash, depth, bestScore,
-                  (bestScore <= alphaOrig) ? UPPER : (bestScore >= betaOrig) ? LOWER : EXACT,
-                  *bestMoveToSave);
-    }
+    saveScore(position->hash, depth, bestScore,
+              (bestScore <= alphaOrig) ? UPPER : (bestScore >= betaOrig) ? LOWER : EXACT,
+              *bestMoveToSave);
     return bestScore;
 }
 
@@ -267,8 +265,8 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool canFurtherIncreaseDepth = true;
     //initKillerMovesTable();
     const int maxDepth = timeLeftMs > 10000 ? 10 : timeLeftMs > 5000 ? 6 : 4;
-    for(int depth = startDepth; depth <= 9; depth++){
-    //for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
+    //for(int depth = startDepth; depth <= 7; depth++){
+    for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
         score = useMtdf
