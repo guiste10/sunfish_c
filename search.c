@@ -278,7 +278,7 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
         moveToUciMove(bestMove, bestMoveUci);
         printf("info depth %d time %d nps %d\n", depth, (int)timeTakenMs, (int)nps);
         printf("info pv %s score cp %d\n", bestMoveUci, score);
-        printf("numNodes %d\n", numNodes);
+        //printf("numNodes %d\n", numNodes);
         fflush(stdout);
         isMate = abs(score) >= MATE_LOWER;
         canFurtherIncreaseDepth = timeTakenMs < 700.0;
