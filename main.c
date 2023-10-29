@@ -15,8 +15,8 @@ int main() {
     char uciPosition[] = "position startpos moves e2e4 g7g6 d2d4 f8g7 g1f3 e7e6 c2c4 g8e7 b1c3 b8c6 c1e3 e8g8 f1e2 d7d6 e1g1 h7h6 d1d2 g6g5 h2h3 f7f5 e4f5 e7f5 d4d5 c6a5 d5e6 c8e6 b2b3 c7c6 a1d1 d8f6 c3e4 f6d8 e4d6 f5d6 d2d6 d8d6 d1d6 a8e8 f1d1 g5g4 h3g4 c6c5 e3c5 e6g4 g1f1 b7b6 c5e3 a5b7 d6d7 g4d7 d1d7 f8f7 d7f7 g8f7 f3d4 f7g6 e2d3 g6h5 d4f5 g7f6 f5h6 e8e3 f2e3 h5h6 d3e4 b7c5 e4d5 c5d3 f1e2 d3c1 e2f3 c1a2 g2g4 a2c1 b3b4 c1d3 b4b5 f6h4 f3e4 d3e1 e4f5 e1c2 e3e4 c2d4 f5e5 d4c2 e5d6 h4g3 d6c6 h6g5 c6b7 g5g4 b7a7 g3f2 a7a6 g4f4 a6b7 c2e3 b7c6 f4e5 c6b6"; // should do e3d5 with double check
     //char uciPosition[] = "position startpos moves e2e4 g7g6 d2d4 f8g7 g1f3 e7e6 c2c4 g8e7 b1c3 b8c6 c1e3 e8g8 f1e2 d7d6 e1g1 h7h6 d1d2 g6g5 h2h3 f7f5 e4f5 e7f5 d4d5 c6a5 d5e6 c8e6 b2b3 c7c6 a1d1 d8f6 c3e4 f6d8 e4d6 f5d6 d2d6 d8d6 d1d6 a8e8 f1d1 g5g4 h3g4 c6c5 e3c5 e6g4 g1f1 b7b6 c5e3 a5b7 d6d7 g4d7 d1d7 f8f7 d7f7 g8f7 f3d4 f7g6 e2d3 g6h5 d4f5 g7f6 f5h6 e8e3 f2e3 h5h6 d3e4 b7c5 e4d5 c5d3 f1e2 d3c1 e2f3 c1a2 g2g4 a2c1 b3b4 c1d3 b4b5 f6h4 f3e4 d3e1 e4f5 e1c2 e3e4 c2d4 f5e5 d4c2 e5d6 h4g3 d6c6 h6g5 c6b7 g5g4 b7a7 g3f2 a7a6 g4f4 a6b7 c2e3 b7c6 f4e5 c6b6 e5f6"; // should do e3d5 with double check
 
-    findBestMoveFromUciPosition(uciPosition);
-    //playUci();
+    //findBestMoveFromUciPosition(uciPosition);
+    playUci();
 
     // Flush the output stream
     printf("\n");

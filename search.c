@@ -13,7 +13,6 @@
 #include "transpositionTable.h"
 #include "killerMovesTable.h"
 
-const int startDepth = 7;
 const int minDepth = 6;
 const bool useNullMove = false; // not used in endgames anyway
 const bool useTT = true;
