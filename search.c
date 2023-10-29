@@ -16,7 +16,6 @@ const bool useTT = true;
 const bool useMtdf = true;
 
 int numNodes = 0;
-bool isEndGame = false;
 
 int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove, Move moves[], Move* bestMoveToSave);
 
@@ -231,33 +230,16 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     return bestScore;
 }
 
-void setIsEndGame(const char *board) {
-    if(!isEndGame) {
-        int queenCount = 0;
-        for(int square = 0; square < SIZE ; square++) {
-            char piece = board[square];
-            if(piece == 'Q' || piece == 'q'){
-                queenCount++;
-                if(queenCount >= 2){
-                    return;
-                }
-            }
-        }
-        isEndGame = true;
-        initEndGamePst();
-    }
-}
-
 void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isWhite) {
-    setIsEndGame(position->board);
     double timeTakenMs;
     int score = 0;
     clock_t start = clock();
     bool isMate = false;
     bool canFurtherIncreaseDepth = true;
+    initTranspositionTable();
     //initKillerMovesTable();
     const int maxDepth = timeLeftMs > 40000 ? 10 : timeLeftMs > 15000 ? 6 : 4;
-    //for(int depth = 1; depth <= 8; depth++){
+    //for(int depth = 1; depth <= 2; depth++){
     for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
@@ -276,5 +258,6 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
         isMate = abs(score) >= MATE_LOWER;
         canFurtherIncreaseDepth = timeTakenMs < 700.0;
     }
+    clearTranspositionTable();
     //clearKillerMovesTable();
 }

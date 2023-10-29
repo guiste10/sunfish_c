@@ -40,7 +40,7 @@ TranspositionEntry* lookupTT(uint64_t hash) {
     if (entry->hash == hash) {
         return entry; // Found a matching entry
     } else {
-        return NULL; // No matching entry found
+        return NULL; // No matching entry found, TT will be full and unusable if we don't clear it after every search
     }
 }
 

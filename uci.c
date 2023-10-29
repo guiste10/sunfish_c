@@ -6,9 +6,10 @@
 #include "search.h"
 #include "chessBoard.h"
 #include "transpositionTable.h"
+#include "pieceSquareTables.h"
 
 const int MAX_ARGS = 1000;
-const char BOT_NAME[] = "Sunfish_c";
+const char BOT_NAME[] = "DiggyDiggyHole";
 
 void fillArgs(char* line, char* args[MAX_ARGS], int* numArgs){
     *numArgs = 0;
@@ -20,12 +21,16 @@ void fillArgs(char* line, char* args[MAX_ARGS], int* numArgs){
 }
 
 void setupPositionWithMoveList(Position* position, char* initialBoardCopy, bool* isWhite, char *uciMoves[1000], int numArgs, uint64_t* history){
+    bool isEndGameReached = false;
     initPosition(position, initialBoardCopy, (char *) initialBoard, history);
     for (int ply = 0; ply < numArgs - 3; ply++) {
+        if(!isEndGameReached && isEndGame(position->board)){
+            isEndGameReached = true;
+            updatePstForEndGame();
+        }
         char *uciMove = uciMoves[3 + ply];
         Move move;
         uciMoveToMove(uciMove, &move, *isWhite);
-        move.moveValue = value(position, &move);
         *isWhite = !*isWhite;
         doMove(position, &move);
     }
@@ -36,6 +41,7 @@ void playUci(){
     char* args[MAX_ARGS];
     int numArgs;
     bool isWhite;
+    bool isEndGame;
     Position pos;
     Position* position = &pos;
     char initialBoardCopy[SIZE];
@@ -51,12 +57,15 @@ void playUci(){
             printf("uciok\n");
             fflush(stdout);
         } else if (strcmp(args[0], "isready") == 0) {
-            clearTranspositionTable();
-            initTranspositionTable();
+            //clearTranspositionTable();
+            //initTranspositionTable();
+            isEndGame = false;
+            initPst();
+            initializePieceIndexArray();
             printf("readyok\n");
             fflush(stdout);
         } else if (strcmp(args[0], "quit") == 0) {
-            clearTranspositionTable();
+            //clearTranspositionTable();
             break;
         } else if (numArgs >= 2 && strcmp(args[0], "position") == 0 && strcmp(args[1], "startpos") == 0) {
             isWhite = true;

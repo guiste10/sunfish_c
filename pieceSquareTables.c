@@ -1,5 +1,6 @@
 #include "constants.h"
 #include "chessBoard.h"
+#include <stdbool.h>
 
 const int pawnVal = 100;
 const int knightVal = 280;
@@ -61,9 +62,9 @@ int PST[NUM_PIECES][SIZE] = {
         { // R
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 35,  29,  33,  4,    37,  33,   56,  50,  0,
-                0, 55,  29, 56,  67,  55,  62, 34, 60,  0,
-                0, 19,  35, 28,  33, 45,  27,  25, 15,  0,
+                0, 35,  29,  33,  30,  37,  33, 33,  33,  0,
+                0, 30,  29, 30,  30,  30,  30, 34, 30,  0,
+                0, 19,  35, 28,  33, 30,  27,  25, 19,  0,
                 0, 0,   5,   16, 13, 18,  -4, -9,  -6,  0,
                 0, -28, -35, -16, -21, -13, -29, -46, -30, 0,
                 0, -42, -28, -42, -25, -25, -35, -26, -46, 0,
@@ -147,7 +148,21 @@ void initPst(){
     }
 }
 
-void initEndGamePst() {
+bool isEndGame(const char *board) {
+    int queenCount = 0;
+    for(int square = 0; square < SIZE ; square++) {
+        char piece = board[square];
+        if(piece == 'Q' || piece == 'q'){
+            queenCount++;
+            if(queenCount >= 2){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+void updatePstForEndGame() {
     for (int row = 0; row < NUM_ROWS; row++) {
         for (int col = 0; col < NUM_FILES; col++) {
             PST[K][(10 * row) + col] = pstKingEndGame[(10 * row) + col];
