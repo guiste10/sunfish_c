@@ -13,6 +13,11 @@
 #include "transpositionTable.h"
 #include "killerMovesTable.h"
 
+const int startDepth = 1;
+const int minDepth = 6;
+const bool useNullMove = false; // not used in endgames anyway
+const bool useTT = true;
+const bool useMtdf = false;
 
 int numNodes = 0;
 bool isEndGame = false;
@@ -76,7 +81,7 @@ int getQuiescentDepth(int depth, Position *position, Move *move) {
 }
 
 
-int mtdf(Position* position, int firstGuess, int depth, Move* bestMove) {
+int mtdf(Position* position, int firstGuess, int depth, Move* moves, Move* bestMove) {
     int g = firstGuess;
     int upperBound = INT_MAX;
     int lowerBound = INT_MIN;
@@ -88,8 +93,7 @@ int mtdf(Position* position, int firstGuess, int depth, Move* bestMove) {
         else
             beta = g;
 
-        Move moves[MAX_BRANCHING_FACTOR];
-        g = alphaBeta(position, depth, beta - 1, beta, true, true, moves, bestMove);
+        g = alphaBeta(position, depth, beta - 1, beta, true, false, moves, bestMove);
         if (g < beta)
             upperBound = g;
         else
@@ -125,7 +129,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     TranspositionEntry* ttEntry = lookupTT(position->hash);
     bool hasBestTTMove = false;
     Move bestMoveTT;
-    if(ttEntry != NULL) {
+    if(useTT && ttEntry != NULL) {
         if (ttEntry->depth >= depth) {
             if (ttEntry->type == EXACT) { // todo search killer moves after winning/equal captures
                 return ttEntry->score;
@@ -163,9 +167,8 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     }
 
     int bestScore;
-    if(canNullMove && depth > 2 && !isEndGame){ // null move
-    //if(false){
-        bestScore = getNullMoveScore(position, depth - 3);
+    if(useNullMove && canNullMove && depth > 3 && !isEndGame){ // null move
+        bestScore = getNullMoveScore(position, depth - 2);
         if(position->isWhite) {
             alpha = (alpha > bestScore) ? alpha : bestScore;
         } else {
@@ -220,19 +223,26 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
             }
 
             if (score < bestScore) {
+//                if(depth == 9 && move->to == 46) {
+//                    int a = alphaBeta(position, getQuiescentDepth(depth, position, move), alpha, beta, true, true,
+//                                                  opponentMoves, &bestChildMove);
+//                }
                 bestScore = score;
                 *bestMoveToSave = *move;
             }
             beta = (beta < bestScore) ? beta : bestScore;
         }
     }
-    saveScore(position->hash, depth, bestScore, (bestScore <= alphaOrig) ? UPPER : (bestScore >= betaOrig) ? LOWER : EXACT, *bestMoveToSave);
+    if(depth != 9) {
+        saveScore(position->hash, depth, bestScore,
+                  (bestScore <= alphaOrig) ? UPPER : (bestScore >= betaOrig) ? LOWER : EXACT,
+                  *bestMoveToSave);
+    }
     return bestScore;
 }
 
 void setIsEndGame(const char *board) {
     if(!isEndGame) {
-        int numFriendlyPieces = 0;
         int queenCount = 0;
         for(int square = 0; square < SIZE ; square++) {
             char piece = board[square];
@@ -255,27 +265,26 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     clock_t start = clock();
     bool isMate = false;
     bool canFurtherIncreaseDepth = true;
-    initTranspositionTable();
     //initKillerMovesTable();
-    const int minDepth = 6;
     const int maxDepth = timeLeftMs > 10000 ? 10 : timeLeftMs > 5000 ? 6 : 4;
-    //for(int depth = 1; depth <= 7; depth++){
-    for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
+    for(int depth = startDepth; depth <= 9; depth++){
+    //for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
-        //score = alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
-        score = mtdf(position, score, depth, bestMove);
+        score = useMtdf
+                ? mtdf(position, score, depth, moves, bestMove)
+                : alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
         timeTakenMs = clock() - start;
         double nps = timeTakenMs == 0.0 ? 0 : numNodes/(timeTakenMs/1000.0);
-        printf("info depth %d time %d nps %d\n", depth, (int)timeTakenMs, (int)nps);
-        //printf("numNodes %d\n", numNodes);
+
         char bestMoveUci[6];
         moveToUciMove(bestMove, bestMoveUci);
+        printf("info depth %d time %d nps %d\n", depth, (int)timeTakenMs, (int)nps);
         printf("info pv %s score cp %d\n", bestMoveUci, score);
+        printf("numNodes %d\n", numNodes);
         fflush(stdout);
         isMate = abs(score) >= MATE_LOWER;
         canFurtherIncreaseDepth = timeTakenMs < 700.0;
     }
-    clearTranspositionTable();
     //clearKillerMovesTable();
 }

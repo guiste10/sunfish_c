@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "search.h"
 #include "chessBoard.h"
+#include "transpositionTable.h"
 
 const int MAX_ARGS = 1000;
 const char BOT_NAME[] = "Sunfish_c";
@@ -50,9 +51,12 @@ void playUci(){
             printf("uciok\n");
             fflush(stdout);
         } else if (strcmp(args[0], "isready") == 0) {
+            clearTranspositionTable();
+            initTranspositionTable();
             printf("readyok\n");
             fflush(stdout);
         } else if (strcmp(args[0], "quit") == 0) {
+            clearTranspositionTable();
             break;
         } else if (numArgs >= 2 && strcmp(args[0], "position") == 0 && strcmp(args[1], "startpos") == 0) {
             isWhite = true;
