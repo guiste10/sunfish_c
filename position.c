@@ -301,9 +301,10 @@ void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, bool hasTTBes
         int to = move->to;
         if(hasTTBestMove && equalMoves(move, ttBestMove)) {
             move->moveType = pvType; // pv move will first move in the moves lost after sorting
+            move->moveValue = ttBestMove->moveValue;
         } else if(move->prom != NO_PROMOTION) {
             move->moveType = promotionType;
-        } else if(move->pieceTo != '.' || (board[from] == 'P' || board[from] == 'p' && to == position->ep)) { // capture or en passant
+        } else if(move->pieceTo != '.' || ((board[from] == 'P' || board[from] == 'p') && to == position->ep)) { // capture or en passant
             char fromPiece = board[from];
             char toPiece = board[to];
             move->moveValue = move->pieceTo != '.' ? pieceValues[PIECE_INDEXES_WHITE[toPiece]] - pieceValues[PIECE_INDEXES_WHITE[fromPiece]] : 0;

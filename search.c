@@ -164,6 +164,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
 
     int bestScore;
     if(canNullMove && depth > 2 && !isEndGame){ // null move
+    //if(false){
         bestScore = getNullMoveScore(position, depth - 3);
         if(position->isWhite) {
             alpha = (alpha > bestScore) ? alpha : bestScore;
@@ -257,9 +258,9 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     initTranspositionTable();
     //initKillerMovesTable();
     const int minDepth = 6;
-    const int maxDepth = 8;
-    for(int depth = 1; depth <= 7; depth++){
-    //for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
+    const int maxDepth = timeLeftMs > 10000 ? 10 : timeLeftMs > 5000 ? 6 : 4;
+    //for(int depth = 1; depth <= 7; depth++){
+    for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
         //score = alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
@@ -267,13 +268,13 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
         timeTakenMs = clock() - start;
         double nps = timeTakenMs == 0.0 ? 0 : numNodes/(timeTakenMs/1000.0);
         printf("info depth %d time %d nps %d\n", depth, (int)timeTakenMs, (int)nps);
-        printf("numNodes %d\n", numNodes);
+        //printf("numNodes %d\n", numNodes);
         char bestMoveUci[6];
         moveToUciMove(bestMove, bestMoveUci);
         printf("info pv %s score cp %d\n", bestMoveUci, score);
         fflush(stdout);
         isMate = abs(score) >= MATE_LOWER;
-        canFurtherIncreaseDepth = timeTakenMs < 700.0 && timeLeftMs > 10000;
+        canFurtherIncreaseDepth = timeTakenMs < 700.0;
     }
     clearTranspositionTable();
     //clearKillerMovesTable();
