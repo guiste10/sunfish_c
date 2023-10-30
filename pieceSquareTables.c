@@ -26,7 +26,7 @@ int PST[NUM_PIECES][SIZE] = {
                 0, 5, 10,  -2, 15, 14,  0,  15,  -13, 0,
                 0, 10, 3,   15,  20,   20,   -10,   -10,   15, 0,
                 0, 5, 9,   5,   5, 5, -20,  20,   20, 0,
-                0, -1, -1,   -1,  -20, -20, 20, 3,   20, 0,
+                0, -1, -1,   -1,  -30, -20, 20, 3,   20, 0,
                 0, 0,   0,   0,   0,   0,   0,   0,   0,   0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -162,7 +162,7 @@ bool isEndGame(const char *board) {
     return true;
 }
 
-void updatePstForEndGame() {
+void setEndGamePST() {
     for (int row = 0; row < NUM_ROWS; row++) {
         for (int col = 0; col < NUM_FILES; col++) {
             PST[K][(10 * row) + col] = pstKingEndGame[(10 * row) + col];

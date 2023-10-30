@@ -239,7 +239,7 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     initTranspositionTable();
     //initKillerMovesTable();
     const int maxDepth = timeLeftMs > 40000 ? 10 : timeLeftMs > 15000 ? 6 : 4;
-    //for(int depth = 1; depth <= 2; depth++){
+    //for(int depth = 1; depth <= 1; depth++){
     for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;

@@ -10,6 +10,6 @@ extern int PST[6][SIZE];
 
 void initPst();
 bool isEndGame(const char *board);
-void updatePstForEndGame();
+void setEndGamePST();
 
 #endif //SUNFISH_C_PIECESQUARETABLES_H

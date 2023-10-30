@@ -5,7 +5,6 @@
 #include "constants.h"
 #include "search.h"
 #include "chessBoard.h"
-#include "transpositionTable.h"
 #include "pieceSquareTables.h"
 
 const int MAX_ARGS = 1000;
@@ -26,7 +25,7 @@ void setupPositionWithMoveList(Position* position, char* initialBoardCopy, bool*
     for (int ply = 0; ply < numArgs - 3; ply++) {
         if(!isEndGameReached && isEndGame(position->board)){
             isEndGameReached = true;
-            updatePstForEndGame();
+            setEndGamePST();
         }
         char *uciMove = uciMoves[3 + ply];
         Move move;
@@ -41,7 +40,6 @@ void playUci(){
     char* args[MAX_ARGS];
     int numArgs;
     bool isWhite;
-    bool isEndGame;
     Position pos;
     Position* position = &pos;
     char initialBoardCopy[SIZE];
@@ -59,15 +57,14 @@ void playUci(){
         } else if (strcmp(args[0], "isready") == 0) {
             //clearTranspositionTable();
             //initTranspositionTable();
-            isEndGame = false;
-            initPst();
-            initializePieceIndexArray();
             printf("readyok\n");
             fflush(stdout);
         } else if (strcmp(args[0], "quit") == 0) {
             //clearTranspositionTable();
             break;
         } else if (numArgs >= 2 && strcmp(args[0], "position") == 0 && strcmp(args[1], "startpos") == 0) {
+            initPst();
+            initializePieceIndexArray();
             isWhite = true;
             setupPositionWithMoveList(position, initialBoardCopy, &isWhite, args, numArgs, history);
         } else if (strcmp(args[0], "go") == 0) {

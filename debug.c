@@ -109,7 +109,7 @@ void findBestMoveTimeStamped(char* boardToUse) {
     initializePieceIndexArray();
     initPosition(position, board, boardToUse, history);
     if(isEndGame(position->board)){
-        updatePstForEndGame();
+        setEndGamePST();
     }
     printf("Current board\n");
     printCharArray(board, SIZE);
