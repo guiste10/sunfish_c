@@ -170,5 +170,5 @@ bool isEndGame(const char *board) {
             }
         }
     }
-    return true;
+    return false;
 }

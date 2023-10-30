@@ -182,7 +182,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
         duplicatePosition(position, &positionBackup);
     }
 
-    Move* move;
+    Move* move = {0};
     if (position->isWhite) {
         for (int i = 0; beta > alpha && i < numMoves; i++) {
             move = &moves[i];
@@ -242,6 +242,7 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool isMate = false;
     bool canFurtherIncreaseDepth = true;
     initTranspositionTable();
+    initKillerMovesTable();
     const int maxDepth = timeLeftMs > 40000 ? 10 : timeLeftMs > 15000 ? 6 : 4;
     //for(int depth = 1; depth <= 4; depth++){
     for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){

@@ -4,9 +4,10 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdio.h>
 
-const int nullType = -1;
-const int unknownType = 0;
+const int unknownType = -1;
+const int nullType = 0;
 const int pvType = 1;
 const int promotionType = 2;
 const int winningCaptureType = 3;
@@ -16,8 +17,6 @@ const int nonCaptureType = 6;
 const int losingCaptureType = 7;
 
 const Move nullMove = {nullType};
-
-char* currentBoard;
 
 void createMove(int from, int to, int prom, char pieceTo, Move* move){
     move->from = from;
@@ -80,6 +79,9 @@ bool equalMoves(const Move* moveA, const Move* moveB) {
 int compareMoves(const void* x, const void* y) {
     Move* moveA = (Move*)x;
     Move* moveB = (Move*)y;
+    if(moveA->moveType == unknownType) {
+        printf("unknown move type");
+    }
     if(moveA->moveType != moveB->moveType) {
         return moveA->moveType - moveB->moveType; // moveType closer to 0 is ordered first
     }
@@ -87,6 +89,5 @@ int compareMoves(const void* x, const void* y) {
 }
 
 void sortMoves(Move moves[], int numMoves, char *board) {
-    currentBoard = board;
     qsort(moves, numMoves, sizeof(Move), compareMoves);
 }

@@ -13,8 +13,6 @@ typedef struct {
     int moveValue;
 } Move;
 
-extern char* currentBoard; // for sorting the moves
-
 extern const int nullType;
 extern const int unknownType;
 extern const int pvType;
