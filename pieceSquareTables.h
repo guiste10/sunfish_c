@@ -5,11 +5,11 @@
 
 extern const int MATE_LOWER;
 extern const int MATE_UPPER;
-extern int pieceValues[NUM_WHITE_PIECES];
+extern int PIECE_VALUES[NUM_WHITE_PIECES];
 extern int PST[6][SIZE];
 
-void initPst();
+void initOpeningToMiddleGamePst();
 bool isEndGame(const char *board);
-void setEndGamePST();
+void setPstToEndGameMode();
 
 #endif //SUNFISH_C_PIECESQUARETABLES_H

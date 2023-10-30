@@ -11,12 +11,14 @@ const int kingVal = 60000;
 const int MATE_LOWER = kingVal - 10 * queenVal; // 50710
 const int MATE_UPPER = kingVal + 10 * queenVal; // 69290
 
-const int pieceValues[NUM_PIECES] = {
+const int PIECE_VALUES[NUM_PIECES] = {
         pawnVal, knightVal, bishopVal, rookVal, queenVal, kingVal,
         -pawnVal, -knightVal, -bishopVal, -rookVal, -queenVal, -kingVal
 };
 
-int PST[NUM_PIECES][SIZE] = {
+int PST[NUM_PIECES][SIZE];
+
+int SQUARE_VALUES[NUM_PIECES][SIZE] = {
         { // P
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -103,7 +105,7 @@ int PST[NUM_PIECES][SIZE] = {
         },
 };
 
-int pstKingEndGame[SIZE] = {
+const int SQUARES_VALUES_KING_ENDGAME[SIZE] = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -118,7 +120,7 @@ int pstKingEndGame[SIZE] = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-int pstPawnEndGame[SIZE] = {
+const int SQUARES_VALUES_PAWN_ENDGAME[SIZE] = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0,   0,   0,   0,    0,   0,    0,   0,   0,
@@ -133,17 +135,26 @@ int pstPawnEndGame[SIZE] = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-void initPst(){
-    for(int piece=NUM_WHITE_PIECES; piece < NUM_PIECES; piece++){ // initialize PST for black based on white's PST
-        for(int row = 0; row < NUM_ROWS; row++){
-            for(int col = 0; col < NUM_FILES; col++){
-                PST[piece][(10 * row) + col] = -PST[piece - NUM_WHITE_PIECES][10 * (NUM_ROWS - row - 1) + col];
+void initOpeningToMiddleGamePst(){
+    for(int row = 0; row < NUM_ROWS; row++){
+        for(int col = 0; col < NUM_FILES; col++){
+            for(int piece=0; piece < NUM_PIECES; piece++) {
+                if(piece >= NUM_WHITE_PIECES) { // mirror white's square values
+                    SQUARE_VALUES[piece][(10 * row) + col] = -SQUARE_VALUES[piece - NUM_WHITE_PIECES][10 * (NUM_ROWS - row - 1) + col];
+                }
+                PST[piece][(10 * row) + col] = SQUARE_VALUES[piece][(10 * row) + col] + PIECE_VALUES[piece];
             }
         }
     }
-    for(int piece=0; piece < NUM_PIECES; piece++){ // add piece values to the PST's
-        for(int square=0; square < SIZE; square++){
-            PST[piece][square] += pieceValues[piece];
+}
+
+void setPstToEndGameMode() {
+    for (int row = 0; row < NUM_ROWS; row++) {
+        for (int col = 0; col < NUM_FILES; col++) {
+            PST[K][(10 * row) + col] = SQUARES_VALUES_KING_ENDGAME[(10 * row) + col] + PIECE_VALUES[K];
+            PST[k][(10 * row) + col] = -SQUARES_VALUES_KING_ENDGAME[(10 * row) + col] + PIECE_VALUES[k];
+            PST[P][(10 * row) + col] = SQUARES_VALUES_PAWN_ENDGAME[(10 * row) + col] + PIECE_VALUES[P];
+            PST[p][(10 * row) + col] = -SQUARES_VALUES_PAWN_ENDGAME[(10 * row) + col] + PIECE_VALUES[p];
         }
     }
 }
@@ -160,21 +171,4 @@ bool isEndGame(const char *board) {
         }
     }
     return true;
-}
-
-void setEndGamePST() {
-    for (int row = 0; row < NUM_ROWS; row++) {
-        for (int col = 0; col < NUM_FILES; col++) {
-            PST[K][(10 * row) + col] = pstKingEndGame[(10 * row) + col];
-            PST[k][(10 * row) + col] = -pstKingEndGame[(10 * row) + col];
-            PST[P][(10 * row) + col] = pstPawnEndGame[(10 * row) + col];
-            PST[p][(10 * row) + col] = -pstPawnEndGame[(10 * row) + col];
-        }
-    }
-    for (int square = 0; square < SIZE; square++) {
-        PST[K][square] += pieceValues[K];
-        PST[k][square] += pieceValues[k];
-        PST[P][square] += pieceValues[P];
-        PST[p][square] += pieceValues[p];
-    }
 }

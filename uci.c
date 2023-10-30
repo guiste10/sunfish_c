@@ -25,7 +25,7 @@ void setupPositionWithMoveList(Position* position, char* initialBoardCopy, bool*
     for (int ply = 0; ply < numArgs - 3; ply++) {
         if(!isEndGameReached && isEndGame(position->board)){
             isEndGameReached = true;
-            setEndGamePST();
+            setPstToEndGameMode();
         }
         char *uciMove = uciMoves[3 + ply];
         Move move;
@@ -44,6 +44,7 @@ void playUci(){
     Position* position = &pos;
     char initialBoardCopy[SIZE];
     uint64_t history[MAX_PLY_CHESS_GAME];
+    initializePieceIndexArray();
 
     while (1) {
         fgets(line, sizeof(line), stdin);
@@ -54,17 +55,19 @@ void playUci(){
             fflush(stdout);
             printf("uciok\n");
             fflush(stdout);
-        } else if (strcmp(args[0], "isready") == 0) {
+        } else if (strcmp(args[0], "ucinewgame") == 0) {
             //clearTranspositionTable();
             //initTranspositionTable();
+            initOpeningToMiddleGamePst();
+            printf("readyok\n");
+            fflush(stdout);
+        } else if (strcmp(args[0], "isready") == 0) {
             printf("readyok\n");
             fflush(stdout);
         } else if (strcmp(args[0], "quit") == 0) {
             //clearTranspositionTable();
             break;
         } else if (numArgs >= 2 && strcmp(args[0], "position") == 0 && strcmp(args[1], "startpos") == 0) {
-            initPst();
-            initializePieceIndexArray();
             isWhite = true;
             setupPositionWithMoveList(position, initialBoardCopy, &isWhite, args, numArgs, history);
         } else if (strcmp(args[0], "go") == 0) {

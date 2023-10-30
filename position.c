@@ -308,7 +308,7 @@ void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, bool hasTTBes
         } else if(move->pieceTo != '.' || ((board[from] == 'P' || board[from] == 'p') && to == position->ep)) { // capture or en passant
             char fromPiece = board[from];
             char toPiece = board[to];
-            move->moveValue = move->pieceTo != '.' ? pieceValues[PIECE_INDEXES_WHITE[toPiece]] - pieceValues[PIECE_INDEXES_WHITE[fromPiece]] : 0;
+            move->moveValue = move->pieceTo != '.' ? PIECE_VALUES[PIECE_INDEXES_WHITE[toPiece]] - PIECE_VALUES[PIECE_INDEXES_WHITE[fromPiece]] : 0;
             move->moveType = move->moveValue == 0 ? equalCaptureType : move->moveValue > 0 ? winningCaptureType : losingCaptureType;
         } else {
             move->moveType = nonCaptureType;
