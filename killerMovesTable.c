@@ -4,32 +4,36 @@
 #include <string.h>
 #include "killerMovesTable.h"
 
-const int NUM_KILLER_MOVES_TO_SAVE_PER_DEPTH = 2;
-Move** killerMovesTable = NULL;
+Move killerMovesTable[MAX_SEARCH_DEPTH][NUM_KILLER_MOVES_PER_DEPTH] = {
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+        {{0},{0}},
+};
 
-void initKillerMovesTable() {
-    memset(killerMovesTable, 0, MAX_SEARCH_DEPTH * sizeof(Move*));
-    for (int i = 0; i < MAX_SEARCH_DEPTH; i++) {
-        killerMovesTable[i] = (Move*)malloc(NUM_KILLER_MOVES_TO_SAVE_PER_DEPTH * sizeof(Move));
-        memset(killerMovesTable[i], 0, NUM_KILLER_MOVES_TO_SAVE_PER_DEPTH * sizeof(Move));
-    }
 
-    if (killerMovesTable == NULL) {
-        fprintf(stderr, "Memory allocation failed.\n");
-        exit(1);
-    }
-}
-
-void clearKillerMovesTable() {
-    if (killerMovesTable != NULL) {
-        for (int i = 0; i < MAX_SEARCH_DEPTH; i++) {
-            free(killerMovesTable[i]);
+void saveKillerMove(Move* cutoffMove, int depth) {
+    if(cutoffMove->pieceTo == '.') { // only save non-captures and en passant
+        Move* storedKillerMoves = killerMovesTable[depth];
+        if(!(equalMoves(&storedKillerMoves[0], cutoffMove) || equalMoves(&storedKillerMoves[1], cutoffMove))) {
+            storedKillerMoves[1] = storedKillerMoves[0];
+            storedKillerMoves[0] = *cutoffMove;
         }
-        free(killerMovesTable);
-        killerMovesTable = NULL;
     }
-}
-
-void saveKillerMove(Move killerMove) {
-
 }

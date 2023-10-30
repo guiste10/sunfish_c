@@ -4,6 +4,7 @@
 #include "move.h"
 #include "pieceSquareTables.h"
 #include "zobrist.h"
+#include "killerMovesTable.h"
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
@@ -315,11 +316,10 @@ void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, bool hasTTBes
             move->moveValue = PST[pieceIndex][move->to] - PST[pieceIndex][move->from];
         }
 
-
-//        for(int killerMove = 0; killerMove < NUM_KILLER_MOVES_TO_SAVE_PER_DEPTH; killerMove++) {
-//            if(equalMoves(move, &killerMovesTable[depth][killerMove])) {
-//                move->moveType = killerType;
-//            }
-//        }
+        for(int killerMove = 0; killerMove < NUM_KILLER_MOVES_PER_DEPTH; killerMove++) {
+            if(equalMoves(move, &killerMovesTable[depth][killerMove])) {
+                move->moveType = killerType;
+            }
+        }
     }
 }

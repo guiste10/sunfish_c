@@ -9,8 +9,10 @@
 #include "chessBoard.h"
 #include "search.h"
 #include "transpositionTable.h"
+#include "killerMovesTable.h"
 
 const int minDepth = 6;
+const bool useKillerMove = true;
 const bool useNullMove = true; // not used in endgames anyway
 const bool useTT = true;
 const bool useMtdf = true;
@@ -224,6 +226,9 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
             beta = (beta < bestScore) ? beta : bestScore;
         }
     }
+    if(alpha >= beta && useKillerMove) {
+        saveKillerMove(move, depth);
+    }
     saveScore(position->hash, depth, bestScore,
               (bestScore <= alphaOrig) ? UPPER : (bestScore >= betaOrig) ? LOWER : EXACT,
               *bestMoveToSave);
@@ -237,9 +242,8 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool isMate = false;
     bool canFurtherIncreaseDepth = true;
     initTranspositionTable();
-    //initKillerMovesTable();
     const int maxDepth = timeLeftMs > 40000 ? 10 : timeLeftMs > 15000 ? 6 : 4;
-    //for(int depth = 1; depth <= 1; depth++){
+    //for(int depth = 1; depth <= 6; depth++){
     for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         numNodes = 0;
@@ -253,11 +257,10 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
         moveToUciMove(bestMove, bestMoveUci);
         printf("info depth %d time %d nps %d\n", depth, (int)timeTakenMs, (int)nps);
         printf("info pv %s score cp %d\n", bestMoveUci, score);
-        //printf("numNodes %d\n", numNodes);
+        printf("numNodes %d\n", numNodes);
         fflush(stdout);
         isMate = abs(score) >= MATE_LOWER;
         canFurtherIncreaseDepth = timeTakenMs < 700.0;
     }
     clearTranspositionTable();
-    //clearKillerMovesTable();
 }

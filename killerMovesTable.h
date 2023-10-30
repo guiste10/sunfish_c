@@ -5,13 +5,8 @@
 #include <stdint.h>
 #include "move.h"
 
-extern const int NUM_KILLER_MOVES_TO_SAVE_PER_DEPTH;
-extern Move** killerMovesTable;
+extern Move killerMovesTable[MAX_SEARCH_DEPTH][NUM_KILLER_MOVES_PER_DEPTH];
 
-void initKillerMovesTable();
-
-void clearKillerMovesTable();
-
-void saveKillerMove(Move killerMove);
+void saveKillerMove(Move* cutoffMove, int depth);
 
 #endif //SUNFISH_C_KILLERMOVESTABLE_H
