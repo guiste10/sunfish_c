@@ -11,7 +11,7 @@
 #include "transpositionTable.h"
 #include "killerMovesTable.h"
 
-const int minDepth = 6;
+const int minDepth = 7;
 const bool useKillerMove = true;
 const bool useNullMove = true; // not used in endgames anyway
 const bool useTT = true;
@@ -71,7 +71,7 @@ bool isPat(Position* position, int numMoves, Move moves[]) {
 int getQuiescentDepth(int depth, Position *position, Move *move) {
     char fromPiece = position->board[move->to];
     char toPiece = move->pieceTo;
-    if (depth == 1 && isCapture(position->ep, move, position->board) && PIECE_VALUES[PIECE_INDEXES_WHITE[fromPiece]] > PIECE_VALUES[PIECE_INDEXES_WHITE[toPiece]]) {
+    if (depth == 1 && isCapture(move, position->board, position->ep) && PIECE_VALUES[PIECE_INDEXES_WHITE[fromPiece]] > PIECE_VALUES[PIECE_INDEXES_WHITE[toPiece]]) {
         return depth; // search one more ply because risky capture
     }
     return depth - 1;
@@ -127,7 +127,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     bool hasBestTTMove = false;
     Move bestMoveTT;
     if(useTT && ttEntry != NULL) {
-        if (ttEntry->depth == depth) {
+        if (ttEntry->depth >= depth) { // replace condition by == to get true minimax score with TT
             if (ttEntry->type == EXACT) { // todo search killer moves after winning/equal captures
                 return ttEntry->score;
             } else if (ttEntry->type == LOWER) {
@@ -177,6 +177,13 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
 
     Position positionBackup;
     if(alpha <= beta) { // only sort moves if there is no alpha-beta pruning caused by null move heuristic
+//        if(depth == 1) { // this if does work with quiescent search!!!!!
+//            // if there are one or more captures or one promotion, only try them
+//            int numCapsAndProms = keepCapturesAndPromotionsIfPresent(moves, numMoves, position->board, position->ep);
+//            if(numCapsAndProms > 0) {
+//                numMoves = numCapsAndProms;
+//            }
+//        }
         sortMoves(moves, depth, hasBestTTMove, &bestMoveTT, position->board, position->ep, numMoves);
         duplicatePosition(position, &positionBackup);
     }
@@ -233,6 +240,8 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     return bestScore;
 }
 
+
+
 void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isWhite) {
     int timeTakenMs;
     int score = 0;
@@ -243,7 +252,7 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool canFurtherIncreaseDepth = true;
     initKillerMovesTable();
     const int maxDepth = timeLeftMs > 40000 ? 10 : timeLeftMs > 15000 ? 6 : 4;
-    //for(int depth = 1; depth <= 6; depth++){
+    //for(int depth = 1; depth <= 1; depth++){
     for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         score = useMtdf
