@@ -68,7 +68,7 @@ void playUci(){
     uint64_t history[MAX_PLY_CHESS_GAME];
     initializePieceIndexArray();
     initOpeningToMiddleGamePst();
-
+    initTranspositionTable();
     while (1) {
         fgets(line, sizeof(line), stdin);
         fillArgs(line, args, &numArgs);
