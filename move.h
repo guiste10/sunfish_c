@@ -29,5 +29,6 @@ void createMove(int from, int to, int prom, char pieceTo, Move* move);
 void moveToUciMove(const Move *move, char uciMove[6]);
 void uciMoveToMove(const char uciMove[6], Move *move, bool isWhite);
 bool equalMoves(const Move* moveA, const Move* moveB);
+bool isCapture(int ep, const Move *move, const char *board);
 void sortMoves(Move moves[], int numMoves, char *board);
 #endif //SUNFISH_C_MOVE_H

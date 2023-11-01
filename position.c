@@ -305,7 +305,7 @@ void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, bool hasTTBes
             move->moveValue = ttBestMove->moveValue;
         } else if(move->prom != NO_PROMOTION) {
             move->moveType = promotionType;
-        } else if(move->pieceTo != '.' || ((board[from] == 'P' || board[from] == 'p') && to == position->ep)) { // capture or en passant
+        } else if(isCapture(position->ep, move, board)) { // capture or en passant
             char fromPiece = board[from];
             char toPiece = board[to];
             move->moveValue = move->pieceTo != '.' ? PIECE_VALUES[PIECE_INDEXES_WHITE[toPiece]] - PIECE_VALUES[PIECE_INDEXES_WHITE[fromPiece]] : 0;

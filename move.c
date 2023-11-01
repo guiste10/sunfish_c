@@ -75,13 +75,13 @@ bool equalMoves(const Move* moveA, const Move* moveB) {
     moveA->pieceTo == moveB->pieceTo;
 }
 
+bool isCapture(const int ep, const Move *move, const char *board) {
+    return move->pieceTo != '.' || ((board[move->from] == 'P' || board[move->from] == 'p') && move->to == ep);
+}
 
 int compareMoves(const void* x, const void* y) {
     Move* moveA = (Move*)x;
     Move* moveB = (Move*)y;
-    if(moveA->moveType == unknownType) {
-        printf("unknown move type");
-    }
     if(moveA->moveType != moveB->moveType) {
         return moveA->moveType - moveB->moveType; // moveType closer to 0 is ordered first
     }
