@@ -237,6 +237,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
 void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isWhite) {
     int timeTakenMs;
     int score = 0;
+    int mtdfFirstGuess[2] = {0, 0};
     clock_t start = clock();
     numNodes = 0;
     bool isMate = false;
@@ -247,8 +248,9 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         score = useMtdf
-                ? mtdf(position, score, depth, moves, bestMove)
+                ? mtdf(position, mtdfFirstGuess[depth % 2], depth, moves, bestMove)
                 : alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
+        mtdfFirstGuess[depth % 2] = score;
         timeTakenMs = (int)(clock() - start);
         int nps = timeTakenMs == 0.0 ? 0 : (int)(numNodes/(timeTakenMs/1000.0));
 
