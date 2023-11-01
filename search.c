@@ -177,7 +177,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
 
     Position positionBackup;
     if(alpha <= beta) { // only sort moves if there is no alpha-beta pruning caused by null move heuristic
-        computeMoveTypeAndValue(moves, numMoves, depth, hasBestTTMove, &bestMoveTT, position);
+        computeMoveTypeAndValue(moves, numMoves, depth, hasBestTTMove, &bestMoveTT, position->board, position->ep);
         sortMoves(moves, numMoves, position->board);
         duplicatePosition(position, &positionBackup);
     }
@@ -244,8 +244,8 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool canFurtherIncreaseDepth = true;
     initKillerMovesTable();
     const int maxDepth = timeLeftMs > 40000 ? 10 : timeLeftMs > 15000 ? 6 : 4;
-    //for(int depth = 1; depth <= 6; depth++){
-    for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
+    for(int depth = 1; depth <= 6; depth++){
+    //for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         score = useMtdf
                 ? mtdf(position, mtdfFirstGuess[depth % 2], depth, moves, bestMove)

@@ -28,6 +28,4 @@ int value(const Position *position, const Move *move);
 
 void doMove(Position* position, const Move* move);
 void undoMove(Position* position, Move* move, Position positionOld);
-
-void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, bool hasTTBestMove, Move *ttBestMove, Position* position);
 #endif //SUNFISH_C_POSITION_H

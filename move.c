@@ -1,10 +1,11 @@
 #include "move.h"
 #include "chessBoard.h"
 #include "utils.h"
+#include "pieceSquareTables.h"
+#include "killerMovesTable.h"
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 const int unknownType = -1;
 const int nullType = 0;
@@ -77,6 +78,38 @@ bool equalMoves(const Move* moveA, const Move* moveB) {
 
 bool isCapture(const int ep, const Move *move, const char *board) {
     return move->pieceTo != '.' || ((board[move->from] == 'P' || board[move->from] == 'p') && move->to == ep);
+}
+
+void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, bool hasTTBestMove, Move *ttBestMove, char board[], int ep) {
+    Move *move;
+    for (int bestTTMoveIndex = 0; bestTTMoveIndex < numMoves; bestTTMoveIndex++) {
+        move = &moves[bestTTMoveIndex];
+        int from = move->from;
+        int to = move->to;
+        if (hasTTBestMove && equalMoves(move, ttBestMove)) {
+            move->moveType = pvType; // pv move will first move in the moves lost after sorting
+            move->moveValue = ttBestMove->moveValue;
+        } else if (move->prom != NO_PROMOTION) {
+            move->moveType = promotionType;
+        } else if (isCapture(ep, move, board)) { // capture or en passant
+            char fromPiece = board[from];
+            char toPiece = board[to];
+            move->moveValue = move->pieceTo != '.' ? PIECE_VALUES[PIECE_INDEXES_WHITE[toPiece]] -
+                                                     PIECE_VALUES[PIECE_INDEXES_WHITE[fromPiece]] : 0;
+            move->moveType = move->moveValue == 0 ? equalCaptureType : move->moveValue > 0 ? winningCaptureType
+                                                                                           : losingCaptureType;
+        } else {
+            move->moveType = nonCaptureType;
+            int pieceIndex = PIECE_INDEXES_WHITE[board[move->from]];
+            move->moveValue = PST[pieceIndex][move->to] - PST[pieceIndex][move->from];
+        }
+
+        for (int killerMove = 0; killerMove < NUM_KILLER_MOVES_PER_DEPTH; killerMove++) {
+            if (equalMoves(move, &killerMovesTable[depth][killerMove])) {
+                move->moveType = killerType;
+            }
+        }
+    }
 }
 
 int compareMoves(const void* x, const void* y) {
