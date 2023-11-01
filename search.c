@@ -226,7 +226,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
         }
     }
     if(alpha >= beta && useKillerMove) {
-        saveKillerMove(move, depth, position->ep, position->board);
+        saveAsKillerMove(move, depth, position->ep, position->board);
     }
     int entryType = (bestScore <= alphaOrig) ? UPPER : (bestScore >= betaOrig) ? LOWER : EXACT;
     saveScore(position->hash, depth, bestScore, entryType, *bestMoveToSave, position->currentPly);
@@ -243,8 +243,8 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     bool canFurtherIncreaseDepth = true;
     initKillerMovesTable();
     const int maxDepth = timeLeftMs > 40000 ? 10 : timeLeftMs > 15000 ? 6 : 4;
-    for(int depth = 1; depth <= 6; depth++){
-    //for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
+    //for(int depth = 1; depth <= 6; depth++){
+    for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
         Move moves[MAX_BRANCHING_FACTOR];
         score = useMtdf
                 ? mtdf(position, mtdfFirstGuess[depth % 2], depth, moves, bestMove)

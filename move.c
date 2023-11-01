@@ -7,7 +7,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-const int nullType = 0;
+const int unknownType = -1; // not 0 for this one
+const int nullType = 0; // do move with moveType 0 will perform a null move!!!
 const int pvType = 1;
 const int promotionType = 2;
 const int winningCaptureType = 3;
@@ -23,6 +24,7 @@ void createMove(int from, int to, int prom, char pieceTo, Move* move){
     move->to = to;
     move->prom = prom;
     move->pieceTo = pieceTo;
+    move->moveType = unknownType;
     move->moveValue = 0;
 }
 
@@ -111,6 +113,7 @@ void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, bool hasTTBes
 int compareMoves(const void* x, const void* y) {
     Move* moveA = (Move*)x;
     Move* moveB = (Move*)y;
+
     if(moveA->moveType != moveB->moveType) {
         return moveA->moveType - moveB->moveType; // moveType closer to 0 is ordered first
     }
