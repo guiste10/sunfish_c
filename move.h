@@ -14,7 +14,6 @@ typedef struct {
 } Move;
 
 extern const int nullType;
-extern const int unknownType;
 extern const int pvType;
 extern const int promotionType;
 extern const int winningCaptureType;
@@ -30,6 +29,5 @@ void moveToUciMove(const Move *move, char uciMove[6]);
 void uciMoveToMove(const char uciMove[6], Move *move, bool isWhite);
 bool equalMoves(const Move* moveA, const Move* moveB);
 bool isCapture(int ep, const Move *move, const char *board);
-void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, bool hasTTBestMove, Move *ttBestMove, char board[], int ep);
-void sortMoves(Move moves[], int numMoves, char *board);
+void sortMoves(Move *moves, int depth, bool hasTTBestMove, Move *ttBestMove, char board[], int ep, int numMoves);
 #endif //SUNFISH_C_MOVE_H

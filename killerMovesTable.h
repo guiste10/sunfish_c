@@ -4,10 +4,8 @@
 
 #include <stdint.h>
 #include "move.h"
-
-extern Move killerMovesTable[MAX_SEARCH_DEPTH][NUM_KILLER_MOVES_PER_DEPTH];
-
 void initKillerMovesTable();
-void saveKillerMove(Move* cutoffMove, int depth);
+void saveKillerMove(Move* cutoffMove, int depth, int ep, char board[]);
+bool isKillerType(int depth, Move *move);
 
 #endif //SUNFISH_C_KILLERMOVESTABLE_H

@@ -7,7 +7,6 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-const int unknownType = -1;
 const int nullType = 0;
 const int pvType = 1;
 const int promotionType = 2;
@@ -24,7 +23,6 @@ void createMove(int from, int to, int prom, char pieceTo, Move* move){
     move->to = to;
     move->prom = prom;
     move->pieceTo = pieceTo;
-    move->moveType = unknownType;
     move->moveValue = 0;
 }
 
@@ -104,10 +102,9 @@ void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, bool hasTTBes
             move->moveValue = PST[pieceIndex][move->to] - PST[pieceIndex][move->from];
         }
 
-        for (int killerMove = 0; killerMove < NUM_KILLER_MOVES_PER_DEPTH; killerMove++) {
-            if (equalMoves(move, &killerMovesTable[depth][killerMove])) {
-                move->moveType = killerType;
-            }
+
+        if(isKillerType(depth, move)) {
+            move->moveType = killerType;
         }
     }
 }
@@ -121,6 +118,7 @@ int compareMoves(const void* x, const void* y) {
     return moveB->moveValue - moveA->moveValue;
 }
 
-void sortMoves(Move moves[], int numMoves, char *board) {
+void sortMoves(Move *moves, int depth, bool hasTTBestMove, Move *ttBestMove, char board[], int ep, int numMoves){
+    computeMoveTypeAndValue(moves, numMoves, depth, hasTTBestMove, ttBestMove, board, ep);
     qsort(moves, numMoves, sizeof(Move), compareMoves);
 }

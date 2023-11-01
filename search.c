@@ -177,8 +177,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
 
     Position positionBackup;
     if(alpha <= beta) { // only sort moves if there is no alpha-beta pruning caused by null move heuristic
-        computeMoveTypeAndValue(moves, numMoves, depth, hasBestTTMove, &bestMoveTT, position->board, position->ep);
-        sortMoves(moves, numMoves, position->board);
+        sortMoves(moves, depth, hasBestTTMove, &bestMoveTT, position->board, position->ep, numMoves);
         duplicatePosition(position, &positionBackup);
     }
 
@@ -227,7 +226,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
         }
     }
     if(alpha >= beta && useKillerMove) {
-        saveKillerMove(move, depth);
+        saveKillerMove(move, depth, position->ep, position->board);
     }
     int entryType = (bestScore <= alphaOrig) ? UPPER : (bestScore >= betaOrig) ? LOWER : EXACT;
     saveScore(position->hash, depth, bestScore, entryType, *bestMoveToSave, position->currentPly);
