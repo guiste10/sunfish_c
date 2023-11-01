@@ -102,7 +102,6 @@ void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, bool hasTTBes
             move->moveValue = PST[pieceIndex][move->to] - PST[pieceIndex][move->from];
         }
 
-
         if(isKillerType(depth, move)) {
             move->moveType = killerType;
         }

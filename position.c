@@ -4,7 +4,6 @@
 #include "move.h"
 #include "pieceSquareTables.h"
 #include "zobrist.h"
-#include "killerMovesTable.h"
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
@@ -68,8 +67,10 @@ int genMoves(Position* position, Move moves[MAX_BRANCHING_FACTOR]) { // For each
                         && to != position->kp - 1 && to != position->kp && to != position->kp + 1) // for castling check detection
                         break;
                     if (to >= A8 && to <= H8) { // If we move to the last row, we can be anything
-                        for (int promotion = Q; promotion > P ; promotion--)
+                        for (int promotion = Q; promotion > P ; promotion--){
                             createMove(from, to, promotion, pieceTo, &moves[moveIndex++]);
+                            break; // only consider queen promotions for efficiency reasons
+                        }
                         break;
                     }
                 }
@@ -82,8 +83,10 @@ int genMoves(Position* position, Move moves[MAX_BRANCHING_FACTOR]) { // For each
                         && to != position->kp - 1 && to != position->kp && to != position->kp + 1) // for castling check detection
                         break;
                     if (to >= A1 && to <= H1) { // If we move to the last row, we can be anything
-                        for (int promotion = q; promotion > p ; promotion--)
+                        for (int promotion = q; promotion > p ; promotion--){
                             createMove(from, to, promotion, pieceTo, &moves[moveIndex++]);
+                            break; // only consider queen promotions for efficiency reasons
+                        }
                         break;
                     }
                 }
