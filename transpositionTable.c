@@ -44,13 +44,15 @@ TranspositionEntry* lookupTT(uint64_t hash) {
     }
 }
 
-void saveScore(uint64_t hash, int depth, int score, int type, Move bestMove) {
+void saveScore(uint64_t hash, int depth, int score, int type, Move bestMove, int currentPly) {
     unsigned int index = hashFunction(hash);
 
     TranspositionEntry* entry = &transpositionTable[index];
 
     // Store the entry if it's deeper or has the same depth but a better type
-    if (depth > entry->depth || (depth == entry->depth && type != entry->type && type == EXACT)) {
+    // if existing entry is too old then don't check for hash equality and replace the entry
+    if (depth > entry->depth || currentPly > (entry->plyStored + 15)
+    || (depth == entry->depth && type != entry->type && type == EXACT)) {
         entry->hash = hash;
         entry->depth = depth;
         entry->score = score;

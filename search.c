@@ -229,9 +229,8 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     if(alpha >= beta && useKillerMove) {
         saveKillerMove(move, depth);
     }
-    saveScore(position->hash, depth, bestScore,
-              (bestScore <= alphaOrig) ? UPPER : (bestScore >= betaOrig) ? LOWER : EXACT,
-              *bestMoveToSave);
+    int entryType = (bestScore <= alphaOrig) ? UPPER : (bestScore >= betaOrig) ? LOWER : EXACT;
+    saveScore(position->hash, depth, bestScore, entryType, *bestMoveToSave, position->currentPly);
     return bestScore;
 }
 
@@ -241,7 +240,7 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     clock_t start = clock();
     bool isMate = false;
     bool canFurtherIncreaseDepth = true;
-    initTranspositionTable();
+    //initTranspositionTable();
     initKillerMovesTable();
     const int maxDepth = timeLeftMs > 40000 ? 10 : timeLeftMs > 15000 ? 6 : 4;
     //for(int depth = 1; depth <= 4; depth++){
@@ -263,5 +262,5 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
         isMate = abs(score) >= MATE_LOWER;
         canFurtherIncreaseDepth = timeTakenMs < 700.0;
     }
-    clearTranspositionTable();
+    //clearTranspositionTable();
 }

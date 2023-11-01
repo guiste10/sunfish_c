@@ -11,7 +11,7 @@ void initKillerMovesTable() {
 }
 
 void saveKillerMove(Move* cutoffMove, int depth) {
-    if(cutoffMove->moveType != nullType && cutoffMove->pieceTo == '.') { // only save non-captures and en passant
+    if(cutoffMove->moveType != nullType && cutoffMove->pieceTo == '.') { // only save non-captures (and en passant)
         Move* storedKillerMoves = killerMovesTable[depth];
         if(!(equalMoves(&storedKillerMoves[0], cutoffMove) || equalMoves(&storedKillerMoves[1], cutoffMove))) {
             storedKillerMoves[1] = storedKillerMoves[0];

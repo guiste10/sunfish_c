@@ -115,9 +115,9 @@ void findBestMoveTimeStamped(char* boardToUse) {
     printCharArray(board, SIZE);
     clock_t start = clock();
     Move bestMove;
-    //initTranspositionTable();
+    initTranspositionTable();
     searchBestMove(position, &bestMove, TIME_LEFT_DEBUG, true);
-    //clearTranspositionTable();
+    clearTranspositionTable();
     printf("Best move search finished\nTime taken: %.2f ms\n", (double)clock()-start);
     doMove(position, &bestMove);
     printMove(bestMove);
@@ -141,9 +141,9 @@ void findBestMoveFromUciPosition(char uciPosition[MAX_ARGS]) {
     printCharArray(position->board, SIZE);
     Move bestMove;
     clock_t start = clock();
-    //initTranspositionTable();
+    initTranspositionTable();
     searchBestMove(position, &bestMove, TIME_LEFT_DEBUG, isWhite);
-    //clearTranspositionTable();
+    clearTranspositionTable();
     printf("Best move search finished\nTime taken: %.2f ms\n", (double)clock()-start);
     printMove(bestMove);
 //    doMove(position, &bestMove);
