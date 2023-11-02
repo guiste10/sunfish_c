@@ -127,7 +127,7 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
     bool hasBestTTMove = false;
     Move bestMoveTT;
     if(useTT && ttEntry != NULL) {
-        if (ttEntry->depth >= depth) { // replace condition by == to get true minimax score with TT
+        if (ttEntry->depth == depth) { // replace condition by == to get true minimax score with TT
             if (ttEntry->type == EXACT) { // todo search killer moves after winning/equal captures
                 return ttEntry->score;
             } else if (ttEntry->type == LOWER) {
@@ -139,10 +139,8 @@ int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatChec
                 return ttEntry->score;
             }
         }
-        if(ttEntry->type == EXACT) {
-            hasBestTTMove = true;
-            bestMoveTT = ttEntry->bestMove;
-        }
+        hasBestTTMove = true;
+        bestMoveTT = ttEntry->bestMove;
     }
 
     int alphaOrig = alpha;
@@ -264,9 +262,11 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
 
         char bestMoveUci[6];
         moveToUciMove(bestMove, bestMoveUci);
-        printf("info depth %d pv %s score cp %d\n", depth, bestMoveUci, score);
-        printf("info time %d numNodes %d nps %d\n", (int)timeTakenMs, numNodes, nps);
-        fflush(stdout);
+        if(depth > 1) {
+            printf("info depth %d pv %s score cp %d\n", depth, bestMoveUci, score);
+            printf("info time %d numNodes %d nps %d\n", (int)timeTakenMs, numNodes, nps);
+            fflush(stdout);
+        }
         isMate = abs(score) >= MATE_LOWER;
         canFurtherIncreaseDepth = timeTakenMs < 700.0;
     }

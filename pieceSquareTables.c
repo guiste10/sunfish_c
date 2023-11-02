@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 const int pawnVal = 100;
-const int knightVal = 320; // prev 280
+const int knightVal = 310; // prev 280
 const int bishopVal = 320;
 const int rookVal = 479;
 const int queenVal = 929;
