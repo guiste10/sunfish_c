@@ -76,17 +76,17 @@ bool equalMoves(const Move* moveA, const Move* moveB) {
     moveA->pieceTo == moveB->pieceTo;
 }
 
-bool isCapture(const Move *move, const char *board, const int ep) {
+bool isCapture(const Move *move, char *board, int ep) {
     return move->pieceTo != '.' || ((board[move->from] == 'P' || board[move->from] == 'p') && move->to == ep);
 }
 
-void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, bool hasTTBestMove, Move *ttBestMove, char board[], int ep) {
+void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, Move *ttBestMove, char board[], int ep) {
     Move *move;
     for (int i = 0; i < numMoves; i++) {
         move = &moves[i];
         int from = move->from;
         int to = move->to;
-        if (hasTTBestMove && equalMoves(move, ttBestMove)) {
+        if (ttBestMove != NULL && equalMoves(move, ttBestMove)) {
             move->moveType = pvType; // pv move will first move in the moves lost after sorting
             move->moveValue = ttBestMove->moveValue;
         } else if (move->prom != NO_PROMOTION) {
@@ -120,19 +120,7 @@ int compareMoves(const void* x, const void* y) {
     return moveB->moveValue - moveA->moveValue;
 }
 
-void sortMoves(Move *moves, int depth, bool hasTTBestMove, Move *ttBestMove, char board[], int ep, int numMoves){
-    computeMoveTypeAndValue(moves, numMoves, depth, hasTTBestMove, ttBestMove, board, ep);
+void sortMoves(Move *moves, int depth, Move *ttBestMove, char board[], int ep, int numMoves){
+    computeMoveTypeAndValue(moves, numMoves, depth, ttBestMove, board, ep);
     qsort(moves, numMoves, sizeof(Move), compareMoves);
-}
-
-int keepCapturesAndPromotionsIfPresent(Move *moves, int numMoves, char *board, int ep) {
-    Move* move;
-    int capturesAndPromotionsIndex = 0;
-    for(int i=0; i<numMoves; i++) {
-        move = moves + i;
-        if(isCapture(move, board, ep) || move->prom != NO_PROMOTION) {
-            moves[capturesAndPromotionsIndex++] = *move;
-        }
-    }
-    return capturesAndPromotionsIndex;
 }

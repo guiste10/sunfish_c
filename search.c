@@ -11,6 +11,7 @@
 #include "transpositionTable.h"
 #include "killerMovesTable.h"
 
+const int EVAL_ROUGHNESS = 15;
 const int minDepth = 7;
 const bool useKillerMove = true;
 const bool useNullMove = true; // not used in endgames anyway
@@ -19,85 +20,84 @@ const bool useMtdf = true;
 
 int numNodes = 0;
 
-int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove, Move moves[], Move* bestMoveToSave);
 
-bool onlyKingMoves(Move moves[], int numMoves, const char *board) {
-    for (int i=0; i<numMoves; i++){
-        char fromPiece = *(board + moves[i].from);
-        if(fromPiece != 'K' && fromPiece != 'k'){
-            return false;
-        }
-    }
-    return true;
-}
 
-int getNullMoveScore(Position *position, int depth) {
-    Move opponentMoves[MAX_BRANCHING_FACTOR];
-    Move bestChildMove;
-    Position duplicate;
-    duplicatePosition(position, &duplicate);
-    doMove(&duplicate, &nullMove);
-    return alphaBeta(&duplicate, depth, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
-}
+//int getNullMoveScore(Position *position, int depth) {
+//    Move opponentMoves[MAX_BRANCHING_FACTOR];
+//    Move bestChildMove;
+//    Position duplicate;
+//    duplicatePosition(position, &duplicate);
+//    doMove(&duplicate, &nullMove);
+//    return bound(&duplicate, depth, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
+//}
 
-bool isKingInCheck(Position *position) {
-    return abs(getNullMoveScore(position, 1)) >= MATE_LOWER;
-}
+//bool isKingInCheck(Position *position) {
+//    return abs(getNullMoveScore(position, 1)) >= MATE_LOWER;
+//}
 
-bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[]) {
-    for (int i=0; i < numMoves; i++){
-        Move* move = &kingMoves[i];
-        Position positionBackup;
-        duplicatePosition(position, &positionBackup);
-        doMove(position, move);
-        Move opponentMoves[MAX_BRANCHING_FACTOR];
-        Move bestChildMove;
-        int score = alphaBeta(position, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
-        undoMove(position, move, positionBackup);
-        if (abs(score) < MATE_LOWER) { // one safe move has been found
-            return false;
-        }
-    }
-    return true;
-}
+//bool allKingMovesLeadToDeath(Position *position, int numMoves, Move kingMoves[]) {
+//    for (int i=0; i < numMoves; i++){
+//        Move* move = &kingMoves[i];
+//        Position positionBackup;
+//        duplicatePosition(position, &positionBackup);
+//        doMove(position, move);
+//        Move opponentMoves[MAX_BRANCHING_FACTOR];
+//        Move bestChildMove;
+//        int score = bound(position, 1, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
+//        undoMove(position, move, positionBackup);
+//        if (abs(score) < MATE_LOWER) { // one safe move has been found
+//            return false;
+//        }
+//    }
+//    return true;
+//}
 
-bool isPat(Position* position, int numMoves, Move moves[]) {
-    if(onlyKingMoves(moves, numMoves, position->board) && !isKingInCheck(position)) {
-        return allKingMovesLeadToDeath(position, numMoves, moves);
-    }
-    return false;
-}
+//bool isPat(Position* position, int numMoves, Move moves[]) {
+//    if(onlyKingMoves(moves, numMoves, position->board) && !isKingInCheck(position)) {
+//        return allKingMovesLeadToDeath(position, numMoves, moves);
+//    }
+//    return false;
+//}
 
-int getQuiescentDepth(int depth, Position *position, Move *move) {
-    char fromPiece = position->board[move->to];
-    char toPiece = move->pieceTo;
-    if (depth == 1 && isCapture(move, position->board, position->ep) && PIECE_VALUES[PIECE_INDEXES_WHITE[fromPiece]] > PIECE_VALUES[PIECE_INDEXES_WHITE[toPiece]]) {
-        return depth; // search one more ply because risky capture
-    }
-    return depth - 1;
-}
+int bound(Position* position, int depth, int gamma, bool canNullMove, Move moves[], Move* bestMoveToSave);
+
+//bool onlyKingMoves(Move moves[], int numMoves, const char *board) {
+//    for (int i=0; i<numMoves; i++){
+//        char fromPiece = *(board + moves[i].from);
+//        if(fromPiece != 'K' && fromPiece != 'k'){
+//            return false;
+//        }
+//    }
+//    return true;
+//}
+
+//int getQuiescentDepth(int depth, Position *position, Move *move) {
+//    char fromPiece = position->board[move->to];
+//    char toPiece = move->pieceTo;
+//    if (depth == 1 && isCapture(move, position->board, position->ep) && PIECE_VALUES[PIECE_INDEXES_WHITE[fromPiece]] > PIECE_VALUES[PIECE_INDEXES_WHITE[toPiece]]) {
+//        return depth; // search one more ply because risky capture
+//    }
+//    return depth - 1;
+//}
 
 
 int mtdf(Position* position, int firstGuess, int depth, Move* moves, Move* bestMove) {
-    int g = firstGuess;
-    int upperBound = INT_MAX;
-    int lowerBound = INT_MIN;
+    int score, gamma = firstGuess;
+    int lowerBound = -MATE_LOWER;
+    int upperBound = MATE_LOWER;
 
-    while (lowerBound < upperBound) {
-        int beta;
-        if (g == lowerBound)
-            beta = g + 1;
-        else
-            beta = g;
+    while (lowerBound < upperBound - EVAL_ROUGHNESS) {
+        score = bound(position, depth, gamma, false, moves, bestMove);
 
-        g = alphaBeta(position, depth, beta - 1, beta, true, false, moves, bestMove);
-        if (g < beta)
-            upperBound = g;
-        else
-            lowerBound = g;
+        if(score >= gamma) {
+            lowerBound = score;
+        } else {
+            upperBound = score;
+        }
+        gamma = (lowerBound + upperBound + 1) / 2;
     }
 
-    return g;
+    return gamma;
 }
 
 int isThreefoldRepetition(const Position *position) {
@@ -115,109 +115,78 @@ int isThreefoldRepetition(const Position *position) {
 
 
 
-int alphaBeta(Position* position, int depth, int alpha, int beta, bool doPatCheck, bool canNullMove,
-              Move moves[], Move* bestMoveToSave) {
+int bound(Position* position, int depth, int gamma, bool canNullMove,
+          Move moves[], Move* bestMoveToSave) {
     numNodes++;
 
     depth = depth < 0 ? 0 : depth;
 
-    if (position->score <= -MATE_LOWER) { // mated as white
+    if (position->score <= -MATE_LOWER) {
         return -MATE_UPPER;
     }
-    if (position->score >= MATE_LOWER) {
-        return MATE_UPPER;
-    }
 
-    bool hasBestTTMove;
-    Move bestMoveTT;
     int entryLowerBound, entryUpperBound;
     TranspositionEntry* ttEntry = lookupTT(position->hash);
+    Move* bestTTMove;
     if(ttEntry == NULL) {
         entryLowerBound = -MATE_UPPER;
         entryUpperBound = MATE_UPPER;
+        bestTTMove = NULL;
     } else {
         entryLowerBound = ttEntry->lowerBound;
         entryUpperBound = ttEntry->upperBound;
-        hasBestTTMove = true;
-        bestMoveTT = ttEntry->bestMove;
         if (ttEntry->depth >= depth) { // replace condition by == to get true minimax score with TT
-            if(ttEntry->lowerBound >= beta) {
+            if(ttEntry->lowerBound >= gamma) {
                 return ttEntry->lowerBound;
             }
-            if(ttEntry->upperBound <= alpha) {
+            if(ttEntry->upperBound < gamma) {
                 return ttEntry->upperBound;
             }
-            alpha = (alpha > ttEntry->lowerBound ? alpha : ttEntry->lowerBound);
-            beta = (beta < ttEntry->upperBound ? beta : ttEntry->upperBound);
         }
+        bestTTMove = &ttEntry->bestMove;
     }
 
     if(isThreefoldRepetition(position)) {
         return 0;
     }
 
-    int g, score;
+    if(depth == 0) { // todo adapt
+        return position->score;
+    }
+
+    int best, score;
     Move* move;
-    if (depth <= 0) {
-        g = position->score;
-    } else {
-        int numMoves = genMoves(position, moves);
-        if (doPatCheck && isPat(position, numMoves, moves)) { // todo change as in sunfish
-            return 0;
+    int numMoves = genMoves(position, moves);
+    sortMoves(moves, depth, bestTTMove, position->board, position->ep, numMoves);
+    Position positionBackup;
+    duplicatePosition(position, &positionBackup);
+
+    best = -MATE_UPPER;
+    for (int i = 0; i < numMoves; i++) {
+        move = &moves[i];
+        doMove(position, move);
+        Move opponentMoves[MAX_BRANCHING_FACTOR];
+        Move bestChildMove;
+        score = -bound(position, depth - 1, 1-gamma, true,
+                      opponentMoves, &bestChildMove);
+        undoMove(position, move, positionBackup);
+
+        if (score > best) {
+            best = score;
+            *bestMoveToSave = *move;
         }
-        sortMoves(moves, depth, hasBestTTMove, &bestMoveTT, position->board, position->ep, numMoves);
-        Position positionBackup;
-        duplicatePosition(position, &positionBackup);
-        if (position->isWhite) {
-            g = -MATE_UPPER;
-            int al = alpha;
-            for (int i = 0; g < beta && i < numMoves; i++) {
-                move = &moves[i];
-                doMove(position, move);
-                Move opponentMoves[MAX_BRANCHING_FACTOR];
-                Move bestChildMove;
-                score = alphaBeta(position, getQuiescentDepth(depth, position, move), al, beta, true, true,
-                                  opponentMoves, &bestChildMove);
-                undoMove(position, move, positionBackup);
-
-                if (score >= g) {
-                    g = score;
-                    *bestMoveToSave = *move;
-                }
-                if(g > al) {
-                    al = g;
-                }
-            }
-        } else {
-            g = MATE_UPPER;
-            int bet = beta;
-            for (int i = 0; beta > alpha && i < numMoves; i++) {
-                move = &moves[i];
-                doMove(position, move);
-                Move opponentMoves[MAX_BRANCHING_FACTOR];
-                Move bestChildMove;
-                score = alphaBeta(position, getQuiescentDepth(depth, position, move), alpha, bet, true, true,
-                                  opponentMoves, &bestChildMove);
-                undoMove(position, move, positionBackup);
-
-                if (score <= g) {
-                    g = score;
-                    *bestMoveToSave = *move;
-                }
-                if(g < bet) {
-                    bet = g;
-                }
-            }
+        if(best >= gamma) {
+            // todo save move for pv construction and killer heuristic
+            break;
         }
     }
-    if(g <= alpha) {
-        entryUpperBound = g;
+    if(best >= gamma) {
+        saveScore(position->hash, depth, best, entryUpperBound, *bestMoveToSave, position->currentPly);
     }
-    if(g >= beta) {
-        entryLowerBound = g;
+    else {
+        saveScore(position->hash, depth, entryLowerBound, best, *bestMoveToSave, position->currentPly);
     }
-    saveScore(position->hash, depth, entryLowerBound, entryUpperBound, *bestMoveToSave, position->currentPly);
-    return g;
+    return best;
 }
 
 
@@ -235,9 +204,10 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
     for(int depth = 1; depth <= 7; depth++){
     //for(int depth = 1; !isMate  && (depth <= minDepth || canFurtherIncreaseDepth) && depth <= maxDepth; depth++){
         Move moves[MAX_BRANCHING_FACTOR];
-        score = useMtdf
-                ? mtdf(position, mtdfFirstGuess[depth % 2], depth, moves, bestMove)
-                : alphaBeta(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
+//        score = useMtdf
+//                ? mtdf(position, mtdfFirstGuess[depth % 2], depth, moves, bestMove)
+//                : bound(position, depth, -INT_MAX, INT_MAX, false, false, moves, bestMove);
+        score = mtdf(position, mtdfFirstGuess[depth % 2], depth, moves, bestMove);
         mtdfFirstGuess[depth % 2] = score;
         timeTakenMs = (int)(clock() - start);
         int nps = timeTakenMs == 0.0 ? 0 : (int)(numNodes/(timeTakenMs/1000.0));

@@ -29,7 +29,6 @@ void moveToUciMove(const Move *move, char uciMove[6]);
 void uciMoveToMove(const char uciMove[6], Move *move, bool isWhite);
 bool equalMoves(const Move* moveA, const Move* moveB);
 
-bool isCapture(const Move *move, const char *board, const int ep);
-void sortMoves(Move *moves, int depth, bool hasTTBestMove, Move *ttBestMove, char board[], int ep, int numMoves);
-int keepCapturesAndPromotionsIfPresent(Move *moves, int numMoves, char *board, int ep);
+bool isCapture(const Move *move, char *board, int ep);
+void sortMoves(Move *moves, int depth, Move *ttBestMove, char board[], int ep, int numMoves);
 #endif //SUNFISH_C_MOVE_H
