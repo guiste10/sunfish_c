@@ -214,11 +214,11 @@ void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isW
 
         char bestMoveUci[6];
         moveToUciMove(bestMove, bestMoveUci);
-        if(depth > 1) {
-            printf("info depth %d pv %s score cp %d\n", depth, bestMoveUci, score);
-            printf("info time %d numNodes %d nps %d\n", (int)timeTakenMs, numNodes, nps);
-            fflush(stdout);
-        }
+        //if(depth > 1) {
+        printf("info depth %d pv %s score cp %d\n", depth, bestMoveUci, score);
+        printf("info time %d numNodes %d nps %d\n", (int)timeTakenMs, numNodes, nps);
+        fflush(stdout);
+        //}
         isMate = abs(score) >= MATE_LOWER;
         canFurtherIncreaseDepth = timeTakenMs < 700.0;
     }
