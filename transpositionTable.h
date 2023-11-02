@@ -11,8 +11,8 @@
 typedef struct {
     uint64_t hash;
     int depth;
-    int score;
-    int type;
+    int lowerBound;
+    int upperBound;
     int plyStored;
     Move bestMove;
 } TranspositionEntry;
@@ -29,6 +29,5 @@ void clearTranspositionTable();
 
 TranspositionEntry* lookupTT(uint64_t hash);
 
-void saveScore(uint64_t hash, int depth, int score, int type, Move bestMove, int currentPly);
-
+void saveScore(uint64_t hash, int depth, int lowerBound, int upperBound, Move bestMove, int currentPly);
 #endif //SUNFISH_C_TRANSPOSITIONTABLE_H
