@@ -2,26 +2,22 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "transpositionTable.h"
+#include "tpScore.h"
 
-TranspositionEntry* transpositionTable = NULL;
+TpScoreEntry* transpositionTable = NULL;
 
-const int LOWER = 0;
-const int EXACT = 1;
-const int UPPER = 2;
-
-void initTranspositionTable() {
-    transpositionTable = (TranspositionEntry*)malloc(sizeof(TranspositionEntry) * (1 << TABLE_SIZE_LOG2));
+void initTpMove() {
+    transpositionTable = (TpScoreEntry*)malloc(sizeof(TpScoreEntry) * (1 << TABLE_SIZE_LOG2));
 
     if (transpositionTable == NULL) {
         fprintf(stderr, "Memory allocation failed.\n");
         exit(1);
     }
 
-    memset(transpositionTable, 0, sizeof(TranspositionEntry) * (1 << TABLE_SIZE_LOG2));
+    memset(transpositionTable, 0, sizeof(TpScoreEntry) * (1 << TABLE_SIZE_LOG2));
 }
 
-void clearTranspositionTable() {
+void clearTpMove() {
     if (transpositionTable != NULL) {
         free(transpositionTable);
         transpositionTable = NULL;
@@ -33,9 +29,9 @@ unsigned int hashFunction(uint64_t hash) {
     return (unsigned int)(hash & ((1 << TABLE_SIZE_LOG2) - 1));
 }
 
-TranspositionEntry* lookupTT(uint64_t hash) {
+TpScoreEntry* lookupTpMove(uint64_t hash) {
     unsigned int index = hashFunction(hash);
-    TranspositionEntry* entry = &transpositionTable[index];
+    TpScoreEntry* entry = &transpositionTable[index];
 
     if (entry->hash == hash) {
         return entry; // Found a matching entry
@@ -47,7 +43,7 @@ TranspositionEntry* lookupTT(uint64_t hash) {
 void saveScore(uint64_t hash, int depth, int lowerBound, int upperBound, Move bestMove, int currentPly) {
     unsigned int index = hashFunction(hash);
 
-    TranspositionEntry* entry = &transpositionTable[index];
+    TpScoreEntry* entry = &transpositionTable[index];
 
     // Store the entry if it's deeper
     // or if existing entry is too old then and replace the entry (and don't check for hash equality)

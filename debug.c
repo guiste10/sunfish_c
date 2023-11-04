@@ -8,7 +8,7 @@
 #include "chessBoard.h"
 #include "uci.h"
 #include "zobrist.h"
-#include "transpositionTable.h"
+#include "tpMove.h"
 #include "pieceSquareTables.h"
 
 const char debugBoard[] = "          "
@@ -114,10 +114,10 @@ void findBestMoveTimeStamped(char* boardToUse) {
     printf("Current board\n");
     printCharArray(board, SIZE);
     clock_t start = clock();
-    Move bestMove;
-    initTranspositionTable();
-    searchBestMove(position, &bestMove, TIME_LEFT_DEBUG, true);
-    clearTranspositionTable();
+    ;
+    initTpMove();
+    Move bestMove = searchBestMove(position, TIME_LEFT_DEBUG, true);
+    clearTpMove();
     printf("Best move search finished\nTime taken: %.2f ms\n", (double)clock()-start);
     doMove(position, &bestMove);
     printMove(bestMove);
@@ -139,11 +139,10 @@ void findBestMoveFromUciPosition(char uciPosition[MAX_ARGS]) {
     setupPositionWithMoveList(position, initialBoardCopy, &isWhite, args, numArgs, history);
     printf("Current board\n");
     printCharArray(position->board, SIZE);
-    Move bestMove;
     clock_t start = clock();
-    initTranspositionTable();
-    searchBestMove(position, &bestMove, TIME_LEFT_DEBUG, isWhite);
-    clearTranspositionTable();
+    initTpMove();
+    Move bestMove = searchBestMove(position, &bestMove, TIME_LEFT_DEBUG, isWhite);
+    clearTpMove();
     printf("Best move search finished\nTime taken: %.2f ms\n", (double)clock()-start);
     printMove(bestMove);
 //    doMove(position, &bestMove);

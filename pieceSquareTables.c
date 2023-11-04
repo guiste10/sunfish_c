@@ -1,5 +1,6 @@
 #include "constants.h"
 #include "chessBoard.h"
+#include "debug.h"
 #include <stdbool.h>
 
 const int pawnVal = 100;
@@ -13,7 +14,7 @@ const int MATE_UPPER = kingVal + 10 * queenVal; // 69290
 
 const int PIECE_VALUES[NUM_PIECES] = {
         pawnVal, knightVal, bishopVal, rookVal, queenVal, kingVal,
-        -pawnVal, -knightVal, -bishopVal, -rookVal, -queenVal, -kingVal
+        pawnVal, knightVal, bishopVal, rookVal, queenVal, kingVal
 };
 
 int PST[NUM_PIECES][SIZE];
@@ -140,18 +141,23 @@ void initOpeningToMiddleGamePst(){
         for(int col = 0; col < NUM_FILES; col++){
             for(int piece=0; piece < NUM_PIECES; piece++) {
                 if(piece >= NUM_WHITE_PIECES) { // mirror white's square values
-                    SQUARE_VALUES[piece][(10 * row) + col] = -SQUARE_VALUES[piece - NUM_WHITE_PIECES][10 * (NUM_ROWS - row - 1) + col];
+                    SQUARE_VALUES[piece][(10 * row) + col] = SQUARE_VALUES[piece - NUM_WHITE_PIECES][10 * (NUM_ROWS - row - 1) + col];
                 }
                 PST[piece][(10 * row) + col] = SQUARE_VALUES[piece][(10 * row) + col] + PIECE_VALUES[piece];
             }
         }
     }
+//    for(int piece=0; piece < NUM_PIECES; piece++) {
+//        printIntArray(PST[piece], 120);
+//    }
 }
 
 void setPstToEndGameMode() {
     for (int row = 0; row < NUM_ROWS; row++) {
         for (int col = 0; col < NUM_FILES; col++) {
             PST[K][(10 * row) + col] = SQUARES_VALUES_KING_ENDGAME[(10 * row) + col] + PIECE_VALUES[K];
+            // todo adapt for black to mirror square values such as below line and test with printIntArray()
+            //SQUARE_VALUES[piece][(10 * row) + col] = SQUARE_VALUES[piece - NUM_WHITE_PIECES][10 * (NUM_ROWS - row - 1) + col];
             PST[k][(10 * row) + col] = -SQUARES_VALUES_KING_ENDGAME[(10 * row) + col] + PIECE_VALUES[k];
             PST[P][(10 * row) + col] = SQUARES_VALUES_PAWN_ENDGAME[(10 * row) + col] + PIECE_VALUES[P];
             PST[p][(10 * row) + col] = -SQUARES_VALUES_PAWN_ENDGAME[(10 * row) + col] + PIECE_VALUES[p];

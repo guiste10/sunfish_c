@@ -4,6 +4,6 @@
 
 #include "position.h"
 
-void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isWhite);
+Move searchBestMove(Position* position, int timeLeftMs, bool isWhite);
 
 #endif //SUNFISH_C_SEARCH_H
