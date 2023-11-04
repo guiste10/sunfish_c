@@ -29,12 +29,12 @@ unsigned int hashFunction(uint64_t hash) {
     return (unsigned int)(hash & ((1 << TABLE_SIZE_LOG2) - 1));
 }
 
-TpMoveEntry* lookupTpMove(uint64_t hash) {
+Move* lookupTpMove(uint64_t hash) {
     unsigned int index = hashFunction(hash);
     TpMoveEntry* entry = &tpMove[index];
 
     if (entry->hash == hash) {
-        return entry; // Found a matching entry
+        return &entry->bestMove; // Found a matching entry
     } else {
         return NULL; // No matching entry found, TT will be full and unusable if we don't clear it after every search
     }

@@ -8,6 +8,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+Position* currentPosition;
+
 void initPosition(Position *position, char *boardCopy, char *boardToUse, uint64_t* history) {
     copyBoard(boardCopy, boardToUse);
     position->board = boardCopy;
@@ -43,11 +45,11 @@ Position* duplicatePosition(Position* source, Position* target){
     return target;
 }
 
-int genMoves(Position* position, Move moves[MAX_BRANCHING_FACTOR]) { // For each friendly piece, iterate through each possible 'ray' of moves as defined in the 'directions' map. The rays are broken e.g. by captures or immediately in case of pieces such as knights.
+int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]) { // For each friendly piece, iterate through each possible 'ray' of moves as defined in the 'directions' map. The rays are broken e.g. by captures or immediately in case of pieces such as knights.
     int moveIndex = 0;
     int isWhite = position->isWhite;
     char* board = position->board;
-    for (int from = 0; from < SIZE ; from++) {
+    for (int from = A8; from < H1 ; from++) {
         char pieceFrom = board[from];
         if ((isWhite && !isupper(pieceFrom)) || (!isWhite && !islower(pieceFrom)))
             continue;
@@ -154,8 +156,15 @@ int value(const Position *position, const Move *move) {
             score -= PST[P][to + NORTH];
         }
     }
-
     return score;
+}
+
+void assignMoveValues(Position * position, Move *moves, int numMoves) {
+    Move *move;
+    for (int i = 0; i < numMoves; i++) {
+        move = &moves[i];
+        move->moveValue = value(position, move);
+    }
 }
 
 bool isIrreversibleMove(const Move* move, Position* position){ // to know where to start checking for threefold repetition

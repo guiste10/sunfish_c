@@ -23,9 +23,10 @@ void initPosition(Position *position, char *boardCopy, char *boardToUse, uint64_
 
 Position* duplicatePosition(Position* source, Position* target);
 
-int genMoves(Position * position, Move moves[MAX_BRANCHING_FACTOR]);
-int value(const Position *position, const Move *move);
+int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]);
+void assignMoveValues(Position * position, Move *moves, int numMoves);
 
+int value(const Position *position, const Move *move);
 void doMove(Position* position, const Move* move);
 void undoMove(Position* position, Move* move, Position positionOld);
 #endif //SUNFISH_C_POSITION_H

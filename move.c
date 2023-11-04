@@ -79,43 +79,15 @@ bool isCapture(const Move *move, char *board, int ep) {
     return move->pieceTo != '.' || ((board[move->from] == 'P' || board[move->from] == 'p') && move->to == ep);
 }
 
-void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, Move *ttBestMove, char board[], int ep) {
-    Move *move;
-    for (int i = 0; i < numMoves; i++) {
-        move = &moves[i];
-        int from = move->from;
-        int to = move->to;
-        if (ttBestMove != NULL && equalMoves(move, ttBestMove)) {
-            move->moveType = pvType; // pv move will first move in the moves lost after sorting
-            move->moveValue = ttBestMove->moveValue;
-        } else if (move->prom != NO_PROMOTION) {
-            move->moveType = promotionType;
-        } else if (isCapture(move, board, ep)) { // capture or en passant
-            char fromPiece = board[from];
-            char toPiece = board[to];
-            move->moveValue = move->pieceTo != '.' ? PIECE_VALUES[PIECE_INDEXES_WHITE[toPiece]] -
-                                                     PIECE_VALUES[PIECE_INDEXES_WHITE[fromPiece]] : 0;
-            move->moveType = move->moveValue == 0 ? equalCaptureType : move->moveValue > 0 ? winningCaptureType
-                                                                                           : losingCaptureType;
-        } else {
-            move->moveType = nonCaptureType;
-            int pieceIndex = PIECE_INDEXES_WHITE[board[move->from]];
-            move->moveValue = PST[pieceIndex][move->to] - PST[pieceIndex][move->from];
-        }
-    }
-}
+
 
 int compareMoves(const void* x, const void* y) {
     Move* moveA = (Move*)x;
     Move* moveB = (Move*)y;
 
-    if(moveA->moveType != moveB->moveType) {
-        return moveA->moveType - moveB->moveType; // moveType closer to 0 is ordered first
-    }
     return moveB->moveValue - moveA->moveValue;
 }
 
 void sortMoves(Move *moves, int depth, char board[], int ep, int numMoves){
     computeMoveTypeAndValue(moves, numMoves, depth, board, ep);
-    qsort(moves, numMoves, sizeof(Move), compareMoves);
 }

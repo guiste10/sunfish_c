@@ -1,0 +1,40 @@
+white king goes from e1 to g1
+
+pst g1 - pst e1 = 60040 - 60006 = 34
+
+white black goes from e8 to g8
+
+pst g8 - pst e8 = 60040 - 60006 = 34
+
+=============================================
+
+always yield Move(immediate), score(computation)
+
+for moveValue, move in genActualMovesSorted:
+  yield Move(immediate) score(computation OR immediate)
+
+
+
+
+
+
+
+
+
+========================================
+gen special moves (use move.moveType)
+try special moves one by one and see if best >= gamma
+gen moves
+flag moves with their values
+sort moves based on their values
+try special moves one by one and see if best >= gamma
+
+define doMove that reads move.moveType
+
+
+
+
+========================================
+améliorations:
+save tpMove if depth > tpMove.depth? else best move overwritten?
+call pos.value only once and store it inside move?

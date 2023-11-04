@@ -19,7 +19,7 @@ void initTpMove();
 
 void clearTpMove();
 
-TpMoveEntry* lookupTpMove(uint64_t hash);
+Move* lookupTpMove(uint64_t hash);
 
 void saveMove(uint64_t hash, Move bestMove);
 #endif //SUNFISH_C_TPMOVE_H
