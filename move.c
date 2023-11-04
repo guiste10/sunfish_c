@@ -87,7 +87,3 @@ int compareMoves(const void* x, const void* y) {
 
     return moveB->moveValue - moveA->moveValue;
 }
-
-void sortMoves(Move *moves, int depth, char board[], int ep, int numMoves){
-    computeMoveTypeAndValue(moves, numMoves, depth, board, ep);
-}

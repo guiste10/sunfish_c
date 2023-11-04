@@ -45,7 +45,7 @@ int getMoveScoresLazy(int step, Position* position, int gamma, int depth, bool c
             }
             if(move != NULL && move->moveValue >= valLower) {
                 *moveToYield = *move;
-                *scoreToYield = getMoveScore(position, gamma, depth, &positionBackup, move);
+                *scoreToYield = getMoveScore(position, gamma, depth, positionBackup, move);
                 return 3;
             }
             break;
@@ -54,7 +54,7 @@ int getMoveScoresLazy(int step, Position* position, int gamma, int depth, bool c
             assignMoveValues(position, actualMoves, *numActualMoves);
             qsort(actualMoves, *numActualMoves, sizeof(Move), compareMoves);
             *moveIndex = 0;
-            return 4;
+            break;
         case 4:
             if(*moveIndex == *numActualMoves) {
                 return STOP;

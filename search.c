@@ -31,8 +31,8 @@ int getNullMoveScore(Position *position, int newGamma, int depth) {
 }
 
 void printInfo(int depth, int timeTaken, int score, int gamma, Position* position, char bestMoveUci[6]) {
-    printf("info depth %d timeTaken %d nodes %d nps %d score cp %d",
-           depth, timeTaken, numNodes, numNodes / timeTaken, score);
+    printf("info depth %d timeTaken %d nodes %d nps %d score cp %d ",
+           depth, timeTaken, numNodes, timeTaken == 0 ? 0 : numNodes / timeTaken, score);
     printf(score >= gamma ? "lowerbound " : "upperbound");
     if(score >= gamma) {
         moveToUciMove(lookupTpMove(position->hash), bestMoveUci);
@@ -102,7 +102,8 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
     int best, moveIndex, numActualMoves, score;
     int valLower = QS - (depth * QS_A);
     Move actualMoves[MAX_BRANCHING_FACTOR];
-    Move* move = NULL;
+    Move mv;
+    Move* move = &mv;
     Position positionBackup;
     duplicatePosition(position, &positionBackup);
 
@@ -144,7 +145,7 @@ Move searchBestMove(Position* position, int timeLeftMs, bool isWhite) {
     char bestMoveUci[6];
     clock_t start = clock();
     numNodes = 0;
-    for(int depth = 1; depth < 1000; depth++){
+    for(int depth = 1; depth <= 1; depth++){
         score = mtdf(position, depth, start, bestMoveUci);
         bestMove = *lookupTpMove(position->hash);
         timeTakenMs = (int)(clock() - start);

@@ -25,12 +25,12 @@ void clearTpMove() {
 }
 
 // Hash function to map a position to an index in the transposition table
-unsigned int hashFunction(uint64_t hash) {
+unsigned int getTpMoveIndexFromHash(uint64_t hash) {
     return (unsigned int)(hash & ((1 << TABLE_SIZE_LOG2) - 1));
 }
 
 Move* lookupTpMove(uint64_t hash) {
-    unsigned int index = hashFunction(hash);
+    unsigned int index = getTpMoveIndexFromHash(hash);
     TpMoveEntry* entry = &tpMove[index];
 
     if (entry->hash == hash) {
@@ -41,7 +41,7 @@ Move* lookupTpMove(uint64_t hash) {
 }
 
 void saveMove(uint64_t hash, Move bestMove) {
-    unsigned int index = hashFunction(hash); // todo verify if check on depth needed to save best move?
+    unsigned int index = getTpMoveIndexFromHash(hash); // todo verify if check on depth needed to save best move?
 
     TpMoveEntry* entry = &tpMove[index];
 

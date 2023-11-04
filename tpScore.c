@@ -29,12 +29,12 @@ void clearTpScore() {
 }
 
 // Hash function to map a position to an index in the transposition table
-unsigned int hashFunction(uint64_t hash) {
+unsigned int getTpScoreIndexFromHash(uint64_t hash) {
     return (unsigned int)(hash & ((1 << TABLE_SIZE_LOG2) - 1));
 }
 
 TpScoreEntry* lookupTpScore(uint64_t hash, int depth, bool canNullMove) {
-    unsigned int index = hashFunction(hash);
+    unsigned int index = getTpScoreIndexFromHash(hash);
     TpScoreEntry* entry = &(&(&tpScore[index])[depth])[canNullMove ? 1 : 0];
 
     if (entry->hash == hash) {
@@ -45,7 +45,7 @@ TpScoreEntry* lookupTpScore(uint64_t hash, int depth, bool canNullMove) {
 }
 
 void saveScore(uint64_t hash, int depth, bool canNullMove, int lowerBound, int upperBound) {
-    unsigned int index = hashFunction(hash);
+    unsigned int index = getTpScoreIndexFromHash(hash);
 
     TpScoreEntry* entry = &(&(&tpScore[index])[depth])[canNullMove ? 1 : 0];
 

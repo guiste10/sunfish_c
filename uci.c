@@ -98,8 +98,7 @@ void playUci(){
             if(currentPly < 4) { // hardcode first moves
                 playOpening(position, currentPly);
             } else {
-                Move bestMove;
-                searchBestMove(position, &bestMove, atoi(isWhite ? args[2] : args[4]), isWhite);
+                Move bestMove = searchBestMove(position, atoi(isWhite ? args[2] : args[4]), isWhite);
                 moveToUciMove(&bestMove, uciMove);
                 printf("bestmove %s\n", uciMove);
             }
