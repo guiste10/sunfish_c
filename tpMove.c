@@ -40,7 +40,7 @@ TpMoveEntry* lookupTpMove(uint64_t hash) {
     }
 }
 
-void saveScore(uint64_t hash, Move bestMove) {
+void saveMove(uint64_t hash, Move bestMove) {
     unsigned int index = hashFunction(hash); // todo verify if check on depth needed to save best move?
 
     TpMoveEntry* entry = &tpMove[index];

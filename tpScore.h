@@ -1,6 +1,6 @@
 
-#ifndef SUNFISH_C_TPMOVE_H
-#define SUNFISH_C_TPMOVE_H
+#ifndef SUNFISH_C_TPSCORE_H
+#define SUNFISH_C_TPSCORE_H
 
 #include <stdint.h>
 #include "position.h"
@@ -10,20 +10,18 @@
 
 typedef struct {
     uint64_t hash;
-    int depth;
     int lowerBound;
     int upperBound;
     int plyStored;
-    Move bestMove;
 } TpScoreEntry;
 
-extern TpScoreEntry* transpositionTable;
+extern TpScoreEntry* tpScore; // indexed by hash, depth and canNullMove
 
 void initTpScore();
 
 void clearTpScore();
 
-TpScoreEntry* lookupTpScore(uint64_t hash);
+TpScoreEntry* lookupTpScore(uint64_t hash, int depth, bool canNullMove);
 
-void saveScore(uint64_t hash, int depth, int lowerBound, int upperBound, Move bestMove, int currentPly);
-#endif //SUNFISH_C_TPMOVE_H
+void saveScore(uint64_t hash, int depth, bool canNullMove, int lowerBound, int upperBound);
+#endif //SUNFISH_C_TPSCORE_H

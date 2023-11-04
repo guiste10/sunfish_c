@@ -10,6 +10,7 @@
 #include "chessBoard.h"
 #include "search.h"
 #include "tpMove.h"
+#include "tpScore.h"
 
 const int EVAL_ROUGHNESS = 15;
 const int minDepth = 7;
@@ -20,20 +21,20 @@ const bool useMtdf = true;
 
 int numNodes = 0;
 
-//int getNullMoveScore(Position *position, int depth) {
-//    Move opponentMoves[MAX_BRANCHING_FACTOR];
-//    Move bestChildMove;
-//    Position duplicate;
-//    duplicatePosition(position, &duplicate);
-//    doMove(&duplicate, &nullMove);
-//    return bound(&duplicate, depth, -INT_MAX, INT_MAX, false, false, opponentMoves, &bestChildMove);
-//}
 
-//bool isKingInCheck(Position *position) {
-//    return abs(getNullMoveScore(position, 1)) >= MATE_LOWER;
-//}
+int bound(Position *position, int gamma, int depth, bool canNullMove, Move moves[]);
 
-int bound(Position* position, int depth, int gamma, bool canNullMove, Move moves[]);
+int getNullMoveScore(Position *position, int depth) {
+    Move opponentMoves[MAX_BRANCHING_FACTOR];
+    Position duplicate;
+    duplicatePosition(position, &duplicate);
+    doMove(&duplicate, &nullMove);
+    return bound(&duplicate, MATE_UPPER, 0, true, opponentMoves);
+}
+
+bool isKingInCheck(Position *position) {
+    return abs(getNullMoveScore(position, 1)) >= MATE_LOWER;
+}
 
 void printInfo(int depth, int timeTaken, int score, int gamma) {
     printf("info depth %d timeTaken %d nodes %d nps %d score cp %d",
@@ -49,7 +50,7 @@ int mtdf(Position *position, int depth, clock_t startTime) {
 
     while (lowerBound < upperBound - EVAL_ROUGHNESS) {
         Move moves[MAX_BRANCHING_FACTOR];
-        score = bound(position, depth, gamma, false, moves);
+        score = bound(position, gamma, depth, false, moves);
 
         if(score >= gamma) {
             lowerBound = score;
@@ -73,34 +74,29 @@ int isRepetition(const Position *position) {
 
 
 
-int bound(Position* position, int depth, int gamma, bool canNullMove, Move moves[]) {
+int bound(Position *position, int gamma, int depth, bool canNullMove, Move moves[]) {
     numNodes++;
 
-    depth = depth < 0 ? 0 : depth;
+    depth = depth > 0 ? depth : 0;
 
     if (position->score <= -MATE_LOWER) {
         return -MATE_UPPER;
     }
 
     int entryLowerBound, entryUpperBound;
-    TpMoveEntry* ttEntry = lookupTpMove(position->hash);
-    Move* bestTTMove;
+    TpScoreEntry* ttEntry = lookupTpScore(position->hash, depth, canNullMove);
     if(ttEntry == NULL) {
         entryLowerBound = -MATE_UPPER;
         entryUpperBound = MATE_UPPER;
-        bestTTMove = NULL;
     } else {
         entryLowerBound = ttEntry->lowerBound;
         entryUpperBound = ttEntry->upperBound;
-        if (ttEntry->depth >= depth) { // replace condition by == to get true minimax score with TT
-            if(ttEntry->lowerBound >= gamma) {
-                return ttEntry->lowerBound;
-            }
-            if(ttEntry->upperBound < gamma) {
-                return ttEntry->upperBound;
-            }
+        if(ttEntry->lowerBound >= gamma) {
+            return ttEntry->lowerBound;
         }
-        bestTTMove = &ttEntry->bestMove;
+        if(ttEntry->upperBound < gamma) {
+            return ttEntry->upperBound;
+        }
     }
 
     if(canNullMove && depth > 0 && isRepetition(position)) {
@@ -114,7 +110,7 @@ int bound(Position* position, int depth, int gamma, bool canNullMove, Move moves
     int best, score;
     Move* move;
     int numMoves = genMoves(position, moves);
-    sortMoves(moves, depth, bestTTMove, position->board, position->ep, numMoves);
+    sortMoves(moves, depth, position->board, position->ep, numMoves);
     Position positionBackup;
     duplicatePosition(position, &positionBackup);
 
@@ -123,23 +119,29 @@ int bound(Position* position, int depth, int gamma, bool canNullMove, Move moves
         move = &moves[i];
         doMove(position, move);
         Move opponentMoves[MAX_BRANCHING_FACTOR];
-        Move bestChildMove;
-        score = -bound(position, depth - 1, 1-gamma, true,opponentMoves);
+        score = -bound(position, 1 - gamma, depth - 1, true, opponentMoves);
         undoMove(position, move, positionBackup);
 
         if (score > best) {
             best = score;
         }
         if(best >= gamma) {
-            // todo save move for pv construction and killer heuristic
+            if(move->moveType != nullType) {
+                saveMove(position->hash, *move);
+            }
             break;
         }
     }
-    if(best >= gamma) {
-        saveScore(position->hash, depth, best, entryUpperBound, *bestMoveToSave, position->currentPly);
+
+    if(depth > 2 && best == -MATE_UPPER) {
+        bool inCheck = getNullMoveScore(position, 0) == MATE_UPPER;
+        best = inCheck ? -MATE_LOWER : 0;
     }
-    else {
-        saveScore(position->hash, depth, entryLowerBound, best, *bestMoveToSave, position->currentPly);
+
+    if(best >= gamma) {
+        saveScore(position->hash, depth, canNullMove, best, entryUpperBound);
+    } else {
+        saveScore(position->hash, depth, canNullMove, entryLowerBound, best);
     }
     return best;
 }

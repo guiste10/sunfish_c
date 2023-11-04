@@ -2,7 +2,6 @@
 #include "chessBoard.h"
 #include "utils.h"
 #include "pieceSquareTables.h"
-#include "killerMovesTable.h"
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -103,10 +102,6 @@ void computeMoveTypeAndValue(Move *moves, int numMoves, int depth, Move *ttBestM
             int pieceIndex = PIECE_INDEXES_WHITE[board[move->from]];
             move->moveValue = PST[pieceIndex][move->to] - PST[pieceIndex][move->from];
         }
-
-        if(isKillerType(depth, move)) {
-            move->moveType = killerType;
-        }
     }
 }
 
@@ -120,7 +115,7 @@ int compareMoves(const void* x, const void* y) {
     return moveB->moveValue - moveA->moveValue;
 }
 
-void sortMoves(Move *moves, int depth, Move *ttBestMove, char board[], int ep, int numMoves){
-    computeMoveTypeAndValue(moves, numMoves, depth, ttBestMove, board, ep);
+void sortMoves(Move *moves, int depth, char board[], int ep, int numMoves){
+    computeMoveTypeAndValue(moves, numMoves, depth, board, ep);
     qsort(moves, numMoves, sizeof(Move), compareMoves);
 }

@@ -21,5 +21,5 @@ void clearTpMove();
 
 TpMoveEntry* lookupTpMove(uint64_t hash);
 
-void saveScore(uint64_t hash, Move bestMove);
+void saveMove(uint64_t hash, Move bestMove);
 #endif //SUNFISH_C_TPMOVE_H
