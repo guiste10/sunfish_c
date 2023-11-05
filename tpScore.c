@@ -7,7 +7,7 @@
 TpScoreEntry* tpScore = NULL;
 
 void initTpScore() {
-    size_t totalSize = sizeof(TpScoreEntry) * TABLE_SIZE * MAX_SEARCH_DEPTH * 2;
+    size_t totalSize = sizeof(TpScoreEntry) * TP_SCORE_SIZE * MAX_SEARCH_DEPTH * 2;
     tpScore = (TpScoreEntry*)malloc(totalSize);
 
     if (tpScore == NULL) {
@@ -30,7 +30,7 @@ void clearTpScore() {
 
 // Hash function to map a position to an index in the transposition table
 unsigned int getTpScoreIndexFromHash(uint64_t hash) {
-    return (unsigned int)(hash & ((1 << TABLE_SIZE_LOG2) - 1));
+    return (unsigned int)(hash & ((1 << TP_SCORE_SIZE_LOG2) - 1));
 }
 
 TpScoreEntry* lookupTpScore(uint64_t hash, int depth, bool canNullMove) {

@@ -114,7 +114,7 @@ void findBestMoveTimeStamped(char* boardToUse) {
     printf("Current board\n");
     printCharArray(board, SIZE);
     clock_t start = clock();
-    ;
+
     initTpMove();
     Move bestMove = searchBestMove(position, TIME_LEFT_DEBUG, true);
     clearTpMove();

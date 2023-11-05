@@ -150,9 +150,11 @@ Move searchBestMove(Position* position, int timeLeftMs, bool isWhite) {
     int timeTakenMs, score;
     Move bestMove;
     char bestMoveUci[6];
+    initTpScore();
+    initTpMove();
     clock_t start = clock();
     numNodes = 0;
-    for(int depth = 1; depth <= 1; depth++){
+    for(int depth = 1; depth < 2; depth++){
         score = mtdf(position, depth, start, bestMoveUci);
         bestMove = *lookupTpMove(position->hash);
         timeTakenMs = (int)(clock() - start);
@@ -161,5 +163,7 @@ Move searchBestMove(Position* position, int timeLeftMs, bool isWhite) {
         printf("info time %d numNodes %d nps %d\n", (int)timeTakenMs, numNodes, nps);
         fflush(stdout);
     }
+    clearTpScore();
+    clearTpMove();
     return bestMove;
 }
