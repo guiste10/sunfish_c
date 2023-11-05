@@ -1,67 +1,13 @@
 #include <stdio.h>
 #include <time.h>
-#include <malloc.h>
 #include "move.h"
 #include "position.h"
 #include "constants.h"
 #include "search.h"
 #include "chessBoard.h"
 #include "uci.h"
-#include "zobrist.h"
 #include "tpMove.h"
 #include "pieceSquareTables.h"
-
-const char debugBoard[] = "          "
-                          "          "
-                          " ........ "
-                          " ........ "
-                          " ........ "
-                          " ........ "
-                          " ..k..... "
-                          " ..q..... "
-                          " K....... "
-                          " ........ "
-                          "          "
-                        "          ";
-
-const char debugBoard2[] = "          "
-                           "          "
-                           " k....... "
-                           " ........ "
-                           " ........ "
-                           " ........ "
-                           " ........ "
-                           " ........ "
-                           " ........ "
-                           " ....K..R "
-                           "          "
-                           "          ";
-
-const char debugBoard3[] = "          "
-                          "          "
-                          " k....... "
-                          " ........ "
-                          " ........ "
-                          " ........ "
-                          " ........ "
-                          " ........ "
-                          " ........ "
-                          " K....... "
-                          "          "
-                          "          ";
-
-const char randomBoard[] = "          "
-                          "          "
-                          " r.k..b.r "
-                          " pp..pppp "
-                          " ........ "
-                          " ...Q.b.. "
-                          " ...n.Bq. "
-                          " ......P. "
-                          " PPP..PBP "
-                          " R...K..R "
-                          "          "
-                          "          ";
 
 const int TIME_LEFT_DEBUG = 99999999;
 
@@ -100,30 +46,6 @@ void printMove(Move move) {
     fflush(stdout);  // Flush the output stream
 }
 
-void findBestMoveTimeStamped(char* boardToUse) {
-    Position pos;
-    Position* position = &pos;
-    char board[SIZE];
-    uint64_t history[MAX_PLY_CHESS_GAME];
-    initOpeningToMiddleGamePst();
-    initializePieceIndexArray();
-    initPosition(position, board, boardToUse, history);
-    if(isEndGame(position->board)){
-        setPstToEndGameMode();
-    }
-    printf("Current board\n");
-    printCharArray(board, SIZE);
-    clock_t start = clock();
-
-    initTpMove();
-    Move bestMove = searchBestMove(position, TIME_LEFT_DEBUG, true);
-    clearTpMove();
-    printf("Best move search finished\nTime taken: %.2f ms\n", (double)clock()-start);
-    doMove(position, &bestMove);
-    printMove(bestMove);
-    //printCharArray(newBoard, SIZE);
-}
-
 void findBestMoveFromUciPosition(char uciPosition[MAX_ARGS]) {
     bool isWhite = true;
     Position pos;
@@ -141,10 +63,8 @@ void findBestMoveFromUciPosition(char uciPosition[MAX_ARGS]) {
     printCharArray(position->board, SIZE);
     clock_t start = clock();
     initTpMove();
-    Move bestMove = searchBestMove(position, TIME_LEFT_DEBUG, isWhite);
+    Move bestMove = searchBestMove(position, TIME_LEFT_DEBUG);
     clearTpMove();
     printf("Best move search finished\nTime taken: %.2f ms\n", (double)clock()-start);
     printMove(bestMove);
-//    doMove(position, &bestMove);
-//    printCharArray(position->board, SIZE);
 }

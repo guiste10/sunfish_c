@@ -8,8 +8,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-Position* currentPosition;
-
 void initPosition(Position *position, char *boardCopy, char *boardToUse, uint64_t* history) {
     copyBoard(boardCopy, boardToUse);
     position->board = boardCopy;
@@ -48,12 +46,12 @@ Position* duplicatePosition(Position* source, Position* target){
 int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]) { // For each friendly piece, iterate through each possible 'ray' of moves as defined in the 'directions' map. The rays are broken e.g. by captures or immediately in case of pieces such as knights.
     int moveIndex = 0;
     char* board = position->board;
-    if(position->isWhite) {
-        for (int from = A8; from < H1 ; from++) {
+    for (int from = A8; from < H1 ; from++) {
+        if(position->isWhite) {
             char pieceFrom = board[from];
             if (!isupper(pieceFrom))
                 continue;
-            int* pieceDirections = (int*)DIRECTIONS[PIECE_INDEXES[pieceFrom]];
+            int *pieceDirections = (int *) DIRECTIONS[PIECE_INDEXES[pieceFrom]];
             for (int dirIndex = 0; *(pieceDirections + dirIndex) != ARRAY_END; dirIndex++) {
                 int d = *(pieceDirections + dirIndex);
                 for (int to = from + d; to >= 0 && to < SIZE; to += d) {
@@ -63,13 +61,15 @@ int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]) { // Fo
                     if (pieceFrom == 'P') { // Pawn move, double move and pieceTo
                         if ((d == NORTH || d == NORTH + NORTH) && pieceTo != '.')
                             break;
-                        if (d == NORTH + NORTH && (from < A1 + NORTH || board[from + NORTH] != '.')) // forbidden double move (pawn is not on initial rank or obstruction mid-road
+                        if (d == NORTH + NORTH && (from < A1 + NORTH || board[from + NORTH] !=
+                                                                        '.')) // forbidden double move (pawn is not on initial rank or obstruction mid-road
                             break;
                         if ((d == NORTH + WEST || d == NORTH + EAST) && pieceTo == '.' && to != position->ep
-                            && to != position->kp - 1 && to != position->kp && to != position->kp + 1) // for castling check detection
+                            && to != position->kp - 1 && to != position->kp &&
+                            to != position->kp + 1) // for castling check detection
                             break;
                         if (to >= A8 && to <= H8) { // If we move to the last row, we can be anything
-                            for (int promotion = Q; promotion > P ; promotion--){
+                            for (int promotion = Q; promotion > P; promotion--) {
                                 createMove(from, to, promotion, pieceTo, &moves[moveIndex++]);
                                 break; // only consider queen promotions for efficiency reasons
                             }
@@ -77,17 +77,18 @@ int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]) { // Fo
                         }
                     }
                     createMove(from, to, NO_PROMOTION, pieceTo, &moves[moveIndex++]); // Move it
-                    if (strchr("PNK", pieceFrom) != NULL || islower(pieceTo)) // Stop crawlers from sliding, and sliding after captures
+                    if (strchr("PNK", pieceFrom) != NULL ||
+                        islower(pieceTo)) // Stop crawlers from sliding, and sliding after captures
                         break;
-                    if (from == A1 && board[to + EAST] == 'K' && position->wc[0]) // Castling, by sliding the rook next to the king, from = king's square
+                    if (from == A1 && board[to + EAST] == 'K' &&
+                        position->wc[0]) // Castling, by sliding the rook next to the king, from = king's square
                         createMove(to + EAST, to + WEST, NO_PROMOTION, pieceTo, &moves[moveIndex++]);
-                    if (from == H1 && board[to + WEST] == 'K' && position->wc[1]) // Castling, by sliding the rook next to the king, from = king's square
+                    if (from == H1 && board[to + WEST] == 'K' &&
+                        position->wc[1]) // Castling, by sliding the rook next to the king, from = king's square
                         createMove(to + WEST, to + EAST, NO_PROMOTION, pieceTo, &moves[moveIndex++]);
                 }
             }
-        }
-    } else {
-        for (int from = H1; from >= A8 ; from--) {
+        } else {
             char pieceFrom = board[from];
             if (!islower(pieceFrom))
                 continue;
@@ -175,16 +176,8 @@ int value(const Position *position, const Move *move) {
     return score;
 }
 
-void assignMoveValues(Position * position, Move *moves, int numMoves) {
-    Move *move;
-    for (int i = 0; i < numMoves; i++) {
-        move = &moves[i];
-        move->moveValue = value(position, move);
-    }
-}
-
 bool isIrreversibleMove(const Move* move, Position* position){ // to know where to start checking for threefold repetition
-    return move->pieceTo != EMPTY_SQUARE || position->ep != 0 || position->kp != 0
+    return move->pieceTo != '.' || position->ep != 0 || position->kp != 0
     || toupper(position->board[move->from]) == 'P';
 }
 
@@ -200,7 +193,7 @@ void doMove(Position* position, const Move* move) {
     position->currentPly++;
     position->hash ^= blackToMoveHash;
 
-    if(move->moveType == nullType){
+    if(move->from == NULL_MOVE){
         position->isWhite = !isWhite;
         position->kp = 0;
         position->ep = 0;

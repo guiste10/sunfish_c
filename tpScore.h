@@ -18,10 +18,7 @@ typedef struct {
 extern TpScoreEntry* tpScore; // indexed by hash, depth and canNullMove
 
 void initTpScore();
-
 void clearTpScore();
-
 TpScoreEntry* lookupTpScore(uint64_t hash, int depth, bool canNullMove);
-
 void saveScore(uint64_t hash, int depth, bool canNullMove, int lowerBound, int upperBound);
 #endif //SUNFISH_C_TPSCORE_H

@@ -7,14 +7,12 @@
 TpMoveEntry* tpMove = NULL;
 
 void initTpMove() {
-    tpMove = (TpMoveEntry*)malloc(sizeof(TpMoveEntry) * (1 << TABLE_SIZE_LOG2));
-
+    tpMove = (TpMoveEntry*)malloc(sizeof(TpMoveEntry) * TP_MOVE_SIZE);
     if (tpMove == NULL) {
         fprintf(stderr, "Memory allocation failed.\n");
         exit(1);
     }
-
-    memset(tpMove, 0, sizeof(TpMoveEntry) * (1 << TABLE_SIZE_LOG2));
+    memset(tpMove, 0, sizeof(TpMoveEntry) * TP_MOVE_SIZE);
 }
 
 void clearTpMove() {
@@ -24,27 +22,19 @@ void clearTpMove() {
     }
 }
 
-// Hash function to map a position to an index in the transposition table
 unsigned int getTpMoveIndexFromHash(uint64_t hash) {
-    return (unsigned int)(hash & ((1 << TABLE_SIZE_LOG2) - 1));
+    return (unsigned int)(hash & ((1 << TP_MOVE_SIZE_LOG2) - 1));
 }
 
 Move* lookupTpMove(uint64_t hash) {
     unsigned int index = getTpMoveIndexFromHash(hash);
     TpMoveEntry* entry = &tpMove[index];
-
-    if (entry->hash == hash) {
-        return &entry->bestMove; // Found a matching entry
-    } else {
-        return NULL; // No matching entry found, TT will be full and unusable if we don't clear it after every search
-    }
+    return entry->hash == hash ? &entry->bestMove : NULL;
 }
 
 void saveMove(uint64_t hash, Move bestMove) {
     unsigned int index = getTpMoveIndexFromHash(hash); // todo verify if check on depth needed to save best move?
-
     TpMoveEntry* entry = &tpMove[index];
-
     entry->hash = hash;
     entry->bestMove = bestMove;
 }

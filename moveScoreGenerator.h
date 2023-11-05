@@ -8,6 +8,7 @@
 extern const int LAST;
 extern const int STOP;
 
+// returns the next step id
 int getNextMoveScoreLazy(int step, Position* position, int gamma, int depth, bool canNull,
                          int valLower, Position* positionBackup, Move* actualMoves, int* numActualMoves,
                          int *moveIndex, Move* moveToYield, int* scoreToYield);

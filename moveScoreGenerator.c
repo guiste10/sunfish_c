@@ -10,7 +10,14 @@
 const int LAST = 5;
 const int STOP = 6;
 
-// returns the next step id
+void assignMoveValues(Position * position, Move *moves, int numMoves) {
+    Move *move;
+    for (int i = 0; i < numMoves; i++) {
+        move = &moves[i];
+        move->moveValue = value(position, move);
+    }
+}
+
 int getNextMoveScoreLazy(int step, Position* position, int gamma, int depth, bool canNull,
                          int valLower, Position* positionBackup, Move* actualMoves, int* numActualMoves,
                          int *moveIndex, Move* moveToYield, int* scoreToYield) {

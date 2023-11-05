@@ -1,29 +1,15 @@
 #include "move.h"
 #include "chessBoard.h"
-#include "utils.h"
-#include "pieceSquareTables.h"
 #include <string.h>
 #include <ctype.h>
-#include <stdlib.h>
 
-const int unknownType = -1;
-const int nullType = 0; // doMove() with moveType 0 will perform a null move!!!
-const int pvType = 1;
-const int promotionType = 2;
-const int winningCaptureType = 3;
-const int equalCaptureType = 4;
-const int killerType = 5; // non capturing!
-const int nonCaptureType = 6;
-const int losingCaptureType = 7;
-
-const Move nullMove = {nullType};
+const Move nullMove = {NULL_MOVE};
 
 void createMove(int from, int to, int prom, char pieceTo, Move* move){
     move->from = from;
     move->to = to;
     move->prom = prom;
     move->pieceTo = pieceTo;
-    move->moveType = unknownType;
     move->moveValue = 0;
 }
 
@@ -53,6 +39,17 @@ void moveToUciMove(const Move *move, char uciMove[6]) {
     uciMove[5] = '\0';
 }
 
+int indexOf(const char* str, char target) {
+    int i = 0;
+    while (str[i] != '\0') {
+        if (str[i] == target) {
+            return i;  // Return the index if the character is found
+        }
+        i++;
+    }
+    return -1;
+}
+
 void uciMoveToMove(const char uciMove[6], Move *move, bool isWhite) {
     int i, j;
     int prom;
@@ -68,22 +65,8 @@ void uciMoveToMove(const char uciMove[6], Move *move, bool isWhite) {
     createMove(i, j, prom, '.', move);
 }
 
-bool equalMoves(const Move* moveA, const Move* moveB) {
-    return moveA->from == moveB->from &&
-    moveA->to == moveB->to &&
-    moveA->prom == moveB->prom &&
-    moveA->pieceTo == moveB->pieceTo;
-}
-
-bool isCapture(const Move *move, char *board, int ep) {
-    return move->pieceTo != '.' || ((board[move->from] == 'P' || board[move->from] == 'p') && move->to == ep);
-}
-
-
-
 int compareMoves(const void* x, const void* y) {
     Move* moveA = (Move*)x;
     Move* moveB = (Move*)y;
-
     return moveB->moveValue - moveA->moveValue;
 }

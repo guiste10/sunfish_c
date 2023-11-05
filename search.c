@@ -1,26 +1,16 @@
-#include <limits.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
-#include <string.h>
 #include "position.h"
 #include "constants.h"
 #include "pieceSquareTables.h"
 #include "debug.h"
-#include "chessBoard.h"
 #include "search.h"
 #include "tpMove.h"
 #include "tpScore.h"
 #include "moveScoreGenerator.h"
 
 const int EVAL_ROUGHNESS = 15;
-const int minDepth = 7;
-const bool useKillerMove = true;
-const bool useNullMove = true; // not used in endgames anyway
-const bool useTT = true;
-const bool useMtdf = true;
-
-int numNodes = 0;
+int numNodes;
 
 
 int getNullMoveScore(Position *position, int newGamma, int depth) {
@@ -37,9 +27,9 @@ int getMoveScore(Position *position, int gamma, int depth, Position *positionBac
     return score;
 }
 
-void printInfo(int depth, int timeTaken, int score, int gamma, Position* position, char bestMoveUci[6]) {
-    printf("info depth %d timeTaken %d nodes %d nps %d score cp %d ",
-           depth, timeTaken, numNodes, timeTaken == 0 ? 0 : numNodes / timeTaken, score);
+void printInfo(int depth, int timeTakenMs, int score, int gamma, Position* position, char bestMoveUci[6]) {
+    printf("info depth %d time %d nodes %d nps %d score cp %d ",
+           depth, timeTakenMs, numNodes, timeTakenMs == 0.0 ? 0 : (int)(numNodes/(timeTakenMs/1000.0)), score);
     printf(score >= gamma ? "lowerbound " : "upperbound");
     if(score >= gamma) {
         moveToUciMove(lookupTpMove(position->hash), bestMoveUci);
@@ -124,7 +114,7 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
         }
         best = score > best ? score : best;
         if(best >= gamma) {
-            if(move->moveType != nullType) {
+            if(move->from != NULL_MOVE) {
                 saveMove(position->hash, *move);
             }
             break;
@@ -146,7 +136,7 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
 
 
 
-Move searchBestMove(Position* position, int timeLeftMs, bool isWhite) {
+Move searchBestMove(Position* position, int timeLeftMs) {
     int timeTakenMs, score;
     Move bestMove;
     char bestMoveUci[6];
@@ -154,7 +144,7 @@ Move searchBestMove(Position* position, int timeLeftMs, bool isWhite) {
     initTpMove();
     clock_t start = clock();
     numNodes = 0;
-    for(int depth = 1; depth < 2; depth++){
+    for(int depth = 1; depth <= MAX_SEARCH_DEPTH; depth++){
         score = mtdf(position, depth, start, bestMoveUci);
         bestMove = *lookupTpMove(position->hash);
         timeTakenMs = (int)(clock() - start);
@@ -162,6 +152,9 @@ Move searchBestMove(Position* position, int timeLeftMs, bool isWhite) {
         printf("info depth %d pv %s score cp %d\n", depth, bestMoveUci, score);
         printf("info time %d numNodes %d nps %d\n", (int)timeTakenMs, numNodes, nps);
         fflush(stdout);
+        if(timeTakenMs > 900) {
+            break;
+        }
     }
     clearTpScore();
     clearTpMove();
