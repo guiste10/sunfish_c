@@ -193,7 +193,7 @@ void doMove(Position* position, const Move* move) {
         return;
     }
 
-    position->score = position->score + value(position, move);
+    position->score = position->score + move->moveValue;
 
     position->hash ^= pieceHashForSquares[fromPieceIndex][from] ^ pieceHashForSquares[fromPieceIndex][to];
     if(toPiece != '.') {
@@ -275,6 +275,7 @@ void doMove(Position* position, const Move* move) {
     if(isIrreversibleMove(move, position)){
         position->plyIrreversible = position->currentPly;
     }
+    position->score = -position->score; // rotate
 }
 
 void undoMove(Position* position, Move* move, Position positionOld){

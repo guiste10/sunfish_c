@@ -30,6 +30,13 @@ int getNullMoveScore(Position *position, int newGamma, int depth) {
     return bound(&duplicate, newGamma, depth,true);
 }
 
+int getMoveScore(Position *position, int gamma, int depth, Position *positionBackup, Move *move) {
+    doMove(position, move);
+    int score = -bound(position, 1-gamma, depth-1, true);
+    undoMove(position, move, (*positionBackup));
+    return score;
+}
+
 void printInfo(int depth, int timeTaken, int score, int gamma, Position* position, char bestMoveUci[6]) {
     printf("info depth %d timeTaken %d nodes %d nps %d score cp %d ",
            depth, timeTaken, numNodes, timeTaken == 0 ? 0 : numNodes / timeTaken, score);
@@ -99,7 +106,7 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
         return 0;
     }
 
-    int best, moveIndex, numActualMoves, score;
+    int best, moveIndex, numActualMoves, score, step = 0;
     int valLower = QS - (depth * QS_A);
     Move actualMoves[MAX_BRANCHING_FACTOR];
     Move mv;
@@ -108,19 +115,19 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
     duplicatePosition(position, &positionBackup);
 
     best = -MATE_UPPER;
-    for (int step = 0; step < STOP; ) {
-        step = getMoveScoresLazy(step, position, gamma, depth, canNullMove, valLower,
-                                 &positionBackup, actualMoves, &numActualMoves,
-                                 &moveIndex, move, &score);
+    while(true) {
+        step = getNextMoveScoreLazy(step, position, gamma, depth, canNullMove, valLower,
+                                    &positionBackup, actualMoves, &numActualMoves,
+                                    &moveIndex, move, &score);
+        if(step == STOP) {
+            break;
+        }
         best = score > best ? score : best;
         if(best >= gamma) {
             if(move->moveType != nullType) {
                 saveMove(position->hash, *move);
             }
             break;
-        }
-        if(step == LAST) {
-            step = STOP;
         }
     }
 

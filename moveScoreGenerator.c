@@ -10,17 +10,10 @@
 const int LAST = 5;
 const int STOP = 6;
 
-int getMoveScore(Position *position, int gamma, int depth, Position *positionBackup, Move *move) {
-    doMove(position, move);
-    int score = -bound(position, 1-gamma, depth-1, true);
-    undoMove(position, move, (*positionBackup));
-    return score;
-}
-
 // returns the next step id
-int getMoveScoresLazy(int step, Position* position, int gamma, int depth, bool canNull,
-                      int valLower, Position* positionBackup, Move* actualMoves, int* numActualMoves,
-                      int *moveIndex, Move* moveToYield, int* scoreToYield) {
+int getNextMoveScoreLazy(int step, Position* position, int gamma, int depth, bool canNull,
+                         int valLower, Position* positionBackup, Move* actualMoves, int* numActualMoves,
+                         int *moveIndex, Move* moveToYield, int* scoreToYield) {
     Move* move;
     switch (step) {
         case 0:
@@ -65,12 +58,14 @@ int getMoveScoresLazy(int step, Position* position, int gamma, int depth, bool c
             }
             *moveToYield = *move;
             if(depth <= 1 && position->score + move->moveValue < gamma) {
-                *scoreToYield = move->moveValue < MATE_LOWER ? position->score : MATE_UPPER;
+                *scoreToYield = move->moveValue < MATE_LOWER ? position->score + move->moveValue : MATE_UPPER;
                 return LAST;
             }
             *scoreToYield = getMoveScore(position, gamma, depth, positionBackup, move);
             return 4;
+        case 5:
+            return STOP;
     }
-    return getMoveScoresLazy(step + 1, position, gamma, depth, canNull,
-                             valLower, positionBackup, actualMoves, numActualMoves, moveIndex, moveToYield, scoreToYield);
+    return getNextMoveScoreLazy(step + 1, position, gamma, depth, canNull,valLower, positionBackup,
+                                actualMoves, numActualMoves, moveIndex, moveToYield, scoreToYield);
 }
