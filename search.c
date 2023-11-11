@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <time.h>
-#include <math.h>
 #include "position.h"
 #include "constants.h"
 #include "pieceSquareTables.h"
@@ -147,7 +146,7 @@ Move searchBestMove(Position* position, int timeLeftMs) {
     initTpMove();
     clock_t start = clock();
     numNodes = 0;
-    for(int depth = 1; depth <= MAX_SEARCH_DEPTH && depth < 2; depth++){
+    for(int depth = 1; depth <= MAX_SEARCH_DEPTH; depth++){
         score = mtdf(position, depth, start, bestMoveUci);
         bestMove = *lookupTpMove(position->hash);
         timeTakenMs = (int)(clock() - start);
@@ -155,7 +154,7 @@ Move searchBestMove(Position* position, int timeLeftMs) {
         printf("info depth %d pv %s score cp %d\n", depth, bestMoveUci, score);
         printf("info time %d numNodes %d nps %d\n", (int)timeTakenMs, numNodes, nps);
         fflush(stdout);
-        if(timeTakenMs > 900 || abs(score) >= MATE_LOWER) {
+        if(timeTakenMs > 900 || (depth >= 6 && timeLeftMs < 10000)) {
             break;
         }
     }

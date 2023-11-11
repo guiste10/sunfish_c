@@ -46,7 +46,7 @@ Position* duplicatePosition(Position* source, Position* target){
 int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]) { // For each friendly piece, iterate through each possible 'ray' of moves as defined in the 'directions' map. The rays are broken e.g. by captures or immediately in case of pieces such as knights.
     int moveIndex = 0;
     char* board = position->board;
-    for (int from = A8; from < H1 ; from++) {
+    for (int from = A8; from <= H1 ; from++) {
         if(position->isWhite) {
             char pieceFrom = board[from];
             if (!isupper(pieceFrom))
