@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <time.h>
+#include <math.h>
 #include "position.h"
 #include "constants.h"
 #include "pieceSquareTables.h"
@@ -115,7 +116,7 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
         best = score > best ? score : best;
         if(best >= gamma) {
             if(move->from != NULL_MOVE) {
-                saveMove(position->hash, *move);
+                saveMove(position->hash, depth, *move);
             }
             break;
         }
@@ -152,7 +153,7 @@ Move searchBestMove(Position* position, int timeLeftMs) {
         printf("info depth %d pv %s score cp %d\n", depth, bestMoveUci, score);
         printf("info time %d numNodes %d nps %d\n", (int)timeTakenMs, numNodes, nps);
         fflush(stdout);
-        if(timeTakenMs > 900) {
+        if(timeTakenMs > 900 || abs(score) >= MATE_LOWER) {
             break;
         }
     }

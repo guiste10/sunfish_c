@@ -1,1 +1,15 @@
+fix    char uciPosition[] = "position startpos moves d2d4 g7g6 c2c4 f8g7 g1f3 g8f6 c1f4 d7d5 e2e3 e8g8 f1d3 f6h5 f4g3";
+
 change PST's for endgame
+
+
+==============================================================
+DEBUG
+
+black has second queen after search at depth 8
+
+numnodes 176041 before bound that creates 2 queens
+numnodes 177597 2 queens already
+
+hash entry 1949984989788893947
+hash entry 6631828393999856379

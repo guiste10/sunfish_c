@@ -26,7 +26,7 @@ void setupPositionWithMoveList(Position* position, char* initialBoardCopy, bool*
     for (int ply = 0; ply < numArgs - 3; ply++) {
         if(!isEndGameReached && isEndGame(position->board)){
             isEndGameReached = true;
-            setPstToEndGameMode();
+            //setPstToEndGameMode();
         }
         char *uciMove = uciMoves[3 + ply];
         Move move;

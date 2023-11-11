@@ -32,9 +32,12 @@ Move* lookupTpMove(uint64_t hash) {
     return entry->hash == hash ? &entry->bestMove : NULL;
 }
 
-void saveMove(uint64_t hash, Move bestMove) {
-    unsigned int index = getTpMoveIndexFromHash(hash); // todo verify if check on depth needed to save best move?
+void saveMove(uint64_t hash, int depth, Move bestMove) {
+    unsigned int index = getTpMoveIndexFromHash(hash);
     TpMoveEntry* entry = &tpMove[index];
-    entry->hash = hash;
-    entry->bestMove = bestMove;
+    if(depth > entry->depth) { // very important, else stored move being searched on lower depths could change between do move and undo move
+        entry->hash = hash;
+        entry->depth = depth;
+        entry->bestMove = bestMove;
+    }
 }

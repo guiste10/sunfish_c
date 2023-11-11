@@ -139,10 +139,8 @@ void initOpeningToMiddleGamePst(){
     for(int row = 0; row < NUM_ROWS; row++){
         for(int col = 0; col < NUM_FILES; col++){
             for(int piece=0; piece < NUM_PIECES; piece++) {
-                if(piece >= NUM_WHITE_PIECES) { // mirror white's square values
+                if(piece >= NUM_WHITE_PIECES)  // mirror white's square values
                     SQUARE_VALUES[piece][(10 * row) + col] = SQUARE_VALUES[piece - NUM_WHITE_PIECES][10 * (NUM_ROWS - row - 1) + col]; // best way to mirror
-                    //SQUARE_VALUES[piece][(10 * row) + col] = SQUARE_VALUES[piece - NUM_WHITE_PIECES][119 -((10 * row) + col)]; // original sunfish doesn't really mirror pst for black (e.g. 1.d4 counts for 46 points for white same as 1.e5 for black instead of 1.d5)
-                }
                 PST[piece][(10 * row) + col] = SQUARE_VALUES[piece][(10 * row) + col] + PIECE_VALUES[piece];
             }
         }
