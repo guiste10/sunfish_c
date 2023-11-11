@@ -22,9 +22,11 @@ int getNullMoveScore(Position *position, int newGamma, int depth) {
 }
 
 int getMoveScore(Position *position, int gamma, int depth, Position *positionBackup, Move *move) {
+    Move moveDuplicate;
+    moveDuplicate = *move; // in case move comes from TpMove and gets overwritten in subtree
     doMove(position, move);
     int score = -bound(position, 1-gamma, depth-1, true);
-    undoMove(position, move, (*positionBackup));
+    undoMove(position, &moveDuplicate, (*positionBackup));
     return score;
 }
 
@@ -116,7 +118,7 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
         best = score > best ? score : best;
         if(best >= gamma) {
             if(move->from != NULL_MOVE) {
-                saveMove(position->hash, depth, *move);
+                saveMove(position->hash, *move);
             }
             break;
         }
@@ -145,7 +147,7 @@ Move searchBestMove(Position* position, int timeLeftMs) {
     initTpMove();
     clock_t start = clock();
     numNodes = 0;
-    for(int depth = 1; depth <= MAX_SEARCH_DEPTH; depth++){
+    for(int depth = 1; depth <= MAX_SEARCH_DEPTH && depth < 2; depth++){
         score = mtdf(position, depth, start, bestMoveUci);
         bestMove = *lookupTpMove(position->hash);
         timeTakenMs = (int)(clock() - start);

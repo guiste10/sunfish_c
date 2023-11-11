@@ -9,7 +9,6 @@
 
 typedef struct {
     uint64_t hash;
-    int depth;
     Move bestMove;
 } TpMoveEntry;
 
@@ -18,5 +17,5 @@ extern TpMoveEntry* tpMove;
 void initTpMove();
 void clearTpMove();
 Move* lookupTpMove(uint64_t hash);
-void saveMove(uint64_t hash, int depth, Move bestMove);
+void saveMove(uint64_t hash, Move bestMove);
 #endif //SUNFISH_C_TPMOVE_H
