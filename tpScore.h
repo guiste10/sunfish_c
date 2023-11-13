@@ -5,10 +5,10 @@
 #include <stdint.h>
 #include "position.h"
 
-#define TP_SCORE_SIZE_LOG2 20 // Use a table size of 2^20 = 20MB and 1 million entries, if 25 then 600MB and 33.5 million entries, if 27 then 2.57GB and 134 million entries
+#define TP_SCORE_SIZE_LOG2 20 // 2^20 => 1 million entries x 20 bytes x maxdepth x 2 = 640MB, 2^25 => 33.5 million entries x 20 bytes x 16 x 2 = 21GB,
 #define TP_SCORE_SIZE (1 << TP_SCORE_SIZE_LOG2) // Calculate table size as a power of 2
 
-typedef struct {
+typedef struct { // 20 bytes
     uint64_t hash;
     int lowerBound;
     int upperBound;

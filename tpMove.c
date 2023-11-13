@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -8,10 +7,6 @@ TpMoveEntry* tpMove = NULL;
 
 void initTpMove() {
     tpMove = (TpMoveEntry*)malloc(sizeof(TpMoveEntry) * TP_MOVE_SIZE);
-    if (tpMove == NULL) {
-        fprintf(stderr, "Memory allocation failed.\n");
-        exit(1);
-    }
     memset(tpMove, 0, sizeof(TpMoveEntry) * TP_MOVE_SIZE);
 }
 

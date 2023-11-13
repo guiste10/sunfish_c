@@ -1,9 +1,7 @@
 #include "constants.h"
-#include "chessBoard.h"
-#include <stdbool.h>
 
 const int pawnVal = 100;
-const int knightVal = 280; // prev 280
+const int knightVal = 280;
 const int bishopVal = 320;
 const int rookVal = 479;
 const int queenVal = 929;
@@ -105,73 +103,14 @@ int SQUARE_VALUES[NUM_PIECES][SIZE] = {
         }
 };
 
-const int SQUARES_VALUES_KING_ENDGAME[SIZE] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 10, 20, 20, 20, 20, 20, 20, 10, 0,
-        0, 10, 20, 20, 20, 20, 20, 20, 10, 0,
-        0, 10, 20, 30, 30, 30, 30, 20, 10, 0,
-        0, 10, 20, 30, 30, 30, 30, 20, 10, 0,
-        0, 10, 20, 30, 30, 30, 30, 20, 10, 0,
-        0, 10, 20, 20, 20, 20, 20, 20, 10, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-};
-
-const int SQUARES_VALUES_PAWN_ENDGAME[SIZE] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0,   0,   0,   0,    0,   0,    0,   0,   0,
-        0, 78,  83, 86,  73,  102, 82, 85, 90,  0,
-        0, 40,   40, 40,   40, 40,  40,  44, 40,   0,
-        0, 20, 20,  20, 15, 20,  20, 20,  20, 0,
-        0, 10, 10,   10,  9,   10,   10, 10,   10, 0,
-        0, -10, -10,   -10,   -11, -10, -10,  -10,   -10, 0,
-        0, -31, -30,   -30,  -30, -36, -30, -20,   -20, 0,
-        0, 0,   0,   0,   0,   0,   0,   0,   0,   0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-};
-
 void initOpeningToMiddleGamePst(){
     for(int row = 0; row < NUM_ROWS; row++){
         for(int col = 0; col < NUM_FILES; col++){
             for(int piece=0; piece < NUM_PIECES; piece++) {
                 if(piece >= NUM_WHITE_PIECES)  // mirror white's square values
-                    SQUARE_VALUES[piece][(10 * row) + col] = SQUARE_VALUES[piece - NUM_WHITE_PIECES][119 -((10 * row) + col)]; // original sunfish doesn't really mirror pst for black (e.g. 1.d4 counts for 46 points for white same as 1.e5 for black instead of 1.d5)
-                    //SQUARE_VALUES[piece][(10 * row) + col] = SQUARE_VALUES[piece - NUM_WHITE_PIECES][10 * (NUM_ROWS - row - 1) + col]; // best way to mirror
+                    SQUARE_VALUES[piece][(10 * row) + col] = SQUARE_VALUES[piece - NUM_WHITE_PIECES][10 * (NUM_ROWS - row - 1) + col]; // best way to mirror
                 PST[piece][(10 * row) + col] = SQUARE_VALUES[piece][(10 * row) + col] + PIECE_VALUES[piece];
             }
         }
     }
-}
-
-void setPstToEndGameMode() {
-    for (int row = 0; row < NUM_ROWS; row++) {
-        for (int col = 0; col < NUM_FILES; col++) {
-            PST[K][(10 * row) + col] = SQUARES_VALUES_KING_ENDGAME[(10 * row) + col] + PIECE_VALUES[K];
-            // todo adapt for black to mirror square values such as below line and test with printIntArray()
-            //SQUARE_VALUES[piece][(10 * row) + col] = SQUARE_VALUES[piece - NUM_WHITE_PIECES][10 * (NUM_ROWS - row - 1) + col];
-            PST[k][(10 * row) + col] = -SQUARES_VALUES_KING_ENDGAME[(10 * row) + col] + PIECE_VALUES[k];
-            PST[P][(10 * row) + col] = SQUARES_VALUES_PAWN_ENDGAME[(10 * row) + col] + PIECE_VALUES[P];
-            PST[p][(10 * row) + col] = -SQUARES_VALUES_PAWN_ENDGAME[(10 * row) + col] + PIECE_VALUES[p];
-        }
-    }
-}
-
-bool isEndGame(const char *board) {
-    return false;
-    int queenCount = 0;
-    for(int square = 0; square < SIZE ; square++) {
-        char piece = board[square];
-        if(piece == 'Q' || piece == 'q'){
-            queenCount++;
-            if(queenCount >= 2){
-                return false;
-            }
-        }
-    }
-    return false;
 }

@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -9,10 +8,6 @@ TpScoreEntry* tpScore = NULL;
 void initTpScore() {
     size_t totalSize = sizeof(TpScoreEntry) * TP_SCORE_SIZE * MAX_SEARCH_DEPTH * 2;
     tpScore = (TpScoreEntry*)malloc(totalSize);
-    if (tpScore == NULL) {
-        fprintf(stderr, "Memory allocation failed.\n");
-        exit(1);
-    }
     memset(tpScore, 0, totalSize);
 }
 

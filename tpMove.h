@@ -3,11 +3,10 @@
 #define SUNFISH_C_TPMOVE_H
 #include <stdint.h>
 #include "position.h"
-// todo update size in MB/GB below based on entry
-#define TP_MOVE_SIZE_LOG2 25 // Use a table size of 2^20 = 20MB and 1 million entries, if 25 then 600MB and 33.5 million entries, if 27 then 2.57GB and 134 million entries
+#define TP_MOVE_SIZE_LOG2 25 // 2^20 = 1 million entries = 28MB, 2^25 then 33.5 million entries = 938 MB, if 27 then 134 million entries = 3.75GB
 #define TP_MOVE_SIZE (1 << TP_MOVE_SIZE_LOG2) // Calculate table size as a power of 2
 
-typedef struct {
+typedef struct { // 28 bytes per TpMoveEntry
     uint64_t hash;
     Move bestMove;
 } TpMoveEntry;

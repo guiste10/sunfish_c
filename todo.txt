@@ -1,5 +1,0 @@
-==============================================================
-TO DO:
-use end game tables for pawn and king
-tune tpScore transposition table (increasing size for increasing depth)
-==============================================================

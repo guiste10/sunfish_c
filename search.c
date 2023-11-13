@@ -3,7 +3,6 @@
 #include "position.h"
 #include "constants.h"
 #include "pieceSquareTables.h"
-#include "debug.h"
 #include "search.h"
 #include "tpMove.h"
 #include "tpScore.h"
@@ -22,7 +21,7 @@ int getNullMoveScore(Position *position, int newGamma, int depth) {
 
 int getMoveScore(Position *position, int gamma, int depth, Position *positionBackup, Move *move) {
     Move moveDuplicate;
-    moveDuplicate = *move; // in case move comes from TpMove and gets overwritten in subtree
+    moveDuplicate = *move; // in case move comes from TpMove and gets overwritten in subtree by other position with different hash but same index using saveMove
     doMove(position, move);
     int score = -bound(position, 1-gamma, depth-1, true);
     undoMove(position, &moveDuplicate, (*positionBackup));
