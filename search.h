@@ -1,9 +1,12 @@
-
 #ifndef SUNFISH_C_SEARCH_H
 #define SUNFISH_C_SEARCH_H
 
 #include "position.h"
 
-void searchBestMove(Position* position, Move* bestMove, int timeLeftMs, bool isWhite);
+extern int numNodes;
 
+Move searchBestMove(Position* position, int timeLeftMs);
+int bound(Position *position, int gamma, int depth, bool canNullMove);
+int getNullMoveScore(Position *position, int newGamma, int depth);
+int getMoveScore(Position *position, int gamma, int depth, Position *positionBackup, Move *move);
 #endif //SUNFISH_C_SEARCH_H

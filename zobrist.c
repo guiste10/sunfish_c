@@ -38,7 +38,7 @@ void setInitialZobristHash(Position* position) {
     for (int square = 0; square < SIZE; square++) {
         char piece = board[square];
         if (piece != '.') {
-            int pieceIndex = PIECE_INDEXES_WHITE[piece];
+            int pieceIndex = PIECE_INDEXES[piece];
             hash ^= pieceHashForSquares[pieceIndex][square];
         }
     }

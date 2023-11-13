@@ -1,6 +1,4 @@
-
 #include <stdint.h>
-
 #ifndef SUNFISH_C_RANDOMUNSIGNED64BITINTEGERS_H
 #define SUNFISH_C_RANDOMUNSIGNED64BITINTEGERS_H
 extern const uint64_t randomIntegers[2000];

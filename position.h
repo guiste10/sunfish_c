@@ -20,12 +20,10 @@ typedef struct {
 } Position;
 
 void initPosition(Position *position, char *boardCopy, char *boardToUse, uint64_t* history);
-
 Position* duplicatePosition(Position* source, Position* target);
+int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]);
 
-int genMoves(Position * position, Move moves[MAX_BRANCHING_FACTOR]);
 int value(const Position *position, const Move *move);
-
 void doMove(Position* position, const Move* move);
 void undoMove(Position* position, Move* move, Position positionOld);
 #endif //SUNFISH_C_POSITION_H
