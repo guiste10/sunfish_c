@@ -80,7 +80,7 @@ Sunfish-C:
 ### Observation
 The number of visited nodes in both engines is very similar.
 
-The C version is around 20 times faster than its Python predecessor !
+The C version is around 20 times faster than its Python version !
 
 
 # License
