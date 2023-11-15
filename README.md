@@ -1,5 +1,5 @@
-# sunfish_C
-
+# Sunfish_C
+![Sunfish logo](https://raw.github.com/guiste10/sunfish_c/master/sunfish_c.png)
 ## Introduction
 Sunfish_C is the result of translating the Sunfish chess engine to the C language.
 The original project has been written in Python https://github.com/thomasahle/sunfish.
