@@ -67,6 +67,7 @@ void playUci(){
         } else if (numArgs >= 2 && strcmp(args[0], "position") == 0 && strcmp(args[1], "startpos") == 0) {
             isWhite = true;
             setupPositionWithMoveList(position, initialBoardCopy, &isWhite, args, numArgs, history);
+            setPstToEndGameIfEndGame(position->board);
         } else if (strcmp(args[0], "go") == 0) {
             char uciMove[6];
             Move bestMove = searchBestMove(position, atoi(isWhite ? args[2] : args[4]));

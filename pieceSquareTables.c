@@ -1,4 +1,5 @@
 #include "constants.h"
+#include "chessBoard.h"
 
 const int pawnVal = 100;
 const int knightVal = 280;
@@ -103,14 +104,78 @@ int SQUARE_VALUES[NUM_PIECES][SIZE] = {
         }
 };
 
+const int SQUARES_VALUES_KING_ENDGAME[SIZE] = {
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 10, 20, 20, 20, 20, 20, 20, 10, 0,
+        0, 10, 20, 30, 30, 30, 30, 20, 10, 0,
+        0, 10, 20, 30, 30, 30, 30, 20, 10, 0,
+        0, 10, 20, 30, 30, 30, 30, 20, 10, 0,
+        0, 10, 20, 30, 30, 30, 30, 20, 10, 0,
+        0, 10, 15, 15, 15, 15, 15, 15, 10, 0,
+        0, -5, 0, 5, 5, 5, 5, 0, -5, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
+const int SQUARES_VALUES_PAWN_ENDGAME[SIZE] = {
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0,   0,   0,   0,    0,   0,    0,   0,   0,
+        0, 78,  83, 86,  73,  102, 82, 85, 90,  0,
+        0, 40,   40, 40,   40, 40,  40,  44, 40,   0,
+        0, 20, 20,  20, 15, 20,  20, 20,  20, 0,
+        0, 10, 10,   10,  9,   10,   10, 10,   10, 0,
+        0, -10, -10,   -10,   -11, -10, -10,  -10,   -10, 0,
+        0, -31, -30,   -30,  -30, -36, -30, -20,   -20, 0,
+        0, 0,   0,   0,   0,   0,   0,   0,   0,   0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
+
 void initOpeningToMiddleGamePst(){
+    int square, mirroredSquare;
     for(int row = 0; row < NUM_ROWS; row++){
         for(int col = 0; col < NUM_FILES; col++){
             for(int piece=0; piece < NUM_PIECES; piece++) {
+                square = (10 * row) + col;
+                mirroredSquare = 10 * (NUM_ROWS - row - 1) + col;
                 if(piece >= NUM_WHITE_PIECES)  // mirror white's square values
-                    SQUARE_VALUES[piece][(10 * row) + col] = SQUARE_VALUES[piece - NUM_WHITE_PIECES][10 * (NUM_ROWS - row - 1) + col]; // best way to mirror
-                PST[piece][(10 * row) + col] = SQUARE_VALUES[piece][(10 * row) + col] + PIECE_VALUES[piece];
+                    SQUARE_VALUES[piece][square] = SQUARE_VALUES[piece - NUM_WHITE_PIECES][mirroredSquare];
+                PST[piece][square] = SQUARE_VALUES[piece][square] + PIECE_VALUES[piece];
             }
         }
     }
+}
+
+void setPstToEndGame() {
+    int square, mirroredSquare;
+    for (int row = 0; row < NUM_ROWS; row++) {
+        for (int col = 0; col < NUM_FILES; col++) {
+            square = (10 * row) + col;
+            mirroredSquare = 10 * (NUM_ROWS - row - 1) + col;
+            SQUARE_VALUES[k][square] = SQUARE_VALUES[K][mirroredSquare];
+            SQUARE_VALUES[p][square] = SQUARE_VALUES[P][mirroredSquare];
+            PST[K][square] = SQUARES_VALUES_KING_ENDGAME[square] + PIECE_VALUES[K];
+            PST[k][square] = SQUARES_VALUES_KING_ENDGAME[mirroredSquare] + PIECE_VALUES[k];
+            PST[P][square] = SQUARES_VALUES_PAWN_ENDGAME[square] + PIECE_VALUES[P];
+            PST[p][square] = SQUARES_VALUES_PAWN_ENDGAME[mirroredSquare] + PIECE_VALUES[p];
+        }
+    }
+}
+
+void setPstToEndGameIfEndGame(const char *board) {
+    int queenCount = 0;
+    for(int square = 0; square < SIZE ; square++) {
+        char piece = board[square];
+        if(piece == 'Q' || piece == 'q'){
+            queenCount++;
+            if(queenCount >= 2){
+                return;
+            }
+        }
+    }
+    setPstToEndGame();
 }
