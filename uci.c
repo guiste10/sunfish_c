@@ -33,6 +33,27 @@ void setupPositionWithMoveList(Position* position, char* initialBoardCopy, bool*
     }
 }
 
+void playOpening(const Position *position, int currentPly) {
+    int e5 = 55;
+    if(currentPly == 0) {
+        printf("bestmove g1f3\n");
+    } else if(currentPly == 1) {
+        printf("bestmove g7g6\n");
+    } else if(currentPly == 2) {
+        if(position->board[e5] == '.') {
+            printf("bestmove g2g3\n");
+        } else {
+            printf("bestmove f3e5\n");
+        }
+    } else {
+        if(position->board[e5] == '.') {
+            printf("bestmove f8g7\n");
+        } else {
+            printf("bestmove d7d6\n");
+        }
+    }
+}
+
 void playUci(){
     char line[10000];
     char* args[MAX_ARGS];
@@ -74,9 +95,14 @@ void playUci(){
             setPstToEndGameIfEndGame(position->board);
         } else if (strcmp(args[0], "go") == 0) {
             char uciMove[6];
-            Move bestMove = searchBestMove(position, atoi(isWhite ? args[2] : args[4]));
-            moveToUciMove(&bestMove, uciMove);
-            printf("bestmove %s\n", uciMove);
+            int currentPly = position->currentPly;
+            if(currentPly < 4) { // hardcode first moves
+                playOpening(position, currentPly);
+            } else {
+                Move bestMove = searchBestMove(position, atoi(isWhite ? args[2] : args[4]));
+                moveToUciMove(&bestMove, uciMove);
+                printf("bestmove %s\n", uciMove);
+            }
             fflush(stdout);
         }
     }
