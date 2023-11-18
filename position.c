@@ -70,6 +70,7 @@ int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]) { // Fo
                         if (to >= A8 && to <= H8) { // If we move to the last row, we can be anything
                             for (int promotion = Q; promotion > P; promotion--) {
                                 createMove(from, to, promotion, pieceTo, &moves[moveIndex++]);
+                                break;  // only consider queen promotions for efficiency reasons
                             }
                             break;
                         }
@@ -108,6 +109,7 @@ int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]) { // Fo
                         if (to >= A1 && to <= H1) { // If we move to the last row, we can be anything
                             for (int promotion = q; promotion > p; promotion--) {
                                 createMove(from, to, promotion, pieceTo, &moves[moveIndex++]);
+                                break; // only consider queen promotions for efficiency reasons
                             }
                             break;
                         }
