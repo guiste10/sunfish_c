@@ -153,7 +153,7 @@ Move searchBestMove(Position* position, int timeLeftMs) {
         printf("info depth %d pv %s score cp %d\n", depth, bestMoveUci, score);
         printf("info time %d numNodes %d nps %d\n", (int)timeTakenMs, numNodes, nps);
         fflush(stdout);
-        if(timeTakenMs > 900 || (depth >= 6 && timeLeftMs < 10000)) {
+        if(timeTakenMs > 900 || (depth >= 6 && timeLeftMs < 20000)) {
             break;
         }
     }
