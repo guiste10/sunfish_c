@@ -7,6 +7,7 @@
 #include "chessBoard.h"
 #include "pieceSquareTables.h"
 #include "tpMove.h"
+#include "tpScore.h"
 
 const int MAX_ARGS = 1000;
 const char BOT_NAME[] = "DiggyDiggyHole";
@@ -43,6 +44,7 @@ void playUci(){
     uint64_t history[MAX_PLY_CHESS_GAME];
     initializePieceIndexArray();
     initOpeningToMiddleGamePst();
+    initTpScore();
     initTpMove();
     while (1) {
         fgets(line, sizeof(line), stdin);
@@ -54,6 +56,7 @@ void playUci(){
             printf("uciok\n");
             fflush(stdout);
         } else if (strcmp(args[0], "ucinewgame") == 0) {
+            initTpScore();
             initTpMove();
             initOpeningToMiddleGamePst();
             printf("readyok\n");
@@ -62,6 +65,7 @@ void playUci(){
             printf("readyok\n");
             fflush(stdout);
         } else if (strcmp(args[0], "quit") == 0) {
+            clearTpScore();
             clearTpMove();
             break;
         } else if (numArgs >= 2 && strcmp(args[0], "position") == 0 && strcmp(args[1], "startpos") == 0) {
