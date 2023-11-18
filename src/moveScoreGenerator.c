@@ -6,15 +6,25 @@
 #include "move.h"
 #include "tpMove.h"
 #include "pieceSquareTables.h"
+#include "killerMovesTable.h"
+#include "chessBoard.h"
 
 const int LAST = 5;
 const int STOP = 6;
 
-void assignMoveValues(Position * position, Move *moves, int numMoves) {
+void assignMoveValuesAndType(Position * position, Move *moves, int numMoves, int depth) {
     Move *move;
     for (int i = 0; i < numMoves; i++) {
         move = &moves[i];
         move->moveValue = value(position, move);
+
+        if (move->prom != NO_PROMOTION) { // promotion
+            move->moveType = promotionType;
+        } else if (isCapture(move, position->board, position->ep)) { // capture
+            move->moveType = captureType;
+        } else {
+            move->moveType = isKillerType(depth, position->board, position->ep, move) ? killerType : nonCaptureType;
+        }
     }
 }
 
@@ -51,7 +61,7 @@ int getNextMoveScoreLazy(int step, Position* position, int gamma, int depth, boo
             break;
         case 3:
             *numActualMoves = genActualMoves(position, actualMoves);
-            assignMoveValues(position, actualMoves, *numActualMoves);
+            assignMoveValuesAndType(position, actualMoves, *numActualMoves, depth);
             qsort(actualMoves, *numActualMoves, sizeof(Move), compareMoves);
             *moveIndex = 0;
             break;

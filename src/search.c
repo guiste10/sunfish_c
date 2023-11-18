@@ -7,6 +7,7 @@
 #include "tpMove.h"
 #include "tpScore.h"
 #include "moveScoreGenerator.h"
+#include "killerMovesTable.h"
 
 const int EVAL_ROUGHNESS = 15;
 int numNodes;
@@ -115,6 +116,7 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
         if(best >= gamma) {
             if(move->from != NULL_MOVE) {
                 saveMove(position->hash, *move);
+                saveAsKillerMove(move, depth, position->ep, position->board);
             }
             break;
         }
