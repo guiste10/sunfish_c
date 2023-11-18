@@ -1,4 +1,3 @@
-
 #ifndef SUNFISH_C_TPMOVE_H
 #define SUNFISH_C_TPMOVE_H
 #include <stdint.h>

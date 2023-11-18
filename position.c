@@ -61,8 +61,7 @@ int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]) { // Fo
                     if (pieceFrom == 'P') { // Pawn move, double move and pieceTo
                         if ((d == NORTH || d == NORTH + NORTH) && pieceTo != '.')
                             break;
-                        if (d == NORTH + NORTH && (from < A1 + NORTH || board[from + NORTH] !=
-                                                                        '.')) // forbidden double move (pawn is not on initial rank or obstruction mid-road
+                        if (d == NORTH + NORTH && (from < A1 + NORTH || board[from + NORTH] !='.')) // forbidden double move (pawn is not on initial rank or obstruction mid-road
                             break;
                         if ((d == NORTH + WEST || d == NORTH + EAST) && pieceTo == '.' && to != position->ep
                             && to != position->kp - 1 && to != position->kp &&
@@ -71,14 +70,12 @@ int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]) { // Fo
                         if (to >= A8 && to <= H8) { // If we move to the last row, we can be anything
                             for (int promotion = Q; promotion > P; promotion--) {
                                 createMove(from, to, promotion, pieceTo, &moves[moveIndex++]);
-                                break; // only consider queen promotions for efficiency reasons
                             }
                             break;
                         }
                     }
                     createMove(from, to, NO_PROMOTION, pieceTo, &moves[moveIndex++]); // Move it
-                    if (strchr("PNK", pieceFrom) != NULL ||
-                        islower(pieceTo)) // Stop crawlers from sliding, and sliding after captures
+                    if (strchr("PNK", pieceFrom) != NULL || islower(pieceTo)) // Stop crawlers from sliding, and sliding after captures
                         break;
                     if (from == A1 && board[to + EAST] == 'K' &&
                         position->wc[0]) // Castling, by sliding the rook next to the king, from = king's square
@@ -111,7 +108,6 @@ int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]) { // Fo
                         if (to >= A1 && to <= H1) { // If we move to the last row, we can be anything
                             for (int promotion = q; promotion > p; promotion--) {
                                 createMove(from, to, promotion, pieceTo, &moves[moveIndex++]);
-                                break; // only consider queen promotions for efficiency reasons
                             }
                             break;
                         }
