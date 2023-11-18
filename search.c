@@ -141,8 +141,6 @@ Move searchBestMove(Position* position, int timeLeftMs) {
     int timeTakenMs, score;
     Move bestMove;
     char bestMoveUci[6];
-    initTpScore();
-    initTpMove();
     clock_t start = clock();
     numNodes = 0;
     for(int depth = 1; depth <= MAX_SEARCH_DEPTH; depth++){
@@ -157,7 +155,5 @@ Move searchBestMove(Position* position, int timeLeftMs) {
             break;
         }
     }
-    clearTpScore();
-    clearTpMove();
     return bestMove;
 }
