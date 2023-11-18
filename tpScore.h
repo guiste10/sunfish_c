@@ -1,7 +1,5 @@
-
 #ifndef SUNFISH_C_TPSCORE_H
 #define SUNFISH_C_TPSCORE_H
-
 #include <stdint.h>
 #include "position.h"
 
