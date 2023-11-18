@@ -6,8 +6,9 @@
 TpMoveEntry* tpMove = NULL;
 
 void initTpMove() {
-    tpMove = (TpMoveEntry*)malloc(sizeof(TpMoveEntry) * TP_MOVE_SIZE);
-    memset(tpMove, 0, sizeof(TpMoveEntry) * TP_MOVE_SIZE);
+    size_t totalSize = sizeof(TpMoveEntry) * TP_MOVE_SIZE;
+    tpMove = (TpMoveEntry*)malloc(totalSize);
+    memset(tpMove, 0, totalSize);
 }
 
 void clearTpMove() {
@@ -18,7 +19,7 @@ void clearTpMove() {
 }
 
 unsigned int getTpMoveIndexFromHash(uint64_t hash) {
-    return (unsigned int)(hash & ((1 << TP_MOVE_SIZE_LOG2) - 1));
+    return (unsigned int)(hash & (TP_MOVE_SIZE - 1));
 }
 
 Move* lookupTpMove(uint64_t hash) {
