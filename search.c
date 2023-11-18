@@ -11,7 +11,6 @@
 const int EVAL_ROUGHNESS = 15;
 int numNodes;
 
-
 int getNullMoveScore(Position *position, int newGamma, int depth) {
     Position duplicate;
     duplicatePosition(position, &duplicate);
@@ -104,7 +103,6 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
     Move* move = &mv;
     Position positionBackup;
     duplicatePosition(position, &positionBackup);
-
     best = -MATE_UPPER;
     while(true) {
         step = getNextMoveScoreLazy(step, position, gamma, depth, canNullMove, valLower,
