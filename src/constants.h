@@ -7,6 +7,7 @@
 #define NUM_ROWS 12
 #define SIZE 120
 #define MAX_PLY_CHESS_GAME 1024
+#define MIN_SEARCH_DEPTH 8
 #define MAX_SEARCH_DEPTH 16
 #define NULL_MOVE 666
 

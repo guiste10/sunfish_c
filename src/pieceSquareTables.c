@@ -2,7 +2,7 @@
 #include "chessBoard.h"
 
 const int pawnVal = 100;
-const int knightVal = 280;
+const int knightVal = 310;
 const int bishopVal = 320;
 const int rookVal = 479;
 const int queenVal = 929;
