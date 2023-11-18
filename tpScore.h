@@ -7,7 +7,7 @@
 
 #define TP_SCORE_NUM_HASHES_HIGH_DEPTH_LOG2 21 // 2^21 => 2 million entries => 2million x 16 bytes x 8depths x 2 = 512MB, to store scores from depth 16 to 9 included
 #define TP_SCORE_NUM_HASHES_HIGH_DEPTH (1 << TP_SCORE_NUM_HASHES_HIGH_DEPTH_LOG2)
-#define TP_SCORE_NUM_HASHES_LOW_DEPTH_LOG2 24 // 2^24 => 16.5million million entries => 16.5million x 16 bytes x 9depths x 2 = 4.75GB, for depth 8 to 0 included
+#define TP_SCORE_NUM_HASHES_LOW_DEPTH_LOG2 23 // 2^24 => 16.5million million entries => 16.5million x 16 bytes x 9depths x 2 = 4.75GB, for depth 8 to 0 included
 #define TP_SCORE_NUM_HASHES_LOW_DEPTH (1 << TP_SCORE_NUM_HASHES_LOW_DEPTH_LOG2)
 #define HIGHEST_LOW_DEPTH 8 // Fewer hashes need to be stored at higher depths
 
