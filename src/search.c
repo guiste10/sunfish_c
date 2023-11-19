@@ -137,13 +137,11 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
 
 Move searchBestMove(Position* position, int timeLeftMs) {
     int timeTakenMs, score;
-    Move bestMove;
     char bestMoveUci[6];
     clock_t start = clock();
     numNodes = 0;
     for(int depth = 1; depth <= MAX_SEARCH_DEPTH; depth++){
         score = mtdf(position, depth, start, bestMoveUci);
-        bestMove = *lookupTpMove(position->hash);
         timeTakenMs = (int)(clock() - start);
         int nps = timeTakenMs == 0.0 ? 0 : (int)(numNodes/(timeTakenMs/1000.0));
         printf("info depth %d pv %s score cp %d\n", depth, bestMoveUci, score);
@@ -153,5 +151,5 @@ Move searchBestMove(Position* position, int timeLeftMs) {
             break;
         }
     }
-    return bestMove;
+    return *lookupTpMove(position->hash);
 }
