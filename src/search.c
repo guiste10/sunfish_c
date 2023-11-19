@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <time.h>
+#include <search.h>
 #include "position.h"
 #include "constants.h"
 #include "pieceSquareTables.h"
@@ -99,6 +100,7 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
 
     int best, moveIndex, numActualMoves, score, step = 0;
     int valLower = QS - (depth * QS_A);
+    moveIndex = -1;
     Move actualMoves[MAX_BRANCHING_FACTOR];
     Move mv;
     Move* move = &mv;
@@ -110,6 +112,7 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
                                     &positionBackup, actualMoves, &numActualMoves,
                                     &moveIndex, move, &score);
         if(step == STOP) {
+            //printf("Stop loop at moveIndex: %d\n", moveIndex);
             break;
         }
         best = score > best ? score : best;
@@ -118,6 +121,7 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
                 saveMove(position->hash, *move);
                 saveAsKillerMove(move, depth, position->ep, position->board);
             }
+            //printf("Prune loop at moveIndex: %d\n", moveIndex);
             break;
         }
     }
@@ -151,6 +155,7 @@ Move searchBestMove(Position* position, int timeLeftMs) {
         printf("info time %d numNodes %d nps %d\n", (int)timeTakenMs, numNodes, nps);
         fflush(stdout);
         if((depth >= MIN_SEARCH_DEPTH && timeTakenMs > 900) || (depth >= 6 && timeLeftMs < 15000)) {
+        //if(depth >= 6) {
             stop = true;
         }
     }

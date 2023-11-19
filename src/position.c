@@ -201,7 +201,7 @@ void doMove(Position* position, const Move* move) {
         return;
     }
 
-    position->score = position->score + move->moveValue;
+    position->score = position->score + value(position, move);
 
     position->hash ^= pieceHashForSquares[fromPieceIndex][from] ^ pieceHashForSquares[fromPieceIndex][to];
     if(toPiece != '.') {

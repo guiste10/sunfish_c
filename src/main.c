@@ -3,8 +3,8 @@
 #include "perft.h"
 
 int main() {
-    runPerft();
-    //playUci();
+    //runPerft();
+    playUci();
     printf("\n");
     fflush(stdout);
     return 0;

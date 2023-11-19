@@ -26,26 +26,6 @@ void perftBasic(Position* position, int depth) { // 9.6 million nps
     }
 }
 
-void perftMoveOrdering(Position* position, int depth) { // 6.4 million nps
-    numNodes++;
-    if(depth == 0)
-        return;
-
-    Position positionBackup;
-    duplicatePosition(position, &positionBackup);
-    Move moves[MAX_BRANCHING_FACTOR];
-    Move move;
-    int numActualMoves = genActualMoves(position, moves);
-    assignMoveValuesAndType(position, moves, numActualMoves, depth);
-    qsort(moves, numActualMoves, sizeof(Move), compareMoves);
-    for(int moveIndex = 0; moveIndex < numActualMoves; moveIndex++) {
-        move = moves[moveIndex];
-        doMove(position, &move);
-        perftMoveOrdering(position, depth-1);
-        undoMove(position, &move, positionBackup);
-    }
-}
-
 void perftMoveOrderingAndMateAndRepetitionAndPat(Position* position, int depth) { // 6.0 million nps
     numNodes++;
 
@@ -88,7 +68,7 @@ void runPerft() {
     initializePieceIndexArray();
     numNodes = 0;
     clock_t start = clock();
-    perftMoveOrderingAndMateAndRepetition(position, 6);
+    perftMoveOrderingAndMateAndRepetitionAndPat(position, 6);
     int timeTakenSec = (int)((float)(clock() - start) / 1000.0);
     printf("Perft finished: nodes: %d, nps: %d\n", numNodes, timeTakenSec == 0 ? 0 : (int)(numNodes/timeTakenSec));
     fflush(stdout);
