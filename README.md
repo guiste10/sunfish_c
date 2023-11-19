@@ -82,6 +82,8 @@ The number of visited nodes in both engines is very similar.
 
 The C version is around 20 times faster than its Python version !
 
+### Perft
+A simple perft routine reaches 9.6 million nodes/sec. This is of course slower in practice because of the move ordering etc.
 
 # License
 
