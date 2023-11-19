@@ -215,7 +215,7 @@ void doMove(Position* position, const Move* move) {
     position->ep = 0;
     position->kp = 0;
 
-    if (position->wc[0] && ((isWhite && from == A1) || (!isWhite && to == A1))) { // Castling rights, we move the rook or pieceTo the opponent's
+    if (position->wc[0] && ((isWhite && from == A1) || (!isWhite && to == A1))) { // Castling rights, we move the rook or capture the opponent's
         position->wc[0] = false;
         position->hash ^= castlingRightsHash[0][0];
     }
