@@ -28,6 +28,22 @@ void assignMoveValuesAndType(Position * position, Move *moves, int numMoves, int
     }
 }
 
+int getNullMoveScore(Position *position, int newGamma, int depth) {
+    Position duplicate;
+    duplicatePosition(position, &duplicate);
+    doMove(&duplicate, &nullMove);
+    return bound(&duplicate, newGamma, depth,true);
+}
+
+int getMoveScore(Position *position, int gamma, int depth, Position *positionBackup, Move *move) {
+    Move moveDuplicate;
+    moveDuplicate = *move; // in case move comes from TpMove and gets overwritten in subtree by other position with different hash but same index using saveMove
+    doMove(position, move);
+    int score = -bound(position, 1-gamma, depth-1, true);
+    undoMove(position, &moveDuplicate, (*positionBackup));
+    return score;
+}
+
 int getNextMoveScoreLazy(int step, Position* position, int gamma, int depth, bool canNull,
                          int valLower, Position* positionBackup, Move* actualMoves, int* numActualMoves,
                          int *moveIndex, Move* moveToYield, int* scoreToYield) {
