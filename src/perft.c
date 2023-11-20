@@ -1,11 +1,15 @@
 #include <time.h>
 #include <stdio.h>
+#include <search.h>
+#include <stdlib.h>
 #include "perft.h"
 #include "position.h"
 #include "chessBoard.h"
 #include "search.h"
+#include "moveScoreGenerator.h"
+#include "pieceSquareTables.h"
 
-void perft(Position* position, int depth) {
+void perftBasic(Position* position, int depth) { // 9.6 million nps
     numNodes++;
     if(depth == 0) 
         return;
@@ -18,10 +22,45 @@ void perft(Position* position, int depth) {
     for(int moveIndex = 0; moveIndex < numActualMoves; moveIndex++) {
         move = moves[moveIndex];
         doMove(position, &move);
-        perft(position, depth-1);
+        perftBasic(position, depth-1);
         undoMove(position, &move, positionBackup);
     }
+}
 
+void perftMoveOrderingAndMateAndRepetitionAndPat(Position* position, int depth) { // 6.0 million nps
+    numNodes++;
+
+    if (position->score <= -MATE_LOWER) {
+        return;
+    }
+
+    if(depth > 0 && isRepetition(position)) {
+        return;
+    }
+
+    if(depth == 0)
+        return;
+
+    Position positionBackup;
+    duplicatePosition(position, &positionBackup);
+    Move moves[MAX_BRANCHING_FACTOR];
+    Move move;
+    int numActualMoves = genActualMoves(position, moves);
+    assignMoveValuesAndType(position, moves, numActualMoves, depth);
+    qsort(moves, numActualMoves, sizeof(Move), compareMoves);
+    for(int moveIndex = 0; moveIndex < numActualMoves; moveIndex++) {
+        move = moves[moveIndex];
+        doMove(position, &move);
+        perftMoveOrderingAndMateAndRepetitionAndPat(position, depth-1);
+        undoMove(position, &move, positionBackup);
+//        if(moveIndex == 5) {
+//            break;
+//        }
+    }
+
+    if(depth > 2 && numActualMoves == 0) {
+        getNullMoveScore(position, MATE_UPPER, 0);
+    }
 }
 
 void runPerft() {
@@ -33,7 +72,7 @@ void runPerft() {
     initializePieceIndexArray();
     numNodes = 0;
     clock_t start = clock();
-    perft(position, 6);
+    perftMoveOrderingAndMateAndRepetitionAndPat(position, 6);
     int timeTakenSec = (int)((float)(clock() - start) / 1000.0);
     printf("Perft finished: nodes: %d, nps: %d\n", numNodes, timeTakenSec == 0 ? 0 : (int)(numNodes/timeTakenSec));
     fflush(stdout);

@@ -10,6 +10,7 @@
 #define MIN_SEARCH_DEPTH 8
 #define MAX_SEARCH_DEPTH 16
 #define NULL_MOVE 666
+#define NUM_KILLER_MOVES_PER_DEPTH 2
 
 extern const int ARRAY_END;
 extern const int NO_PROMOTION;
