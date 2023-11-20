@@ -11,22 +11,6 @@
 const int EVAL_ROUGHNESS = 15;
 int numNodes;
 
-int getNullMoveScore(Position *position, int newGamma, int depth) {
-    Position duplicate;
-    duplicatePosition(position, &duplicate);
-    doMove(&duplicate, &nullMove);
-    return bound(&duplicate, newGamma, depth,true);
-}
-
-int getMoveScore(Position *position, int gamma, int depth, Position *positionBackup, Move *move) {
-    Move moveDuplicate;
-    moveDuplicate = *move; // in case move comes from TpMove and gets overwritten in subtree by other position with different hash but same index using saveMove
-    doMove(position, move);
-    int score = -bound(position, 1-gamma, depth-1, true);
-    undoMove(position, &moveDuplicate, (*positionBackup));
-    return score;
-}
-
 void printInfo(int depth, int timeTakenMs, int score, int gamma, Position* position, char bestMoveUci[6]) {
     printf("info depth %d time %d nodes %d nps %d score cp %d ",
            depth, timeTakenMs, numNodes, timeTakenMs == 0.0 ? 0 : (int)(numNodes/(timeTakenMs/1000.0)), score);
@@ -136,19 +120,20 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
 
 
 Move searchBestMove(Position* position, int timeLeftMs) {
-    int timeTakenMs, score;
+    int timeTakenForDepthMs, score;
     char bestMoveUci[6];
     clock_t start = clock();
     numNodes = 0;
-    for(int depth = 1; depth <= MAX_SEARCH_DEPTH; depth++){
+    bool stop = false;
+    for(int depth = 1; !stop && depth <= MAX_SEARCH_DEPTH; depth++){
         score = mtdf(position, depth, start, bestMoveUci);
-        timeTakenMs = (int)(clock() - start);
-        int nps = timeTakenMs == 0.0 ? 0 : (int)(numNodes/(timeTakenMs/1000.0));
+        timeTakenForDepthMs = (int)(clock() - start);
+        int nps = timeTakenForDepthMs == 0.0 ? 0 : (int)(numNodes / (timeTakenForDepthMs / 1000.0));
         printf("info depth %d pv %s score cp %d\n", depth, bestMoveUci, score);
-        printf("info time %d numNodes %d nps %d\n", (int)timeTakenMs, numNodes, nps);
+        printf("info time %d numNodes %d nps %d\n", (int)timeTakenForDepthMs, numNodes, nps);
         fflush(stdout);
-        if(timeTakenMs > 900 || (depth >= 6 && timeLeftMs < 15000)) {
-            break;
+        if(timeTakenForDepthMs > 900 || (depth >= 6 && timeLeftMs < 15000)) {
+            stop = true;
         }
     }
     return *lookupTpMove(position->hash);

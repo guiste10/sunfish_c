@@ -48,6 +48,7 @@ void playUci(){
     initTpMove();
     while (1) {
         fgets(line, sizeof(line), stdin);
+        memset(args, 0, sizeof(char*) * MAX_ARGS);
         fillArgs(line, args, &numArgs);
 
         if (strcmp(args[0], "uci") == 0) {
@@ -73,7 +74,9 @@ void playUci(){
             setupPositionWithMoveList(position, initialBoardCopy, &isWhite, args, numArgs, history);
         } else if (strcmp(args[0], "go") == 0) {
             char uciMove[6];
-            Move bestMove = searchBestMove(position, atoi(isWhite ? args[2] : args[4]));
+            char* timeLeftArg = isWhite ? args[2] : args[4];
+            int timeLeft = timeLeftArg == NULL ? 999999 : atoi(timeLeftArg);
+            Move bestMove = searchBestMove(position, timeLeft);
             moveToUciMove(&bestMove, uciMove);
             printf("bestmove %s\n", uciMove);
             fflush(stdout);
