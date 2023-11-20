@@ -11,7 +11,10 @@ header files, imports and randomUnsigned64bitIntegers.c
 ## Branches
 The <b>master</b> branch contains the translation of the original Sunfish engine written in python. This can still be improved in terms of lines/quality of code, but the algorithm must stay the same as on the original Sunfish!
 
-The <b>sunfish-improved</b> branch is where all improvements are merged that aren't part of the original Sunfish engine. This can be simple improvements such as endgame PST's, better transposition table usage, better move ordering, killer (non capture) heuristic, etc. 
+The <b>sunfish-improved</b> branch is where all improvements are merged that aren't part of the original Sunfish engine. 
+The current implemented improvements are:
+* Endgame PST's for the king and pawns
+* Killer (non capture) move heuristic
 
 Any <b>pull requests</b> on those 2 branches is welcome !
 
@@ -83,7 +86,7 @@ The number of visited nodes in both engines is very similar.
 The C version is around 20 times faster than its Python version !
 
 ### Perft
-A simple perft routine reaches 9.6 million nodes/sec. This is of course slower in practice because of the move ordering etc.
+A simple perft routine reaches 9.6 million nodes/sec. This is of course much slower in practice because of the quick cutoffs obtained after generating and ordering all the moves.
 
 # License
 
