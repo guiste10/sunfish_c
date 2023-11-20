@@ -1,6 +1,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <search.h>
+#include <stdlib.h>
 #include "perft.h"
 #include "position.h"
 #include "chessBoard.h"
@@ -52,6 +53,9 @@ void perftMoveOrderingAndMateAndRepetitionAndPat(Position* position, int depth) 
         doMove(position, &move);
         perftMoveOrderingAndMateAndRepetitionAndPat(position, depth-1);
         undoMove(position, &move, positionBackup);
+//        if(moveIndex == 5) {
+//            break;
+//        }
     }
 
     if(depth > 2 && numActualMoves == 0) {

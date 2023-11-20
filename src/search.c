@@ -112,7 +112,6 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
                                     &positionBackup, actualMoves, &numActualMoves,
                                     &moveIndex, move, &score);
         if(step == STOP) {
-            //printf("Stop loop at moveIndex: %d\n", moveIndex);
             break;
         }
         best = score > best ? score : best;
@@ -121,7 +120,6 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
                 saveMove(position->hash, *move);
                 saveAsKillerMove(move, depth, position->ep, position->board);
             }
-            //printf("Prune loop at moveIndex: %d\n", moveIndex);
             break;
         }
     }
