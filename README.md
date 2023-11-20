@@ -9,7 +9,7 @@ header files, imports and randomUnsigned64bitIntegers.c
 
 
 ## Branches
-The <b>master</b> branch contains the translation of the original Sunfish engine written in python. This can still be improved in terms of lines/quality of code, but the algorithm must stay the same as on the original Sunfish!
+The <b>sunfish-vanilla</b> branch contains the translation of the original Sunfish engine written in python. This can still be improved in terms of lines/quality of code, but the algorithm must stay the same as on the original Sunfish!
 
 The <b>sunfish-improved</b> branch is where all improvements are merged that aren't part of the original Sunfish engine. 
 The current implemented improvements are:
@@ -29,7 +29,7 @@ To allow incremental updates, the make/unmake approach had to be used.
 One sure wants to know how the C version of Sunfish compares to itself right?
 Let us compare on different positions the time taken for both engines to finish the search at a depth of 8 plies.
 
-The following basic benchmark has been conducted on the master branch at 13/11/2023 with below hardware:
+The following basic benchmark has been conducted on the sunfish-vanilla branch at 13/11/2023 with below hardware:
 
     CPU 11th Gen Intel(R) Core(TM) i7-1185G7 @ 3.00GHz
 	RAM 32,0 GB 4267 MHz
