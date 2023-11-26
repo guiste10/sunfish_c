@@ -85,7 +85,6 @@ void playUci(){
             fflush(stdout);
         } else if (strcmp(args[0], "ucinewgame") == 0) {
             initTables();
-            printf("readyok\n");
             fflush(stdout);
         } else if (strcmp(args[0], "isready") == 0) {
             printf("readyok\n");

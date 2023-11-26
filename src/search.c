@@ -62,6 +62,10 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
         return -MATE_UPPER;
     }
 
+    if(canNullMove && depth > 0 && isRepetition(position)) {
+        return 0;
+    }
+
     int entryLowerBound, entryUpperBound;
     TpScoreEntry* ttEntry = lookupTpScore(position->hash, depth, canNullMove);
     if(ttEntry == NULL) {
@@ -76,10 +80,6 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
         if(ttEntry->upperBound < gamma) {
             return ttEntry->upperBound;
         }
-    }
-
-    if(canNullMove && depth > 0 && isRepetition(position)) {
-        return 0;
     }
 
     int best, moveIndex, numActualMoves, score, step = 0;
