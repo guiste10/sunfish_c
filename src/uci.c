@@ -44,8 +44,6 @@ void playUci(){
     uint64_t history[MAX_PLY_CHESS_GAME];
     initializePieceIndexArray();
     initOpeningToMiddleGamePst();
-    initTpScore();
-    initTpMove();
     while (1) {
         fgets(line, sizeof(line), stdin);
         memset(args, 0, sizeof(char*) * MAX_ARGS);
@@ -79,6 +77,10 @@ void playUci(){
             moveToUciMove(&bestMove, uciMove);
             printf("bestmove %s\n", uciMove);
             fflush(stdout);
+            clearTpScore();
+            clearTpMove();
+            initTpScore();
+            initTpMove();
         }
     }
 }
