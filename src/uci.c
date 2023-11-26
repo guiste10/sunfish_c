@@ -60,7 +60,6 @@ void playUci(){
             initTpScore();
             initTpMove();
             initOpeningToMiddleGamePst();
-            printf("readyok\n");
             fflush(stdout);
         } else if (strcmp(args[0], "isready") == 0) {
             printf("readyok\n");
