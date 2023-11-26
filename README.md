@@ -46,9 +46,9 @@ Sunfish:
 
 Sunfish-C:
 
-    time: 1121 ms
-    nodes: 396745
-    nps: 353920
+    time: 766 ms
+    nodes: 394461
+    nps: 520436
     bestmove: g1f3
 
 ### Middle Game position
@@ -75,15 +75,15 @@ Sunfish:
 
 Sunfish-C:
 
-    time: 2747 ms
-    nodes: 1198635
-    nps: 436343
+    time: 2182 ms
+    nodes: 1189307
+    nps: 544987
     bestmove: f8d8
 
 ### Observation
 The number of visited nodes in both engines is very similar.
 
-The C version is around 20 times faster than its Python version !
+The C version is around 25 times faster than its Python version !
 
 ### Perft
 A simple perft routine reaches 16.8 million nodes/sec (using the CC compiler). This is of course much slower in practice because of the quick cutoffs obtained after generating and ordering all the moves.

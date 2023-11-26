@@ -34,7 +34,9 @@ void runPerft() {
     numNodes = 0;
     clock_t start = clock();
     perft(position, 6);
-    int timeTakenSec = (int)((float)(clock() - start) / 1000.0);
+    clock_t end = clock();
+    double numTicks = (double)(end - start);
+    double timeTakenSec = (double)(numTicks / CLOCKS_PER_SEC);
     printf("Perft finished: nodes: %d, nps: %d\n", numNodes, timeTakenSec == 0 ? 0 : (int)(numNodes/timeTakenSec));
     fflush(stdout);
 }
