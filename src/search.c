@@ -38,7 +38,7 @@ int mtdf(Position *position, int depth, clock_t startTime, char bestMoveUci[6]) 
         } else {
             upperBound = score;
         }
-        printInfo(depth, clock() - startTime, score, gamma, position, bestMoveUci);
+        printInfo(depth, (int)(((double)(clock() - startTime) / CLOCKS_PER_SEC) * 1000.0), score, gamma, position, bestMoveUci);
         gamma = (lowerBound + upperBound + 1) / 2;
     }
     return gamma;
@@ -123,20 +123,20 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
 
 
 Move searchBestMove(Position* position, int timeLeftMs) {
-    int timeTakenForDepthMs, score;
+    int score;
+    double secTakenForDepth;
     char bestMoveUci[6];
     clock_t start = clock();
     numNodes = 0;
     bool stop = false;
     for(int depth = 1; !stop && depth <= MAX_SEARCH_DEPTH; depth++){
         score = mtdf(position, depth, start, bestMoveUci);
-        timeTakenForDepthMs = (int)(clock() - start);
-        int nps = timeTakenForDepthMs == 0.0 ? 0 : (int)(numNodes / (timeTakenForDepthMs / 1000.0));
+        secTakenForDepth = ((double)(clock() - start)) / CLOCKS_PER_SEC;
+        int nps = secTakenForDepth == 0.0 ? 0 : (int)(numNodes / secTakenForDepth);
         printf("info depth %d pv %s score cp %d\n", depth, bestMoveUci, score);
-        printf("info time %d numNodes %d nps %d\n", (int)timeTakenForDepthMs, numNodes, nps);
+        printf("info time %d numNodes %d nps %d\n", (int)(secTakenForDepth*1000), numNodes, nps);
         fflush(stdout);
-        if((depth >= MIN_SEARCH_DEPTH && timeTakenForDepthMs > 900) || (depth >= 6 && timeLeftMs < 15000)) {
-        //if(depth >= 6) {
+        if(depth >= MIN_SEARCH_DEPTH && secTakenForDepth > 0.9 || (depth >= 6 && timeLeftMs < 15000) || depth ==8) {
             stop = true;
         }
     }
