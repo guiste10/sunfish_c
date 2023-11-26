@@ -136,7 +136,7 @@ Move searchBestMove(Position* position, int timeLeftMs) {
         printf("info depth %d pv %s score cp %d\n", depth, bestMoveUci, score);
         printf("info time %d numNodes %d nps %d\n", (int)(secTakenForDepth*1000), numNodes, nps);
         fflush(stdout);
-        if(depth >= MIN_SEARCH_DEPTH && secTakenForDepth > 0.9 || (depth >= 6 && timeLeftMs < 15000) || depth ==8) {
+        if(depth >= MIN_SEARCH_DEPTH && secTakenForDepth > 0.9 || (depth >= 6 && timeLeftMs < 15000)) {
             stop = true;
         }
     }
