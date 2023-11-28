@@ -27,10 +27,9 @@ void perft(Position* position, int depth) {
 void runPerft() {
     Position pos;
     Position* position = &pos;
-    char initialBoardCopy[SIZE];
+    int initialBoardCopy[SIZE];
     uint64_t history[MAX_PLY_CHESS_GAME];
-    initPosition(position, initialBoardCopy, (char *) initialBoard, history);
-    initializePieceIndexArray();
+    initPosition(position, initialBoardCopy, (int *) initialBoard, history);
     numNodes = 0;
     clock_t start = clock();
     perft(position, 6);

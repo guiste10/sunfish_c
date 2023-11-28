@@ -22,8 +22,8 @@ void fillArgs(char* line, char* args[MAX_ARGS], int* numArgs){
     }
 }
 
-void setupPositionWithMoveList(Position* position, char* initialBoardCopy, bool* isWhite, char *uciMoves[1000], int numArgs, uint64_t* history){
-    initPosition(position, initialBoardCopy, (char *) initialBoard, history);
+void setupPositionWithMoveList(Position* position, int* initialBoardCopy, bool* isWhite, char *uciMoves[1000], int numArgs, uint64_t* history){
+    initPosition(position, initialBoardCopy, (int *) initialBoard, history);
     for (int ply = 0; ply < numArgs - 3; ++ply) {
         char *uciMove = uciMoves[3 + ply];
         Move move;
@@ -41,13 +41,13 @@ void playOpening(const Position *position, int currentPly) {
     } else if(currentPly == 1) {
         printf("bestmove g7g6\n");
     } else if(currentPly == 2) {
-        if(position->board[e5] == '.') {
+        if(position->board[e5] == EMPTY_SQUARE) {
             printf("bestmove g2g3\n");
         } else {
             printf("bestmove f3e5\n");
         }
     } else {
-        if(position->board[e5] == '.') {
+        if(position->board[e5] == EMPTY_SQUARE) {
             printf("bestmove f8g7\n");
         } else {
             printf("bestmove d7d6\n");
@@ -69,9 +69,8 @@ void playUci(){
     bool isWhite;
     Position pos;
     Position* position = &pos;
-    char initialBoardCopy[SIZE];
+    int initialBoardCopy[SIZE];
     uint64_t history[MAX_PLY_CHESS_GAME];
-    initializePieceIndexArray();
     initTables();
     while (1) {
         fgets(line, sizeof(line), stdin);

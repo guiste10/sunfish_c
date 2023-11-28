@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 typedef struct {
-    char *board;
+    int *board;
     int score;
     bool wc[2];
     bool bc[2];
@@ -19,7 +19,7 @@ typedef struct {
     int currentPly;
 } Position;
 
-void initPosition(Position *position, char *boardCopy, char *boardToUse, uint64_t* history);
+void initPosition(Position *position, int *boardCopy, int *boardToUse, uint64_t* history);
 Position* duplicatePosition(Position* source, Position* target);
 int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]);
 

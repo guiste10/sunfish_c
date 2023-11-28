@@ -166,11 +166,11 @@ void setPstToEndGame() {
     }
 }
 
-void setPstToEndGameIfEndGame(const char *board) {
+void setPstToEndGameIfEndGame(const int *board) {
     int queenCount = 0;
     for(int square = 0; square < SIZE ; ++square) {
-        char piece = board[square];
-        if(piece == 'Q' || piece == 'q'){
+        int piece = board[square];
+        if(piece == Q || piece == q){
             ++queenCount;
             if(queenCount >= 2){
                 return;

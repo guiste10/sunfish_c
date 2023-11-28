@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-void initPosition(Position *position, char *boardCopy, char *boardToUse, uint64_t* history) {
+void initPosition(Position *position, int *boardCopy, int *boardToUse, uint64_t* history) {
     copyBoard(boardCopy, boardToUse);
     position->board = boardCopy;
     position->score = 0;
@@ -47,40 +47,37 @@ int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]) { // Fo
     int moveIndex = 0;
     if(position->isWhite) {
         for (int from = A8; from <= H1 ; ++from) {
-            char pieceFrom = position->board[from];
-            if (!isupper(pieceFrom))
+            int pieceFrom = position->board[from];
+            if (pieceFrom < P || pieceFrom > K)
                 continue;
-            int *pieceDirections = (int *) DIRECTIONS[PIECE_INDEXES[pieceFrom]];
+            int *pieceDirections = (int *) DIRECTIONS[pieceFrom];
             for (int dirIndex = 0; *(pieceDirections + dirIndex) != ARRAY_END; ++dirIndex) {
                 int d = *(pieceDirections + dirIndex);
                 for (int to = from + d; to >= 0 && to < SIZE; to += d) {
-                    char pieceTo = position->board[to];
-                    if (pieceTo == ' ' || (isupper(pieceTo))) // Stay inside the board, and off friendly pieces
+                    int pieceTo = position->board[to];
+                    if (pieceTo == SPACE || (P <= pieceTo && pieceTo <= K)) // Stay inside the board, and off friendly pieces
                         break;
-                    if (pieceFrom == 'P') { // Pawn move, double move and pieceTo
-                        if ((d == NORTH || d == NORTHNORTH) && pieceTo != '.')
+                    if (pieceFrom == P) { // Pawn move, double move and pieceTo
+                        if ((d == NORTH || d == NORTHNORTH) && pieceTo != EMPTY_SQUARE)
                             break;
-                        if (d == NORTHNORTH && (from < A1 + NORTH || position->board[from + NORTH] != '.')) // forbidden double move (pawn is not on initial rank or obstruction mid-road
+                        if (d == NORTHNORTH && (from < A1 + NORTH || position->board[from + NORTH] != EMPTY_SQUARE)) // forbidden double move (pawn is not on initial rank or obstruction mid-road
                             break;
-                        if ((d == NORTHWEST || d == NORTHEAST) && pieceTo == '.' && to != position->ep
+                        if ((d == NORTHWEST || d == NORTHEAST) && pieceTo == EMPTY_SQUARE && to != position->ep
                             && to != position->kp - 1 && to != position->kp &&
                             to != position->kp + 1) // for castling check detection
                             break;
                         if (to >= A8 && to <= H8) { // If we move to the last row, we can be anything
-                            for (int promotion = Q; promotion > P; promotion--) {
-                                createMove(from, to, promotion, pieceTo, &moves[moveIndex++]);
-                                break;  // only consider queen promotions for efficiency reasons
-                            }
+                            createMove(from, to, Q, pieceTo, &moves[moveIndex++]);
                             break;
                         }
                     }
                     createMove(from, to, NO_PROMOTION, pieceTo, &moves[moveIndex++]); // Move it
-                    if (strchr("PNK", pieceFrom) != NULL || islower(pieceTo)) // Stop crawlers from sliding, and sliding after captures
+                    if (pieceFrom == P || pieceFrom == N || pieceFrom == K || pieceTo >= p) // Stop crawlers from sliding, and sliding after captures
                         break;
-                    if (from == A1 && position->board[to + EAST] == 'K' &&
+                    if (from == A1 && position->board[to + EAST] == K &&
                         position->wc[0]) // Castling, by sliding the rook next to the king, from = king's square
                         createMove(to + EAST, to + WEST, NO_PROMOTION, pieceTo, &moves[moveIndex++]);
-                    if (from == H1 && position->board[to + WEST] == 'K' &&
+                    if (from == H1 && position->board[to + WEST] == K &&
                         position->wc[1]) // Castling, by sliding the rook next to the king, from = king's square
                         createMove(to + WEST, to + EAST, NO_PROMOTION, pieceTo, &moves[moveIndex++]);
                 }
@@ -88,39 +85,36 @@ int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]) { // Fo
         }
     } else {
         for (int from = A8; from <= H1 ; ++from) {
-            char pieceFrom = position->board[from];
-            if (!islower(pieceFrom))
+            int pieceFrom = position->board[from];
+            if (pieceFrom < p)
                 continue;
-            int *pieceDirections = (int *) DIRECTIONS[PIECE_INDEXES[pieceFrom]];
+            int *pieceDirections = (int *) DIRECTIONS[pieceFrom];
             for (int dirIndex = 0; *(pieceDirections + dirIndex) != ARRAY_END; ++dirIndex) {
                 int d = *(pieceDirections + dirIndex);
                 for (int to = from + d; to >= 0 && to < SIZE; to += d) {
-                    char pieceTo = position->board[to];
-                    if (pieceTo == ' ' || (islower(pieceTo))) // Stay inside the board, and off friendly pieces
+                    int pieceTo = position->board[to];
+                    if (pieceTo == SPACE || pieceTo >= p) // Stay inside the board, and off friendly pieces
                         break;
-                    if (pieceFrom == 'p') { // Pawn move, double move and pieceTo
-                        if ((d == SOUTH || d == SOUTHSOUTH) && pieceTo != '.')
+                    if (pieceFrom == p) { // Pawn move, double move and pieceTo
+                        if ((d == SOUTH || d == SOUTHSOUTH) && pieceTo != EMPTY_SQUARE)
                             break;
-                        if (d == SOUTHSOUTH && (from > H8 + SOUTH || position->board[from + SOUTH] != '.'))
+                        if (d == SOUTHSOUTH && (from > H8 + SOUTH || position->board[from + SOUTH] != EMPTY_SQUARE))
                             break;
-                        if ((d == SOUTHWEST || d == SOUTHEAST) && pieceTo == '.' && to != position->ep
+                        if ((d == SOUTHWEST || d == SOUTHEAST) && pieceTo == EMPTY_SQUARE && to != position->ep
                             && to != position->kp - 1 && to != position->kp &&
                             to != position->kp + 1) // for castling check detection
                             break;
                         if (to >= A1 && to <= H1) { // If we move to the last row, we can be anything
-                            for (int promotion = q; promotion > p; promotion--) {
-                                createMove(from, to, promotion, pieceTo, &moves[moveIndex++]);
-                                break; // only consider queen promotions for efficiency reasons
-                            }
+                            createMove(from, to, q, pieceTo, &moves[moveIndex++]);
                             break;
                         }
                     }
                     createMove(from, to, NO_PROMOTION, pieceTo, &moves[moveIndex++]); // Move it
-                    if (strchr("pnk", pieceFrom) != NULL || isupper(pieceTo)) // Stop crawlers from sliding, and sliding after captures
+                    if (pieceFrom == p || pieceFrom == n || pieceFrom == k || (P <= pieceTo && pieceTo <= K)) // Stop crawlers from sliding, and sliding after captures
                         break;
-                    if (from == A8 && position->board[to + EAST] == 'k' && position->bc[0])// Castling, by sliding the rook next to the king, from = king's square
+                    if (from == A8 && position->board[to + EAST] == k && position->bc[0])// Castling, by sliding the rook next to the king, from = king's square
                         createMove(to + EAST, to + WEST, NO_PROMOTION, pieceTo, &moves[moveIndex++]);
-                    if (from == H8 && position->board[to + WEST] == 'k' && position->bc[1]) // Castling, by sliding the rook next to the king, from = king's square
+                    if (from == H8 && position->board[to + WEST] == k && position->bc[1]) // Castling, by sliding the rook next to the king, from = king's square
                         createMove(to + WEST, to + EAST, NO_PROMOTION, pieceTo, &moves[moveIndex++]);
                 }
             }
@@ -130,37 +124,35 @@ int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]) { // Fo
 }
 
 int value(const Position *position, const Move *move) {
-    char fromPiece = position->board[move->from];
-    char toPiece = position->board[move->to];
+    int fromPiece = position->board[move->from];
+    int toPiece = position->board[move->to];
 
-    int friendlyPieceIndex = PIECE_INDEXES[fromPiece];
-    int score = PST[friendlyPieceIndex][move->to] - PST[friendlyPieceIndex][move->from];
+    int score = PST[fromPiece][move->to] - PST[fromPiece][move->from];
 
-    if (toPiece != '.') { // Capture
-        int enemyPieceIndex = PIECE_INDEXES[toPiece];
-        score += PST[enemyPieceIndex][move->to];
+    if (toPiece != EMPTY_SQUARE) { // Capture
+        score += PST[toPiece][move->to];
     }
 
     if (abs(move->to - position->kp) < 2) { // position->kp = square where opponent's rook is after castling, 0 if he has not just castled
         score += PST[position->isWhite ? k : K][move->to]; // Castling check detection, add king's value to score to make it >= Mate_lower because castling was illegal (king, or the 2 other adjacent squares were attacked)
     }
 
-    if (fromPiece == 'K' && abs(move->from - move->to) == 2) { // Castling
+    if (fromPiece == K && abs(move->from - move->to) == 2) { // Castling
         score += PST[R][(move->from + move->to) / 2]; // to
         score -= PST[R][move->to < move->from ? A1 : H1]; // from
-    } else if (fromPiece == 'k' && abs(move->from - move->to) == 2) { // Castling
+    } else if (fromPiece == k && abs(move->from - move->to) == 2) { // Castling
         score += PST[r][(move->from + move->to) / 2];
         score -= PST[r][move->to < move->from ? A8 : H8];
     }
 
-    if (fromPiece == 'P') {
+    if (fromPiece == P) {
         if (A8 <= move->to && move->to <= H8) { // promotion
             score += PST[move->prom][move->to] - PST[P][move->to];
         }
         if (move->to == position->ep) { // en passant
             score += PST[p][move->to + SOUTH];
         }
-    } else if (fromPiece == 'p') {
+    } else if (fromPiece == p) {
         if (A1 <= move->to && move->to <= H1) { // promotion
             score += PST[move->prom][move->to] - PST[p][move->to];
         }
@@ -172,16 +164,15 @@ int value(const Position *position, const Move *move) {
 }
 
 bool isIrreversibleMove(const Move* move, Position* position){ // to know where to start checking for threefold repetition
-    return move->pieceTo != '.' || position->ep != 0 || position->kp != 0
-    || toupper(position->board[move->from]) == 'P';
+    return move->pieceTo != EMPTY_SQUARE || position->ep != 0 || position->kp != 0
+    || position->board[move->from] == P || position->board[move->from] == p;
 }
 
 
 void doMove(Position* position, const Move* move) {
-    char prom = ALL_PIECES[move->prom];
-    char fromPiece = position->board[move->from];
-    char toPiece = position->board[move->to];
-    int fromPieceIndex = PIECE_INDEXES[fromPiece];
+    int prom = move->prom;
+    int fromPiece = position->board[move->from];
+    int toPiece = position->board[move->to];
 
     ++position->currentPly;
     position->hash ^= blackToMoveHash;
@@ -198,13 +189,13 @@ void doMove(Position* position, const Move* move) {
 
     position->score = position->score + move->moveValue;
 
-    position->hash ^= pieceHashForSquares[fromPieceIndex][move->from] ^ pieceHashForSquares[fromPieceIndex][move->to];
-    if(toPiece != '.') {
-        position->hash ^= pieceHashForSquares[PIECE_INDEXES[toPiece]][move->to];
+    position->hash ^= pieceHashForSquares[fromPiece][move->from] ^ pieceHashForSquares[fromPiece][move->to];
+    if(toPiece != EMPTY_SQUARE) {
+        position->hash ^= pieceHashForSquares[toPiece][move->to];
     }
 
     position->board[move->to] = position->board[move->from]; // Actual move
-    position->board[move->from] = '.';
+    position->board[move->from] = EMPTY_SQUARE;
 
     int oldPositionEp = position->ep;
     position->ep = 0;
@@ -227,49 +218,49 @@ void doMove(Position* position, const Move* move) {
         position->hash ^= castlingRightsHash[1][1];
     }
 
-    if (fromPiece == 'K') {  // Castling
+    if (fromPiece == K) {  // Castling
         position->wc[0] = false;
         position->wc[1] = false;
         if (abs(move->to - move->from) == 2) {
             int rookFrom = (move->to < move->from) ? A1 : H1;
             position->kp = (move->from + move->to) / 2; // square 96 if short castle, 94 if long castle
-            position->board[rookFrom] = '.';
-            position->board[position->kp] = 'R';
+            position->board[rookFrom] = EMPTY_SQUARE;
+            position->board[position->kp] = R;
             position->hash ^= pieceHashForSquares[R][rookFrom] ^ pieceHashForSquares[R][position->kp];
         }
-    } else if (fromPiece == 'k') {  // Castling
+    } else if (fromPiece == k) {  // Castling
         position->bc[0] = false;
         position->bc[1] = false;
         if (abs(move->to - move->from) == 2) {
             int rookFrom = (move->to < move->from) ? A8 : H8;
             position->kp = (move->from + move->to) / 2;
-            position->board[rookFrom] = '.';
-            position->board[position->kp] = 'r';
+            position->board[rookFrom] = EMPTY_SQUARE;
+            position->board[position->kp] = r;
             position->hash ^= pieceHashForSquares[r][rookFrom] ^ pieceHashForSquares[r][position->kp];
         }
     }
 
-    if (fromPiece == 'P') { // Pawn promotion, double move, and en passant capture
+    if (fromPiece == P) { // Pawn promotion, double move, and en passant capture
         if (A8 <= move->to && move->to <= H8) {
             position->board[move->to] = prom;
-            position->hash ^= pieceHashForSquares[P][move->to] ^ pieceHashForSquares[PIECE_INDEXES[prom]][move->to];
+            position->hash ^= pieceHashForSquares[P][move->to] ^ pieceHashForSquares[prom][move->to];
         } else if (move->to - move->from == 2 * NORTH) {
             position->ep = move->from + NORTH;
             position->hash ^= enPassantFileHash[move->to % 10];
         } else if (move->to == oldPositionEp) {
-            position->board[move->to + SOUTH] = '.';
+            position->board[move->to + SOUTH] = EMPTY_SQUARE;
             position->hash ^= pieceHashForSquares[p][move->to + SOUTH];
         }
     }
-    if (fromPiece == 'p') { // Pawn promotion, double move, and en passant capture
+    if (fromPiece == p) { // Pawn promotion, double move, and en passant capture
         if (A1 <= move->to && move->to <= H1) {
             position->board[move->to] = prom;
-            position->hash ^= pieceHashForSquares[p][move->to] ^ pieceHashForSquares[PIECE_INDEXES[prom]][move->to];
+            position->hash ^= pieceHashForSquares[p][move->to] ^ pieceHashForSquares[prom][move->to];
         } else if (move->to - move->from == 2 * SOUTH) {
             position->ep = move->from + SOUTH;
             position->hash ^= enPassantFileHash[move->to % 10];
         } else if (move->to == oldPositionEp) {
-            position->board[move->to + NORTH] = '.';
+            position->board[move->to + NORTH] = EMPTY_SQUARE;
             position->hash ^= pieceHashForSquares[P][move->to + NORTH];
         }
     }
@@ -282,27 +273,27 @@ void doMove(Position* position, const Move* move) {
 }
 
 void undoMove(Position* position, Move* move, Position positionOld){
-    char fromPiece = position->board[move->to];
+    int fromPiece = position->board[move->to];
 
     position->board[move->from] = fromPiece;
     position->board[move->to] = move->pieceTo; // Undo move
 
-    if (fromPiece == 'K' && abs(move->to - move->from) == 2) {  // Castling
-        position->board[(move->to < move->from) ? A1 : H1] = 'R';
-        position->board[position->kp] = '.';
-    } else if (fromPiece == 'k' && abs(move->to - move->from) == 2) {  // Castling
-        position->board[(move->to < move->from) ? A8 : H8] = 'r';
-        position->board[position->kp] = '.';
+    if (fromPiece == K && abs(move->to - move->from) == 2) {  // Castling
+        position->board[(move->to < move->from) ? A1 : H1] = R;
+        position->board[position->kp] = EMPTY_SQUARE;
+    } else if (fromPiece == k && abs(move->to - move->from) == 2) {  // Castling
+        position->board[(move->to < move->from) ? A8 : H8] = r;
+        position->board[position->kp] = EMPTY_SQUARE;
     }
 
     if (move->prom != NO_PROMOTION) {
-        position->board[move->from] = positionOld.isWhite ? 'P' : 'p';
+        position->board[move->from] = positionOld.isWhite ? P : p;
     }
     if (move->to == positionOld.ep) {
-        if (fromPiece == 'P') { // en passant capture
-            position->board[move->to + SOUTH] = 'p';
-        } else if (fromPiece == 'p') { // en passant capture
-            position->board[move->to + NORTH] = 'P';
+        if (fromPiece == P) { // en passant capture
+            position->board[move->to + SOUTH] = p;
+        } else if (fromPiece == p) { // en passant capture
+            position->board[move->to + NORTH] = P;
         }
     }
     *position = positionOld;

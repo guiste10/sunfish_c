@@ -20,6 +20,9 @@ const int NORTHEAST = NORTH + EAST;
 const int SOUTHWEST = SOUTH + WEST;
 const int SOUTHEAST = SOUTH + EAST;
 
+const int SPACE = -8;
+const int EMPTY_SQUARE = -1;
+
 const int P = 0;
 const int N = 1;
 const int B = 2;
@@ -33,20 +36,20 @@ const int r = 9;
 const int q = 10;
 const int k = 11;
 
-int PIECE_INDEXES[PIECES_MAX_ASCII];
-
-char const initialBoard[] = "          " // important: keep const keyword for initialboard!!!!
-                            "          "
-                            " rnbqkbnr "
-                            " pppppppp "
-                            " ........ "
-                            " ........ "
-                            " ........ "
-                            " ........ "
-                            " PPPPPPPP "
-                            " RNBQKBNR "
-                            "          "
-                            "          ";
+const int initialBoard[SIZE] = {  // important: keep const keyword for initialboard!!!!
+        -8, -8, -8, -8, -8, -8, -8, -8, -8, -8,
+        -8, -8, -8, -8, -8, -8, -8, -8, -8, -8,
+        -8, 9, 7, 8, 10, 11, 8, 7, 9, -8,
+        -8, 6, 6, 6, 6, 6, 6, 6, 6, -8,
+        -8, -1, -1, -1, -1, -1, -1, -1, -1, -8,
+        -8, -1, -1, -1, -1, -1, -1, -1, -1, -8,
+        -8, -1, -1, -1, -1, -1, -1, -1, -1, -8,
+        -8, -1, -1, -1, -1, -1, -1, -1, -1, -8,
+        -8, 0, 0, 0, 0, 0, 0, 0, 0, -8,
+        -8, 3, 1, 2, 4, 5, 2, 1, 3, -8,
+        -8, -8, -8, -8, -8, -8, -8, -8, -8, -8,
+        -8, -8, -8, -8, -8, -8, -8, -8, -8, -8,
+};
 
 const int DIRECTIONS[NUM_PIECES][9] = {
         {NORTH, NORTHNORTH, NORTHWEST, NORTHEAST, 0}, // pawn
@@ -65,12 +68,6 @@ const int DIRECTIONS[NUM_PIECES][9] = {
 
 const char ALL_PIECES[NUM_PIECES] = "PNBRQKpnbrqk";
 
-void initializePieceIndexArray() {
-    for (int i = 0; i < NUM_PIECES; ++i) {
-        PIECE_INDEXES[ALL_PIECES[i]] = i;
-    }
-}
-
-void copyBoard(char* dest, const char* src) {
-    memcpy(dest, src, sizeof(char) * SIZE);
+void copyBoard(int* dest, const int* src) {
+    memcpy(dest, src, sizeof(int) * SIZE);
 }

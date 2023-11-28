@@ -34,12 +34,10 @@ void initializeZobristHashes() {
 void setInitialZobristHash(Position* position) {
     initializeZobristHashes();
     uint64_t hash = 0;
-    char *board = position->board;
     for (int square = 0; square < SIZE; ++square) {
-        char piece = board[square];
-        if (piece != '.') {
-            int pieceIndex = PIECE_INDEXES[piece];
-            hash ^= pieceHashForSquares[pieceIndex][square];
+        int piece = position->board[square];
+        if (piece != EMPTY_SQUARE) {
+            hash ^= pieceHashForSquares[piece][square];
         }
     }
     position->hash = hash;

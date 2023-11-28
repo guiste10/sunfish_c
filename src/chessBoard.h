@@ -20,6 +20,9 @@ extern const int NORTHEAST;
 extern const int SOUTHWEST;
 extern const int SOUTHEAST;
 
+extern const int SPACE;
+extern const int EMPTY_SQUARE;
+
 extern const int P;
 extern const int N;
 extern const int B;
@@ -34,11 +37,10 @@ extern const int r;
 extern const int q;
 extern const int k;
 
-extern int PIECE_INDEXES[PIECES_MAX_ASCII];
 extern const char ALL_PIECES[NUM_PIECES];
 extern const int DIRECTIONS[NUM_PIECES][9];
-extern const char initialBoard[];
+extern const int initialBoard[];
 
 void initializePieceIndexArray();
-void copyBoard(char* dest, const char* src);
+void copyBoard(int* dest, const int* src);
 #endif //SUNFISH_C_CHESSBOARD_H

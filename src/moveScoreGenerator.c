@@ -32,7 +32,7 @@ int getNullMoveScore(Position *position, int newGamma, int depth) {
     Position duplicate;
     duplicatePosition(position, &duplicate);
     doMove(&duplicate, &nullMove);
-    return bound(&duplicate, newGamma, depth,true);
+    return bound(&duplicate, newGamma, depth, true);
 }
 
 int getMoveScore(Position *position, int gamma, int depth, Position *positionBackup, Move *move) {

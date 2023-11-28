@@ -10,7 +10,7 @@ const int captureType = 2;
 const int killerType = 3; // non capturing!
 const int nonCaptureType = 4;
 
-void createMove(int from, int to, int prom, char pieceTo, Move* move){
+void createMove(int from, int to, int prom, int pieceTo, Move* move){
     move->from = from;
     move->to = to;
     move->prom = prom;
@@ -67,11 +67,11 @@ void uciMoveToMove(const char uciMove[6], Move *move, bool isWhite) {
     i = parseUciSquareToBoardIndex(from);
     j = parseUciSquareToBoardIndex(to);
     prom = uciProm == '\0' ? NO_PROMOTION : indexOf(ALL_PIECES, isWhite ? toupper(uciProm) : uciProm);
-    createMove(i, j, prom, '.', move);
+    createMove(i, j, prom, EMPTY_SQUARE, move);
 }
 
-bool isCapture(const Move *move, const char *board, const int ep) {
-    return move->pieceTo != '.' || ((board[move->from] == 'P' || board[move->from] == 'p') && move->to == ep);
+bool isCapture(const Move *move, const int *board, const int ep) {
+    return move->pieceTo != EMPTY_SQUARE || ((board[move->from] == P || board[move->from] == p) && move->to == ep);
 }
 
 bool equalMoves(const Move* moveA, const Move* moveB) {

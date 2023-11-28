@@ -11,7 +11,7 @@ void initKillerMovesTable() {
     }
 }
 
-void saveAsKillerMove(Move* cutoffMove, int depth, int ep, char board[]) {
+void saveAsKillerMove(Move* cutoffMove, int depth, int ep, int board[]) {
     if(!isCapture(cutoffMove, board, ep)) {
         Move* storedKillerMoves = killerMovesTable[depth];
         if(!(equalMoves(&storedKillerMoves[0], cutoffMove) || equalMoves(&storedKillerMoves[1], cutoffMove))) {
@@ -21,6 +21,6 @@ void saveAsKillerMove(Move* cutoffMove, int depth, int ep, char board[]) {
     }
 }
 
-bool isKillerType(int depth, char* board, int ep, Move *move) {
+bool isKillerType(int depth, int* board, int ep, Move *move) {
     return !isCapture(move, board, ep) && (equalMoves(move, &killerMovesTable[depth][0]) || equalMoves(move, &killerMovesTable[depth][1]));
 }

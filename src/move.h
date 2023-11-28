@@ -8,7 +8,7 @@ typedef struct {
     int from;
     int to;
     int prom;
-    char pieceTo;
+    int pieceTo;
     int moveValue;
     int moveType;
 } Move;
@@ -20,10 +20,10 @@ extern const int captureType;
 extern const int killerType; // non capturing!
 extern const int nonCaptureType;
 
-void createMove(int from, int to, int prom, char pieceTo, Move* move);
+void createMove(int from, int to, int prom, int pieceTo, Move* move);
 void moveToUciMove(const Move *move, char uciMove[6]);
 void uciMoveToMove(const char uciMove[6], Move *move, bool isWhite);
-bool isCapture(const Move *move, const char *board, int ep);
+bool isCapture(const Move *move, const int *board, int ep);
 bool equalMoves(const Move* moveA, const Move* moveB);
 int compareMoves(const void* x, const void* y);
 #endif //SUNFISH_C_MOVE_H

@@ -8,5 +8,5 @@ extern int PIECE_VALUES[NUM_WHITE_PIECES];
 extern int PST[6][SIZE];
 
 void initOpeningToMiddleGamePst();
-bool setPstToEndGameIfEndGame(const char *board);
+bool setPstToEndGameIfEndGame(const int *board);
 #endif //SUNFISH_C_PIECESQUARETABLES_H
