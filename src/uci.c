@@ -24,7 +24,7 @@ void fillArgs(char* line, char* args[MAX_ARGS], int* numArgs){
 
 void setupPositionWithMoveList(Position* position, char* initialBoardCopy, bool* isWhite, char *uciMoves[1000], int numArgs, uint64_t* history){
     initPosition(position, initialBoardCopy, (char *) initialBoard, history);
-    for (int ply = 0; ply < numArgs - 3; ply++) {
+    for (int ply = 0; ply < numArgs - 3; ++ply) {
         char *uciMove = uciMoves[3 + ply];
         Move move;
         uciMoveToMove(uciMove, &move, *isWhite);

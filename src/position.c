@@ -46,12 +46,12 @@ Position* duplicatePosition(Position* source, Position* target){
 int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]) { // For each friendly piece, iterate through each possible 'ray' of moves as defined in the 'directions' map. The rays are broken e.g. by captures or immediately in case of pieces such as knights.
     int moveIndex = 0;
     if(position->isWhite) {
-        for (int from = A8; from <= H1 ; from++) {
+        for (int from = A8; from <= H1 ; ++from) {
             char pieceFrom = position->board[from];
             if (!isupper(pieceFrom))
                 continue;
             int *pieceDirections = (int *) DIRECTIONS[PIECE_INDEXES[pieceFrom]];
-            for (int dirIndex = 0; *(pieceDirections + dirIndex) != ARRAY_END; dirIndex++) {
+            for (int dirIndex = 0; *(pieceDirections + dirIndex) != ARRAY_END; ++dirIndex) {
                 int d = *(pieceDirections + dirIndex);
                 for (int to = from + d; to >= 0 && to < SIZE; to += d) {
                     char pieceTo = position->board[to];
@@ -87,12 +87,12 @@ int genActualMoves(Position *position, Move moves[MAX_BRANCHING_FACTOR]) { // Fo
             }
         }
     } else {
-        for (int from = A8; from <= H1 ; from++) {
+        for (int from = A8; from <= H1 ; ++from) {
             char pieceFrom = position->board[from];
             if (!islower(pieceFrom))
                 continue;
             int *pieceDirections = (int *) DIRECTIONS[PIECE_INDEXES[pieceFrom]];
-            for (int dirIndex = 0; *(pieceDirections + dirIndex) != ARRAY_END; dirIndex++) {
+            for (int dirIndex = 0; *(pieceDirections + dirIndex) != ARRAY_END; ++dirIndex) {
                 int d = *(pieceDirections + dirIndex);
                 for (int to = from + d; to >= 0 && to < SIZE; to += d) {
                     char pieceTo = position->board[to];
@@ -183,7 +183,7 @@ void doMove(Position* position, const Move* move) {
     char toPiece = position->board[move->to];
     int fromPieceIndex = PIECE_INDEXES[fromPiece];
 
-    position->currentPly++;
+    ++position->currentPly;
     position->hash ^= blackToMoveHash;
 
     if(move->from == NULL_MOVE){

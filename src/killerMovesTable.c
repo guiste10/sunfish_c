@@ -4,8 +4,8 @@
 Move killerMovesTable[MAX_SEARCH_DEPTH][NUM_KILLER_MOVES_PER_DEPTH];
 
 void initKillerMovesTable() {
-    for (int i = 0; i < MAX_SEARCH_DEPTH; i++) {
-        for (int j = 0; j < NUM_KILLER_MOVES_PER_DEPTH; j++) {
+    for (int i = 0; i < MAX_SEARCH_DEPTH; ++i) {
+        for (int j = 0; j < NUM_KILLER_MOVES_PER_DEPTH; ++j) {
             killerMovesTable[i][j] = nullMove;
         }
     }

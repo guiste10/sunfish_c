@@ -137,9 +137,9 @@ const int SQUARES_VALUES_PAWN_ENDGAME[SIZE] = {
 
 void initOpeningToMiddleGamePst(){
     int square, mirroredSquare;
-    for(int row = 0; row < NUM_ROWS; row++){
-        for(int col = 0; col < NUM_FILES; col++){
-            for(int piece=0; piece < NUM_PIECES; piece++) {
+    for(int row = 0; row < NUM_ROWS; ++row){
+        for(int col = 0; col < NUM_FILES; ++col){
+            for(int piece=0; piece < NUM_PIECES; ++piece) {
                 square = (10 * row) + col;
                 mirroredSquare = 10 * (NUM_ROWS - row - 1) + col;
                 if(piece >= NUM_WHITE_PIECES)  // mirror white's square values
@@ -152,8 +152,8 @@ void initOpeningToMiddleGamePst(){
 
 void setPstToEndGame() {
     int square, mirroredSquare;
-    for (int row = 0; row < NUM_ROWS; row++) {
-        for (int col = 0; col < NUM_FILES; col++) {
+    for (int row = 0; row < NUM_ROWS; ++row) {
+        for (int col = 0; col < NUM_FILES; ++col) {
             square = (10 * row) + col;
             mirroredSquare = 10 * (NUM_ROWS - row - 1) + col;
             SQUARE_VALUES[k][square] = SQUARE_VALUES[K][mirroredSquare];
@@ -168,10 +168,10 @@ void setPstToEndGame() {
 
 void setPstToEndGameIfEndGame(const char *board) {
     int queenCount = 0;
-    for(int square = 0; square < SIZE ; square++) {
+    for(int square = 0; square < SIZE ; ++square) {
         char piece = board[square];
         if(piece == 'Q' || piece == 'q'){
-            queenCount++;
+            ++queenCount;
             if(queenCount >= 2){
                 return;
             }

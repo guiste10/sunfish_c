@@ -14,7 +14,7 @@ const int STOP = 6;
 
 void assignMoveValuesAndType(Position * position, Move *moves, int numMoves, int depth) {
     Move *move;
-    for (int i = 0; i < numMoves; i++) {
+    for (int i = 0; i < numMoves; ++i) {
         move = &moves[i];
         move->moveValue = value(position, move);
 

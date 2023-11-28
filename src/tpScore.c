@@ -8,7 +8,7 @@ TpScoreEntry** tpScore = NULL;
 void initTpScore() {
     tpScore = (TpScoreEntry**)malloc(MAX_SEARCH_DEPTH * sizeof(TpScoreEntry*));
     size_t totalSizeForDepth =  TP_SCORE_NUM_HASHES_LOW_DEPTH * 2 * sizeof(TpScoreEntry);
-    for(int depth=0; depth <= MAX_SEARCH_DEPTH; depth++) {
+    for(int depth=0; depth <= MAX_SEARCH_DEPTH; ++depth) {
         tpScore[depth] = (TpScoreEntry*) malloc(totalSizeForDepth);
         memset(tpScore[depth], 0, totalSizeForDepth);
         if(depth == HIGHEST_LOW_DEPTH) {
@@ -19,7 +19,7 @@ void initTpScore() {
 
 void clearTpScore() {
     if (tpScore != NULL) {
-        for(int depth=0; depth <= MAX_SEARCH_DEPTH; depth++) {
+        for(int depth=0; depth <= MAX_SEARCH_DEPTH; ++depth) {
             free(tpScore[depth]);
         }
         free(tpScore);

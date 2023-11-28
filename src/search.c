@@ -45,7 +45,7 @@ int mtdf(Position *position, int depth, clock_t startTime, char bestMoveUci[6]) 
 }
 
 int isRepetition(const Position *position) {
-    for(int ply = position->plyIrreversible; ply < position->currentPly; ply++){
+    for(int ply = position->plyIrreversible; ply < position->currentPly; ++ply){
         if(position->history[ply] == position->hash){
             return true;
         }
@@ -54,7 +54,7 @@ int isRepetition(const Position *position) {
 }
 
 int bound(Position *position, int gamma, int depth, bool canNullMove) {
-    numNodes++;
+    ++numNodes;
 
     depth = depth > 0 ? depth : 0;
 
@@ -128,7 +128,7 @@ Move searchBestMove(Position* position, int timeLeftMs) {
     clock_t start = clock();
     numNodes = 0;
     bool stop = false;
-    for(int depth = 1; !stop && depth <= MAX_SEARCH_DEPTH; depth++){
+    for(int depth = 1; !stop && depth <= MAX_SEARCH_DEPTH; ++depth){
         score = mtdf(position, depth, start, bestMoveUci);
         secTakenForDepth = ((double)(clock() - start)) / CLOCKS_PER_SEC;
         int nps = secTakenForDepth == 0.0 ? 0 : (int)(numNodes / secTakenForDepth);

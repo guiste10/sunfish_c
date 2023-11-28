@@ -6,7 +6,7 @@
 #include "search.h"
 
 void perft(Position* position, int depth) {
-    numNodes++;
+    ++numNodes;
     if(depth == 0) 
         return;
 
@@ -15,7 +15,7 @@ void perft(Position* position, int depth) {
     Move moves[MAX_BRANCHING_FACTOR];
     Move move;
     int numActualMoves = genActualMoves(position, moves);
-    for(int moveIndex = 0; moveIndex < numActualMoves; moveIndex++) {
+    for(int moveIndex = 0; moveIndex < numActualMoves; ++moveIndex) {
         move = moves[moveIndex];
         doMove(position, &move);
         perft(position, depth-1);

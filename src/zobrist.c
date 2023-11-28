@@ -14,18 +14,18 @@ void initializeZobristHashes() {
     int index = 0;
     blackToMoveHash = randomIntegers[index++];
 
-    for (int color = 0; color < NUM_COLORS; color++) {
-        for (int castlingSide = 0; castlingSide < NUM_CASTLING_SIDES; castlingSide++) {
+    for (int color = 0; color < NUM_COLORS; ++color) {
+        for (int castlingSide = 0; castlingSide < NUM_CASTLING_SIDES; ++castlingSide) {
             castlingRightsHash[color][castlingSide] = randomIntegers[index++];
         }
     }
 
-    for (int file = 0; file < NUM_FILES; file++) {
+    for (int file = 0; file < NUM_FILES; ++file) {
         enPassantFileHash[file] = randomIntegers[index++];
     }
 
-    for (int pieceIndex = 0; pieceIndex < NUM_PIECES; pieceIndex++) {
-        for (int square = 0; square < SIZE; square++) {
+    for (int pieceIndex = 0; pieceIndex < NUM_PIECES; ++pieceIndex) {
+        for (int square = 0; square < SIZE; ++square) {
             pieceHashForSquares[pieceIndex][square] = randomIntegers[index++];
         }
     }
@@ -35,7 +35,7 @@ void setInitialZobristHash(Position* position) {
     initializeZobristHashes();
     uint64_t hash = 0;
     char *board = position->board;
-    for (int square = 0; square < SIZE; square++) {
+    for (int square = 0; square < SIZE; ++square) {
         char piece = board[square];
         if (piece != '.') {
             int pieceIndex = PIECE_INDEXES[piece];

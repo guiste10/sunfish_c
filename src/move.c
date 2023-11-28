@@ -50,7 +50,7 @@ int indexOf(const char* str, char target) {
         if (str[i] == target) {
             return i;  // Return the index if the character is found
         }
-        i++;
+        ++i;
     }
     return -1;
 }

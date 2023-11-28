@@ -66,7 +66,7 @@ const int DIRECTIONS[NUM_PIECES][9] = {
 const char ALL_PIECES[NUM_PIECES] = "PNBRQKpnbrqk";
 
 void initializePieceIndexArray() {
-    for (int i = 0; i < NUM_PIECES; i++) {
+    for (int i = 0; i < NUM_PIECES; ++i) {
         PIECE_INDEXES[ALL_PIECES[i]] = i;
     }
 }
