@@ -12,6 +12,14 @@ const int EAST = 1;
 const int SOUTH = 10;
 const int WEST = -1;
 
+const int NORTHNORTH = NORTH + NORTH;
+const int SOUTHSOUTH = SOUTH + SOUTH;
+
+const int NORTHWEST = NORTH + WEST;
+const int NORTHEAST = NORTH + EAST;
+const int SOUTHWEST = SOUTH + WEST;
+const int SOUTHEAST = SOUTH + EAST;
+
 const int P = 0;
 const int N = 1;
 const int B = 2;
@@ -41,18 +49,18 @@ char const initialBoard[] = "          " // important: keep const keyword for in
                             "          ";
 
 const int DIRECTIONS[NUM_PIECES][9] = {
-        {NORTH, NORTH + NORTH, NORTH + WEST, NORTH + EAST, 0}, // pawn
-        {NORTH + NORTH + EAST, NORTH + NORTH + WEST, EAST + EAST + NORTH,EAST + EAST + SOUTH,SOUTH + SOUTH + EAST, SOUTH + SOUTH + WEST,WEST + WEST + + SOUTH,WEST + WEST + NORTH, 0}, // knight
-        {NORTH + EAST, SOUTH + EAST, SOUTH + WEST, NORTH + WEST, 0}, // bishop
+        {NORTH, NORTHNORTH, NORTHWEST, NORTHEAST, 0}, // pawn
+        {NORTH + NORTHEAST, NORTH + NORTHWEST, EAST + EAST + NORTH,EAST + EAST + SOUTH,SOUTH + SOUTHEAST, SOUTH + SOUTHWEST,WEST + WEST + + SOUTH,WEST + WEST + NORTH, 0}, // knight
+        {NORTHEAST, SOUTHEAST, SOUTHWEST, NORTHWEST, 0}, // bishop
         {NORTH, EAST, SOUTH, WEST, 0}, // rook
-        {NORTH, EAST, SOUTH, WEST, NORTH + EAST, SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0}, // queen
-        {NORTH, EAST, SOUTH, WEST, NORTH + EAST, SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0}, // king
-        {SOUTH, SOUTH + SOUTH, SOUTH + WEST, SOUTH + EAST, 0}, // pawn
-        {NORTH + NORTH + EAST, NORTH + NORTH + WEST, EAST + EAST + NORTH,EAST + EAST + SOUTH,SOUTH + SOUTH + EAST, SOUTH + SOUTH + WEST,WEST + WEST + + SOUTH,WEST + WEST + NORTH, 0}, // knight
-        {NORTH + EAST, SOUTH + EAST, SOUTH + WEST, NORTH + WEST, 0}, // bishop
+        {NORTH, EAST, SOUTH, WEST, NORTHEAST, SOUTHEAST,SOUTHWEST, NORTHWEST, 0}, // queen
+        {NORTH, EAST, SOUTH, WEST, NORTHEAST, SOUTHEAST,SOUTHWEST, NORTHWEST, 0}, // king
+        {SOUTH, SOUTHSOUTH, SOUTHWEST, SOUTHEAST, 0}, // pawn
+        {NORTH + NORTHEAST, NORTH + NORTHWEST, EAST + EAST + NORTH,EAST + EAST + SOUTH,SOUTH +SOUTHEAST, SOUTH + SOUTHWEST,WEST + WEST + + SOUTH,WEST + WEST + NORTH, 0}, // knight
+        {NORTHEAST, SOUTHEAST, SOUTHWEST, NORTHWEST, 0}, // bishop
         {NORTH, EAST, SOUTH, WEST, 0}, // rook
-        {NORTH, EAST, SOUTH, WEST, NORTH + EAST, SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0}, // queen
-        {NORTH, EAST, SOUTH, WEST, NORTH + EAST, SOUTH + EAST,SOUTH + WEST, NORTH + WEST, 0} // king
+        {NORTH, EAST, SOUTH, WEST, NORTHEAST, SOUTHEAST,SOUTHWEST, NORTHWEST, 0}, // queen
+        {NORTH, EAST, SOUTH, WEST, NORTHEAST, SOUTHEAST,SOUTHWEST, NORTHWEST, 0} // king
 };
 
 const char ALL_PIECES[NUM_PIECES] = "PNBRQKpnbrqk";

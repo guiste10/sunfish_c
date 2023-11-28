@@ -12,6 +12,14 @@ extern const int EAST;
 extern const int SOUTH;
 extern const int WEST;
 
+extern const int NORTHNORTH;
+extern const int SOUTHSOUTH;
+
+extern const int NORTHWEST;
+extern const int NORTHEAST;
+extern const int SOUTHWEST;
+extern const int SOUTHEAST;
+
 extern const int P;
 extern const int N;
 extern const int B;

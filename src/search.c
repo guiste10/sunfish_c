@@ -85,23 +85,22 @@ int bound(Position *position, int gamma, int depth, bool canNullMove) {
     int best, moveIndex, numActualMoves, score, step = 0;
     int valLower = QS - (depth * QS_A);
     Move actualMoves[MAX_BRANCHING_FACTOR];
-    Move mv;
-    Move* move = &mv;
+    Move move;
     Position positionBackup;
     duplicatePosition(position, &positionBackup);
     best = -MATE_UPPER;
     while(true) {
         step = getNextMoveScoreLazy(step, position, gamma, depth, canNullMove, valLower,
                                     &positionBackup, actualMoves, &numActualMoves,
-                                    &moveIndex, move, &score);
+                                    &moveIndex, &move, &score);
         if(step == STOP) {
             break;
         }
         best = score > best ? score : best;
         if(best >= gamma) {
-            if(move->from != NULL_MOVE) {
-                saveMove(position->hash, *move);
-                saveAsKillerMove(move, depth, position->ep, position->board);
+            if(move.from != NULL_MOVE) {
+                saveMove(position->hash, move);
+                saveAsKillerMove(&move, depth, position->ep, position->board);
             }
             break;
         }
