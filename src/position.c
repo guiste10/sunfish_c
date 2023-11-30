@@ -26,7 +26,7 @@ void initPosition(Position *position, int *boardCopy, int *boardToUse, uint64_t*
     position->currentPly = 0;
 }
 
-Position* duplicatePosition(Position* source, Position* target){
+Position* duplicatePosition(Position* source, Position* target){ // todo see if can be optimized in single operation
     target->board = source->board; // shallow copy!
     target->score = source->score;
     target->wc[0] = source->wc[0];

@@ -14,7 +14,7 @@ const int STOP = 6;
 
 void assignMoveValuesAndType(Position * position, Move *moves, int numMoves, int depth) {
     Move *move;
-    for (int i = 0; i < numMoves; ++i) {
+    for (int i = 0; i < numMoves; i++) {
         move = &moves[i];
         move->moveValue = value(position, move);
 
@@ -32,7 +32,7 @@ int getNullMoveScore(Position *position, int newGamma, int depth) {
     Position duplicate;
     duplicatePosition(position, &duplicate);
     doMove(&duplicate, &nullMove);
-    return bound(&duplicate, newGamma, depth, true);
+    return bound(&duplicate, newGamma, depth,true);
 }
 
 int getMoveScore(Position *position, int gamma, int depth, Position *positionBackup, Move *move) {
@@ -75,6 +75,12 @@ int getNextMoveScoreLazy(int step, Position* position, int gamma, int depth, boo
                 return 3;
             }
             break;
+        case 3:
+            *numActualMoves = genActualMoves(position, actualMoves);
+            assignMoveValuesAndType(position, actualMoves, *numActualMoves, depth);
+            qsort(actualMoves, *numActualMoves, sizeof(Move), compareMoves);
+            *moveIndex = 0;
+            break;
         case 4:
             if(*moveIndex == *numActualMoves) {
                 return STOP;
@@ -90,19 +96,8 @@ int getNextMoveScoreLazy(int step, Position* position, int gamma, int depth, boo
             }
             *scoreToYield = getMoveScore(position, gamma, depth, positionBackup, move);
             return 4;
-
-        default: // less frequent cases
-            switch (step) {
-                case 3:
-                    *numActualMoves = genActualMoves(position, actualMoves);
-                    assignMoveValuesAndType(position, actualMoves, *numActualMoves, depth);
-                    qsort(actualMoves, *numActualMoves, sizeof(Move), compareMoves);
-                    *moveIndex = 0;
-                    break;
-                case 5:
-                    return STOP;
-            }
-
+        case 5:
+            return STOP;
     }
     return getNextMoveScoreLazy(step + 1, position, gamma, depth, canNull,valLower, positionBackup,
                                 actualMoves, numActualMoves, moveIndex, moveToYield, scoreToYield);
