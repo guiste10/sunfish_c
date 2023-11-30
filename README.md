@@ -35,6 +35,8 @@ The following basic benchmark has been conducted on the sunfish-vanilla branch a
     CPU 11th Gen Intel(R) Core(TM) i7-1185G7 @ 3.00GHz
 	RAM 32,0 GB 4267 MHz
 
+WSL2 was used for the compilation (CC compiler) and execution of the Sunfish-C version. Sunfish on the other hand was run directly on Windows 10.
+
 ### Start position
 Let us compare the performance of both engines.
 
