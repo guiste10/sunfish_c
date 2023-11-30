@@ -15,6 +15,7 @@ The <b>sunfish-improved</b> branch is where all improvements are merged that are
 The current implemented improvements are:
 * Endgame PST's for the king and pawns
 * Killer (non capture) move heuristic
+* Integer array board representation
 
 Any <b>pull requests</b> on those 2 branches is welcome !
 
@@ -44,11 +45,11 @@ Sunfish:
     nps: 20787
     bestmove: g1f3
 
-Sunfish-C:
+Sunfish-C (vanilla):
 
-    time: 766 ms
+    time: 548 ms
     nodes: 394461
-    nps: 520436
+    nps: 719472
     bestmove: g1f3
 
 ### Middle Game position
@@ -73,20 +74,20 @@ Sunfish:
     nps: 22398
     bestmove: f8d8
 
-Sunfish-C:
+Sunfish-C (vanilla):
 
-    time: 2182 ms
+    time: 1652 ms
     nodes: 1189307
-    nps: 544987
+    nps: 719692
     bestmove: f8d8
 
 ### Observation
 The number of visited nodes in both engines is very similar.
 
-The C version is around 25 times faster than its Python version !
+The C version is around 32 times faster than its Python version !
 
 ### Perft
-A simple perft routine reaches 16.8 million nodes/sec (using the CC compiler). This is of course much slower in practice because of the quick cutoffs obtained after generating and ordering all the moves.
+A simple perft routine reaches 23 million nodes/sec using the CC compiler and the -O1 compilation flag. The improved version (sunfish-improved branch) reaches on average 30.5 million nodes per sec. This is of course much slower in practice because of the quick cutoffs obtained after the generation and sorting of all the moves.
 
 # License
 
